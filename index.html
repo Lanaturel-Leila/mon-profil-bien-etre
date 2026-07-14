@@ -16,135 +16,98 @@
     justify-content: center;
     padding: 24px;
   }
-  .app {
-    max-width: 420px;
-    width: 100%;
-    text-align: center;
-  }
+  .app { max-width: 440px; width: 100%; text-align: center; }
   .glouglou {
-    font-size: 56px;
-    margin-bottom: 16px;
+    width: 72px; height: 72px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #4dd8ff, #00BFFF 60%, #0099CC);
+    position: relative;
+    box-shadow: 0 4px 14px rgba(0,153,204,0.35);
   }
-  h1 {
-    font-size: 22px;
-    font-weight: 700;
-    margin-bottom: 12px;
-    color: #7a2e3b;
+  .glouglou::before, .glouglou::after {
+    content: "";
+    position: absolute;
+    width: 10px; height: 14px;
+    background: #17324a;
+    border-radius: 50%;
+    top: 26px;
   }
-  p.subtitle {
-    font-size: 14px;
-    line-height: 1.6;
-    color: #6b5a52;
-    margin-bottom: 24px;
+  .glouglou::before { left: 20px; }
+  .glouglou::after { right: 20px; }
+  .glouglou-mouth {
+    position: absolute;
+    bottom: 16px; left: 50%;
+    transform: translateX(-50%);
+    width: 24px; height: 12px;
+    border: 3px solid #17324a;
+    border-top: none;
+    border-radius: 0 0 20px 20px;
   }
+  .sound-toggle {
+    position: fixed; top: 16px; right: 16px;
+    background: white; border: 1.5px solid #e8c9cf;
+    border-radius: 999px; padding: 8px 14px;
+    font-size: 13px; cursor: pointer; color: #7a2e3b;
+  }
+  .glouglou-bulle {
+    background: white; border-radius: 14px; padding: 10px 16px;
+    font-size: 13px; color: #5a4a42; margin-bottom: 18px;
+    display: inline-block; border: 1px solid #f0e0dd;
+  }
+  h1 { font-size: 21px; font-weight: 700; margin-bottom: 12px; color: #7a2e3b; }
+  p.subtitle { font-size: 14px; line-height: 1.6; color: #6b5a52; margin-bottom: 24px; }
   .btn {
-    display: inline-block;
-    background: #7a2e3b;
-    color: white;
-    border: none;
-    padding: 14px 28px;
-    border-radius: 999px;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    text-decoration: none;
-    width: 100%;
-    margin-top: 8px;
+    display: inline-block; background: #7a2e3b; color: white; border: none;
+    padding: 14px 28px; border-radius: 999px; font-size: 15px; font-weight: 600;
+    cursor: pointer; text-decoration: none; width: 100%; margin-top: 8px;
   }
   .btn:active { opacity: 0.85; }
-  .btn-secondary {
-    background: white;
-    color: #7a2e3b;
-    border: 1.5px solid #e8c9cf;
+  .btn-secondary { background: white; color: #7a2e3b; border: 1.5px solid #e8c9cf; }
+  .btn-ghost {
+    background: none; border: none; color: #a08d84; font-size: 13px;
+    text-decoration: underline; cursor: pointer; margin-top: 10px;
   }
-  .progress {
-    display: flex;
-    justify-content: center;
-    gap: 6px;
-    margin-bottom: 28px;
-  }
-  .dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #e8c9cf;
-  }
+  .progress { display: flex; justify-content: center; gap: 5px; margin-bottom: 22px; flex-wrap: wrap; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: #e8c9cf; }
   .dot.active { background: #7a2e3b; }
-  .question-title {
-    font-size: 19px;
-    font-weight: 600;
-    margin-bottom: 20px;
-    line-height: 1.4;
-  }
-  .options {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 16px;
-  }
+  .question-title { font-size: 18px; font-weight: 600; margin-bottom: 18px; line-height: 1.4; }
+  .options { display: flex; flex-direction: column; gap: 9px; margin-bottom: 12px; }
   .option-btn {
-    background: white;
-    border: 1.5px solid #e8c9cf;
-    border-radius: 12px;
-    padding: 14px 16px;
-    font-size: 15px;
-    color: #4a3b34;
-    text-align: left;
-    cursor: pointer;
+    background: white; border: 1.5px solid #e8c9cf; border-radius: 12px;
+    padding: 13px 16px; font-size: 14.5px; color: #4a3b34; text-align: left; cursor: pointer;
   }
   .option-btn:active { background: #fbeaec; }
-  .back-link {
-    background: none;
-    border: none;
-    color: #a08d84;
-    font-size: 13px;
-    text-decoration: underline;
-    cursor: pointer;
-    margin-top: 8px;
-  }
   .card {
-    background: white;
-    border-radius: 16px;
-    padding: 20px;
-    text-align: left;
-    margin-bottom: 16px;
-    border: 1px solid #f0e0dd;
+    background: white; border-radius: 16px; padding: 18px; text-align: left;
+    margin-bottom: 14px; border: 1px solid #f0e0dd;
   }
-  .card p.card-title {
-    font-weight: 700;
-    margin-bottom: 12px;
-    font-size: 15px;
-  }
-  .card ol {
-    padding-left: 18px;
-    font-size: 14px;
-    line-height: 1.8;
-    color: #5a4a42;
-  }
+  .card p.card-title { font-weight: 700; margin-bottom: 10px; font-size: 15px; }
+  .dim-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 13px; }
+  .dim-label { width: 130px; text-align: left; }
+  .dim-bar-bg { flex: 1; background: #f4e4e0; border-radius: 999px; height: 8px; overflow: hidden; }
+  .dim-bar-fill { height: 100%; background: #7a2e3b; border-radius: 999px; }
+  .priorites-list, .gestes-list { padding-left: 18px; font-size: 14px; line-height: 1.8; color: #5a4a42; text-align: left; }
   input[type="email"] {
-    width: 100%;
-    padding: 12px 14px;
-    border-radius: 10px;
-    border: 1.5px solid #e8c9cf;
-    font-size: 14px;
-    margin-bottom: 10px;
+    width: 100%; padding: 12px 14px; border-radius: 10px; border: 1.5px solid #e8c9cf;
+    font-size: 14px; margin-bottom: 10px;
   }
+  .consent { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; color: #6b5a52; margin-bottom: 12px; text-align: left; }
   .hidden { display: none; }
-  .profil-tag {
-    font-size: 14px;
-    color: #7a2e3b;
-    margin-bottom: 20px;
-    font-weight: 600;
-  }
+  .disclaimer { font-size: 11px; color: #a08d84; margin-top: 4px; }
 </style>
 </head>
 <body>
+
+<button class="sound-toggle" id="sound-toggle" onclick="toggleSon()">🔈 Son</button>
+
 <div class="app">
 
   <div id="screen-intro">
-    <div class="glouglou">💧</div>
-    <h1>Découvre ton Profil Bien-être 🌸</h1>
-    <p class="subtitle">En moins de 2 minutes, réponds à quelques questions pour découvrir ce qui influence probablement ton bien-être aujourd'hui.</p>
+    <div class="glouglou"><div class="glouglou-mouth"></div></div>
+    <div class="glouglou-bulle">Bonjour 🌸 Moi c'est Glouglou.</div>
+    <h1>Découvre ton Profil Bien-être</h1>
+    <p class="subtitle">En moins de 3 minutes, nous allons découvrir ce qui influence probablement ton bien-être aujourd'hui. Promis… ce n'est pas un examen.</p>
     <button class="btn" onclick="demarrer()">Commencer</button>
   </div>
 
@@ -152,22 +115,39 @@
     <div class="progress" id="progress"></div>
     <div class="question-title" id="question-title"></div>
     <div class="options" id="options"></div>
-    <button class="back-link hidden" id="btn-retour" onclick="reculer()">Question précédente</button>
+    <button class="btn-ghost hidden" id="btn-retour" onclick="reculer()">Question précédente</button>
   </div>
 
   <div id="screen-resultat" class="hidden">
-    <div class="glouglou">🌸</div>
-    <h1>Ton profil est prêt</h1>
-    <p class="profil-tag" id="profil-titre"></p>
+    <div class="glouglou"><div class="glouglou-mouth"></div></div>
+    <div class="glouglou-bulle" id="glouglou-bonjour"></div>
+    <h1>Ton Portrait Bien-être</h1>
 
     <div class="card">
-      <p class="card-title">💧 Voici 3 gestes simples à faire aujourd'hui :</p>
-      <ol id="gestes-liste"></ol>
+      <p class="card-title">Ton portrait aujourd'hui</p>
+      <div id="dimensions"></div>
+      <p class="disclaimer">Ces indicateurs sont uniquement des repères de bien-être et ne constituent pas un diagnostic médical.</p>
     </div>
 
+    <div class="card">
+      <p class="card-title">Les 3 priorités du jour</p>
+      <ol class="priorites-list" id="priorites-liste"></ol>
+    </div>
+
+    <div class="card">
+      <p class="card-title" id="routine-titre"></p>
+      <ol class="gestes-list" id="routine-gestes"></ol>
+    </div>
+
+    <button class="btn btn-secondary" onclick="autreRoutine()">✨ Voir une autre routine</button>
+
     <div class="card" id="email-block">
-      <p style="margin-bottom:12px; font-size:14px;">Souhaites-tu recevoir gratuitement ton plan personnalisé et les prochains conseils ?</p>
+      <p style="margin-bottom:10px; font-size:14px;">Souhaites-tu recevoir gratuitement ton plan personnalisé ?</p>
       <input type="email" id="email-input" placeholder="ton@email.com">
+      <label class="consent">
+        <input type="checkbox" id="consent-checkbox">
+        <span>J'accepte que mes réponses soient utilisées pour personnaliser mes conseils.</span>
+      </label>
       <button class="btn" onclick="envoyerEmail()">Recevoir mon plan</button>
     </div>
     <p id="email-merci" class="hidden" style="font-size:14px; color:#7a2e3b; margin-bottom:16px;">Merci 🌸 Tu vas recevoir ton plan très vite.</p>
@@ -178,71 +158,131 @@
 </div>
 
 <script>
-const QUESTIONS = [
-  {
-    id: "gene",
-    libelle: "Aujourd'hui, qu'est-ce qui te gêne le plus ?",
-    options: [
-      { libelle: "Jambes lourdes", valeur: "jambes-lourdes" },
-      { libelle: "Ventre gonflé", valeur: "ventre-gonfle" },
-      { libelle: "Visage gonflé", valeur: "visage-gonfle" },
-      { libelle: "Fatigue", valeur: "fatigue" },
-      { libelle: "Stress", valeur: "stress" },
-      { libelle: "Je veux simplement prendre soin de moi", valeur: "soin" }
-    ]
-  },
-  {
-    id: "frequence",
-    libelle: "À quelle fréquence ressens-tu cela ?",
-    options: [
-      { libelle: "Tous les jours", valeur: "quotidien" },
-      { libelle: "Plusieurs fois par semaine", valeur: "frequent" },
-      { libelle: "De temps en temps", valeur: "occasionnel" },
-      { libelle: "Rarement", valeur: "rare" }
-    ]
-  },
-  {
-    id: "travail",
-    libelle: "Ton travail est plutôt…",
-    options: [
-      { libelle: "Assise", valeur: "assise" },
-      { libelle: "Debout", valeur: "debout" },
-      { libelle: "Très physique", valeur: "physique" },
-      { libelle: "Variable", valeur: "variable" }
-    ]
-  },
-  {
-    id: "temperature",
-    libelle: "Aujourd'hui il fait…",
-    options: [
-      { libelle: "Très chaud", valeur: "chaud" },
-      { libelle: "Température normale", valeur: "normal" },
-      { libelle: "Froid", valeur: "froid" }
-    ]
-  },
-  {
-    id: "eau",
-    libelle: "Combien d'eau bois-tu environ chaque jour ?",
-    options: [
-      { libelle: "Moins de 1 litre", valeur: "peu" },
-      { libelle: "Entre 1 et 2 litres", valeur: "moyen" },
-      { libelle: "Plus de 2 litres", valeur: "beaucoup" }
-    ]
-  },
-  {
-    id: "temps",
-    libelle: "Combien de temps peux-tu consacrer à toi aujourd'hui ?",
-    options: [
-      { libelle: "5 minutes", valeur: "5" },
-      { libelle: "10 minutes", valeur: "10" },
-      { libelle: "20 minutes", valeur: "20" },
-      { libelle: "Plus de 30 minutes", valeur: "30" }
-    ]
+/* ---------- SON D'AMBIANCE (généré, sans fichier externe) ---------- */
+let audioCtx = null, oscillators = [], sonActif = false;
+function toggleSon() {
+  sonActif = !sonActif;
+  document.getElementById('sound-toggle').textContent = sonActif ? '🔊 Son' : '🔈 Son';
+  if (sonActif) {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const notes = [261.6, 329.6, 392.0];
+    oscillators = notes.map((freq, i) => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      gain.gain.value = 0.015;
+      osc.connect(gain).connect(audioCtx.destination);
+      osc.start();
+      return osc;
+    });
+  } else {
+    oscillators.forEach(o => o.stop());
+    oscillators = [];
   }
+}
+
+/* ---------- QUESTIONS ---------- */
+const QUESTIONS = [
+  { id: "objectif", libelle: "Quel est ton objectif aujourd'hui ?", options: [
+    { libelle: "Retrouver des jambes légères", valeur: "jambes-legeres" },
+    { libelle: "Diminuer les gonflements", valeur: "gonflements" },
+    { libelle: "Retrouver de l'énergie", valeur: "energie" },
+    { libelle: "Me sentir plus sereine", valeur: "serenite" },
+    { libelle: "Prendre davantage soin de moi", valeur: "soin" }
+  ]},
+  { id: "rythme", libelle: "Comment se passent généralement tes journées ?", options: [
+    { libelle: "Je cours partout", valeur: "cours-partout" },
+    { libelle: "J'ai très peu de temps pour moi", valeur: "peu-de-temps" },
+    { libelle: "Mes journées sont plutôt calmes", valeur: "calmes" },
+    { libelle: "Chaque journée est différente", valeur: "variable" }
+  ]},
+  { id: "travail", libelle: "Ton travail est principalement :", options: [
+    { libelle: "Assise", valeur: "assise" },
+    { libelle: "Debout", valeur: "debout" },
+    { libelle: "Physique", valeur: "physique" },
+    { libelle: "Variable", valeur: "variable" }
+  ]},
+  { id: "mouvement", libelle: "En dehors du travail, tu bouges ?", options: [
+    { libelle: "Jamais", valeur: "jamais" },
+    { libelle: "1 à 2 fois par semaine", valeur: "1-2" },
+    { libelle: "3 à 4 fois par semaine", valeur: "3-4" },
+    { libelle: "Tous les jours", valeur: "tous-les-jours" }
+  ]},
+  { id: "energie_soir", libelle: "À la fin de la journée, tu te sens :", options: [
+    { libelle: "Pleine d'énergie", valeur: "energie" },
+    { libelle: "Fatiguée", valeur: "fatiguee" },
+    { libelle: "Très fatiguée", valeur: "tres-fatiguee" },
+    { libelle: "Complètement épuisée", valeur: "epuisee" }
+  ]},
+  { id: "dernier_moment", libelle: "Quand as-tu pris un vrai moment pour toi ?", options: [
+    { libelle: "Aujourd'hui", valeur: "aujourdhui" },
+    { libelle: "Cette semaine", valeur: "cette-semaine" },
+    { libelle: "Je ne m'en souviens même plus", valeur: "jamais" }
+  ]},
+  { id: "gene", libelle: "Aujourd'hui, qu'est-ce qui te gêne le plus ?", options: [
+    { libelle: "Jambes lourdes", valeur: "jambes-lourdes" },
+    { libelle: "Ventre gonflé", valeur: "ventre-gonfle" },
+    { libelle: "Fatigue", valeur: "fatigue" },
+    { libelle: "Stress", valeur: "stress" },
+    { libelle: "Visage gonflé", valeur: "visage-gonfle" }
+  ]},
+  { id: "temps", libelle: "Combien de temps peux-tu consacrer à toi aujourd'hui ?", options: [
+    { libelle: "5 minutes", valeur: "5" },
+    { libelle: "10 minutes", valeur: "10" },
+    { libelle: "20 minutes", valeur: "20" },
+    { libelle: "Plus de 30 minutes", valeur: "30" }
+  ]},
+  { id: "eau", libelle: "Tu bois en moyenne :", options: [
+    { libelle: "Moins d'un litre", valeur: "moins-1L" },
+    { libelle: "Entre 1 et 2 litres", valeur: "1-2L" },
+    { libelle: "Plus de 2 litres", valeur: "plus-2L" }
+  ]}
 ];
+
+/* ---------- MOTEUR DE ROUTINES (10 profils, évolutif) ---------- */
+const ROUTINES = [
+  { id: 1, dims: ["chargeMentale"], duree: 5, titre: "Pause respiration (5 min)",
+    gestes: ["Ferme les yeux et respire profondément pendant 1 minute.", "Note 3 choses qui te pèsent aujourd'hui.", "Relâche consciemment tes épaules et ta mâchoire."] },
+  { id: 2, dims: ["chargeMentale", "mouvement"], duree: 7, titre: "Recentrage actif (7 min)",
+    gestes: ["Bois un grand verre d'eau.", "Fais 2 minutes d'étirements doux.", "Marche 3 minutes, même sur place.", "Respire profondément 1 minute."] },
+  { id: 3, dims: ["mouvement"], duree: 5, titre: "Réveil des jambes (5 min)",
+    gestes: ["Pompages de cheville, 20 rotations chaque sens.", "Marche ou monte quelques escaliers.", "Étire tes mollets contre un mur."] },
+  { id: 4, dims: ["mouvement", "hydratation"], duree: 10, titre: "Circulation & hydratation (10 min)",
+    gestes: ["Bois un grand verre d'eau.", "Lissages du bas vers le haut, mollet puis genou.", "Marche 5 minutes.", "Surélève tes jambes 2 minutes."] },
+  { id: 5, dims: ["hydratation"], duree: 5, titre: "Réhydratation express (5 min)",
+    gestes: ["Bois un grand verre d'eau maintenant.", "Prépare une bouteille à garder près de toi aujourd'hui.", "Ajoute une rondelle de citron pour varier."] },
+  { id: 6, dims: ["hydratation", "recuperation"], duree: 7, titre: "Douceur & hydratation (7 min)",
+    gestes: ["Bois un grand verre d'eau.", "Passe un gant d'eau fraîche sur ton visage.", "Accorde-toi 5 minutes allongée, jambes surélevées."] },
+  { id: 7, dims: ["recuperation"], duree: 5, titre: "Micro-pause récupération (5 min)",
+    gestes: ["Éloigne-toi des écrans 5 minutes.", "Ferme les yeux et respire lentement.", "Bois un verre d'eau à la fin."] },
+  { id: 8, dims: ["recuperation", "chargeMentale"], duree: 10, titre: "Ressourcement complet (10 min)",
+    gestes: ["Installe-toi confortablement, sans écran.", "Respire profondément pendant 3 minutes.", "Note une chose positive de ta journée.", "Étire doucement ton corps."] },
+  { id: 9, dims: ["mouvement", "recuperation"], duree: 10, titre: "Mouvement doux & repos (10 min)",
+    gestes: ["Marche tranquillement 5 minutes.", "Étire tes jambes et ton dos.", "Termine allongée, jambes surélevées 3 minutes."] },
+  { id: 10, dims: ["general"], duree: 5, titre: "Un moment rien que pour toi (5 min)",
+    gestes: ["Bois un grand verre d'eau.", "Respire profondément quelques instants.", "Offre-toi un geste doux : une crème, une musique, un silence."] }
+];
+
+const LABELS_PRIORITE = {
+  chargeMentale: "💗 Réduire la charge mentale.",
+  mouvement: "🌿 Bouger un peu plus.",
+  hydratation: "💧 Améliorer ton hydratation.",
+  recuperation: "😴 Prendre plus de temps pour récupérer."
+};
+
+const LABELS_DIM = {
+  chargeMentale: "💗 Charge mentale",
+  mouvement: "🌿 Mouvement",
+  hydratation: "💧 Hydratation",
+  recuperation: "😴 Récupération"
+};
 
 let step = 0;
 let reponses = {};
+let dimensions = {};
+let topDims = [];
+let routineActuelleId = null;
 
 function demarrer() {
   document.getElementById('screen-intro').classList.add('hidden');
@@ -281,81 +321,118 @@ function choisir(questionId, valeur) {
     step++;
     afficherQuestion();
   } else {
-    afficherResultat();
+    calculerEtAfficherResultat();
   }
 }
 
 function reculer() {
-  if (step > 0) {
-    step--;
-    afficherQuestion();
-  }
+  if (step > 0) { step--; afficherQuestion(); }
 }
 
-function calculerProfil() {
-  const facteurs = [];
-  if (reponses.temperature === "chaud") facteurs.push("Chaleur");
-  if (reponses.travail === "debout") facteurs.push("Station debout");
-  if (reponses.travail === "physique") facteurs.push("Activité physique intense");
-  if (reponses.travail === "assise") facteurs.push("Position assise prolongée");
-  if (reponses.eau === "peu") facteurs.push("Hydratation insuffisante");
-  if (reponses.gene === "stress") facteurs.push("Stress");
-  if (reponses.gene === "fatigue") facteurs.push("Fatigue");
+/* ---------- CALCUL DU PORTRAIT ---------- */
+function calculerDimensions() {
+  const d = { chargeMentale: 20, mouvement: 20, hydratation: 20, recuperation: 20 };
 
-  const titre = facteurs.length > 0 ? facteurs.slice(0, 2).join(" & ") : "Un besoin de douceur aujourd'hui";
+  const map2 = { "jambes-legeres": ["mouvement",20], "gonflements": ["hydratation",20], "energie": ["recuperation",20], "serenite": ["chargeMentale",20], "soin": ["recuperation",10] };
+  if (map2[reponses.objectif]) d[map2[reponses.objectif][0]] += map2[reponses.objectif][1];
 
-  let gestes = [];
-  if (reponses.eau === "peu" || reponses.temperature === "chaud") {
-    gestes.push("Bois un grand verre d'eau maintenant.");
-  }
-  if (reponses.gene === "jambes-lourdes" || reponses.travail === "debout") {
-    gestes.push("Surélève tes jambes 5 minutes ce soir.");
-  }
-  if (reponses.gene === "stress") {
-    gestes.push("Prends 3 respirations profondes, lentement, les yeux fermés.");
-  }
-  if (reponses.gene === "fatigue") {
-    gestes.push("Accorde-toi une micro-pause de 5 minutes sans écran.");
-  }
-  if (reponses.gene === "ventre-gonfle") {
-    gestes.push("Masse doucement ton ventre dans le sens des aiguilles d'une montre.");
-  }
-  if (reponses.gene === "visage-gonfle") {
-    gestes.push("Passe un gant d'eau fraîche sur ton visage quelques instants.");
-  }
-  gestes.push("Fais une routine de 5 minutes, rien que pour toi.");
+  const map3 = { "cours-partout": 20, "peu-de-temps": 15, "calmes": 0, "variable": 10 };
+  d.chargeMentale += map3[reponses.rythme] || 0;
 
-  gestes = [...new Set(gestes)].slice(0, 3);
+  const map4 = { "assise": 15, "debout": 5, "physique": -10, "variable": 5 };
+  d.mouvement += Math.max(0, map4[reponses.travail] || 0);
+  if (reponses.travail === "physique") d.recuperation += 15;
+  if (reponses.travail === "debout") d.recuperation += 10;
 
-  const situationsAvecContenu = ["jambes-lourdes"];
-  const situationSlug = situationsAvecContenu.includes(reponses.gene) ? reponses.gene : "jambes-lourdes";
+  const map5 = { "jamais": 25, "1-2": 15, "3-4": 5, "tous-les-jours": 0 };
+  d.mouvement += map5[reponses.mouvement] || 0;
 
-  return { titre, gestes, situationSlug };
+  const map6 = { "energie": 0, "fatiguee": 15, "tres-fatiguee": 25, "epuisee": 35 };
+  d.recuperation += map6[reponses.energie_soir] || 0;
+
+  const map7 = { "aujourdhui": 0, "cette-semaine": 10, "jamais": 25 };
+  d.chargeMentale += map7[reponses.dernier_moment] || 0;
+
+  const map8 = { "jambes-lourdes": ["mouvement"], "ventre-gonfle": ["hydratation"], "fatigue": ["recuperation"], "stress": ["chargeMentale"], "visage-gonfle": ["hydratation"] };
+  if (map8[reponses.gene]) d[map8[reponses.gene][0]] += 15;
+
+  const map10 = { "moins-1L": 30, "1-2L": 10, "plus-2L": 0 };
+  d.hydratation += map10[reponses.eau] || 0;
+
+  Object.keys(d).forEach(k => d[k] = Math.min(100, d[k]));
+  return d;
 }
 
-function afficherResultat() {
+function calculerEtAfficherResultat() {
+  dimensions = calculerDimensions();
+  topDims = Object.entries(dimensions).sort((a,b) => b[1]-a[1]).map(e => e[0]).slice(0,3);
+
   document.getElementById('screen-questions').classList.add('hidden');
   document.getElementById('screen-resultat').classList.remove('hidden');
+  document.getElementById('glouglou-bonjour').textContent = "Merci pour tes réponses 🌸 Ton portrait est prêt.";
 
-  const resultat = calculerProfil();
-  document.getElementById('profil-titre').textContent = "Aujourd'hui : " + resultat.titre;
+  const dimsDiv = document.getElementById('dimensions');
+  dimsDiv.innerHTML = '';
+  Object.entries(dimensions).forEach(([key, val]) => {
+    const row = document.createElement('div');
+    row.className = 'dim-row';
+    row.innerHTML = '<span class="dim-label">' + LABELS_DIM[key] + '</span><div class="dim-bar-bg"><div class="dim-bar-fill" style="width:' + val + '%"></div></div><span>' + val + '%</span>';
+    dimsDiv.appendChild(row);
+  });
 
-  const liste = document.getElementById('gestes-liste');
+  const listePriorites = document.getElementById('priorites-liste');
+  listePriorites.innerHTML = '';
+  topDims.forEach(dim => {
+    const li = document.createElement('li');
+    li.textContent = LABELS_PRIORITE[dim];
+    listePriorites.appendChild(li);
+  });
+
+  afficherRoutine(choisirRoutine());
+
+  const situationsAvecContenu = { "jambes-lourdes": "jambes-lourdes" };
+  const slug = situationsAvecContenu[reponses.gene] || "jambes-lourdes";
+  document.getElementById('lien-lymia').href = "https://lymia-opal.vercel.app/situation/" + slug;
+}
+
+function choisirRoutine(exclureId) {
+  const tempsDispo = parseInt(reponses.temps, 10) || 5;
+  let candidates = ROUTINES.filter(r => r.duree <= tempsDispo && r.id !== exclureId);
+  if (candidates.length === 0) candidates = ROUTINES.filter(r => r.id !== exclureId);
+
+  candidates.forEach(r => {
+    r._score = r.dims.reduce((acc, dim) => acc + (topDims.includes(dim) ? (topDims.indexOf(dim) === 0 ? 3 : 2) : 0), 0);
+  });
+  candidates.sort((a,b) => b._score - a._score);
+
+  const meilleurScore = candidates[0]._score;
+  const meilleurs = candidates.filter(r => r._score === meilleurScore);
+  return meilleurs[Math.floor(Math.random() * meilleurs.length)];
+}
+
+function afficherRoutine(routine) {
+  routineActuelleId = routine.id;
+  document.getElementById('routine-titre').textContent = routine.titre;
+  const liste = document.getElementById('routine-gestes');
   liste.innerHTML = '';
-  resultat.gestes.forEach(g => {
+  routine.gestes.forEach(g => {
     const li = document.createElement('li');
     li.textContent = g;
     liste.appendChild(li);
   });
+}
 
-  document.getElementById('lien-lymia').href = "https://lymia-opal.vercel.app/situation/" + resultat.situationSlug;
+function autreRoutine() {
+  afficherRoutine(choisirRoutine(routineActuelleId));
 }
 
 function envoyerEmail() {
   const email = document.getElementById('email-input').value;
-  if (!email.includes('@')) return;
+  const consent = document.getElementById('consent-checkbox').checked;
+  if (!email.includes('@') || !consent) return;
   try {
     localStorage.setItem('profil_email', email);
+    localStorage.setItem('profil_reponses', JSON.stringify(reponses));
   } catch (e) {}
   document.getElementById('email-block').classList.add('hidden');
   document.getElementById('email-merci').classList.remove('hidden');
