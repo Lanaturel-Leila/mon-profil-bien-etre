@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Découvre ton Profil Bien-être</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #fdf6f3;
+    color: #4a3b34;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .app {
+    max-width: 420px;
+    width: 100%;
+    text-align: center;
+  }
+  .glouglou {
+    font-size: 56px;
+    margin-bottom: 16px;
+  }
+  h1 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: #7a2e3b;
+  }
+  p.subtitle {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #6b5a52;
+    margin-bottom: 24px;
+  }
+  .btn {
+    display: inline-block;
+    background: #7a2e3b;
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 999px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    width: 100%;
+    margin-top: 8px;
+  }
+  .btn:active { opacity: 0.85; }
+  .btn-secondary {
+    background: white;
+    color: #7a2e3b;
+    border: 1.5px solid #e8c9cf;
+  }
+  .progress {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 28px;
+  }
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #e8c9cf;
+  }
+  .dot.active { background: #7a2e3b; }
+  .question-title {
+    font-size: 19px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    line-height: 1.4;
+  }
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .option-btn {
+    background: white;
+    border: 1.5px solid #e8c9cf;
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-size: 15px;
+    color: #4a3b34;
+    text-align: left;
+    cursor: pointer;
+  }
+  .option-btn:active { background: #fbeaec; }
+  .back-link {
+    background: none;
+    border: none;
+    color: #a08d84;
+    font-size: 13px;
+    text-decoration: underline;
+    cursor: pointer;
+    margin-top: 8px;
+  }
+  .card {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    text-align: left;
+    margin-bottom: 16px;
+    border: 1px solid #f0e0dd;
+  }
+  .card p.card-title {
+    font-weight: 700;
+    margin-bottom: 12px;
+    font-size: 15px;
+  }
+  .card ol {
+    padding-left: 18px;
+    font-size: 14px;
+    line-height: 1.8;
+    color: #5a4a42;
+  }
+  input[type="email"] {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1.5px solid #e8c9cf;
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+  .hidden { display: none; }
+  .profil-tag {
+    font-size: 14px;
+    color: #7a2e3b;
+    margin-bottom: 20px;
+    font-weight: 600;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div id="screen-intro">
+    <div class="glouglou">💧</div>
+    <h1>Découvre ton Profil Bien-être 🌸</h1>
+    <p class="subtitle">En moins de 2 minutes, réponds à quelques questions pour découvrir ce qui influence probablement ton bien-être aujourd'hui.</p>
+    <button class="btn" onclick="demarrer()">Commencer</button>
+  </div>
+
+  <div id="screen-questions" class="hidden">
+    <div class="progress" id="progress"></div>
+    <div class="question-title" id="question-title"></div>
+    <div class="options" id="options"></div>
+    <button class="back-link hidden" id="btn-retour" onclick="reculer()">Question précédente</button>
+  </div>
+
+  <div id="screen-resultat" class="hidden">
+    <div class="glouglou">🌸</div>
+    <h1>Ton profil est prêt</h1>
+    <p class="profil-tag" id="profil-titre"></p>
+
+    <div class="card">
+      <p class="card-title">💧 Voici 3 gestes simples à faire aujourd'hui :</p>
+      <ol id="gestes-liste"></ol>
+    </div>
+
+    <div class="card" id="email-block">
+      <p style="margin-bottom:12px; font-size:14px;">Souhaites-tu recevoir gratuitement ton plan personnalisé et les prochains conseils ?</p>
+      <input type="email" id="email-input" placeholder="ton@email.com">
+      <button class="btn" onclick="envoyerEmail()">Recevoir mon plan</button>
+    </div>
+    <p id="email-merci" class="hidden" style="font-size:14px; color:#7a2e3b; margin-bottom:16px;">Merci 🌸 Tu vas recevoir ton plan très vite.</p>
+
+    <a class="btn btn-secondary" href="https://lymia-opal.vercel.app" id="lien-lymia">Découvrir Lymia</a>
+  </div>
+
+</div>
+
+<script>
+const QUESTIONS = [
+  {
+    id: "gene",
+    libelle: "Aujourd'hui, qu'est-ce qui te gêne le plus ?",
+    options: [
+      { libelle: "Jambes lourdes", valeur: "jambes-lourdes" },
+      { libelle: "Ventre gonflé", valeur: "ventre-gonfle" },
+      { libelle: "Visage gonflé", valeur: "visage-gonfle" },
+      { libelle: "Fatigue", valeur: "fatigue" },
+      { libelle: "Stress", valeur: "stress" },
+      { libelle: "Je veux simplement prendre soin de moi", valeur: "soin" }
+    ]
+  },
+  {
+    id: "frequence",
+    libelle: "À quelle fréquence ressens-tu cela ?",
+    options: [
+      { libelle: "Tous les jours", valeur: "quotidien" },
+      { libelle: "Plusieurs fois par semaine", valeur: "frequent" },
+      { libelle: "De temps en temps", valeur: "occasionnel" },
+      { libelle: "Rarement", valeur: "rare" }
+    ]
+  },
+  {
+    id: "travail",
+    libelle: "Ton travail est plutôt…",
+    options: [
+      { libelle: "Assise", valeur: "assise" },
+      { libelle: "Debout", valeur: "debout" },
+      { libelle: "Très physique", valeur: "physique" },
+      { libelle: "Variable", valeur: "variable" }
+    ]
+  },
+  {
+    id: "temperature",
+    libelle: "Aujourd'hui il fait…",
+    options: [
+      { libelle: "Très chaud", valeur: "chaud" },
+      { libelle: "Température normale", valeur: "normal" },
+      { libelle: "Froid", valeur: "froid" }
+    ]
+  },
+  {
+    id: "eau",
+    libelle: "Combien d'eau bois-tu environ chaque jour ?",
+    options: [
+      { libelle: "Moins de 1 litre", valeur: "peu" },
+      { libelle: "Entre 1 et 2 litres", valeur: "moyen" },
+      { libelle: "Plus de 2 litres", valeur: "beaucoup" }
+    ]
+  },
+  {
+    id: "temps",
+    libelle: "Combien de temps peux-tu consacrer à toi aujourd'hui ?",
+    options: [
+      { libelle: "5 minutes", valeur: "5" },
+      { libelle: "10 minutes", valeur: "10" },
+      { libelle: "20 minutes", valeur: "20" },
+      { libelle: "Plus de 30 minutes", valeur: "30" }
+    ]
+  }
+];
+
+let step = 0;
+let reponses = {};
+
+function demarrer() {
+  document.getElementById('screen-intro').classList.add('hidden');
+  document.getElementById('screen-questions').classList.remove('hidden');
+  afficherQuestion();
+}
+
+function afficherQuestion() {
+  const q = QUESTIONS[step];
+  document.getElementById('question-title').textContent = q.libelle;
+
+  const progress = document.getElementById('progress');
+  progress.innerHTML = '';
+  QUESTIONS.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (i <= step ? ' active' : '');
+    progress.appendChild(dot);
+  });
+
+  const optionsDiv = document.getElementById('options');
+  optionsDiv.innerHTML = '';
+  q.options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.textContent = opt.libelle;
+    btn.onclick = () => choisir(q.id, opt.valeur);
+    optionsDiv.appendChild(btn);
+  });
+
+  document.getElementById('btn-retour').classList.toggle('hidden', step === 0);
+}
+
+function choisir(questionId, valeur) {
+  reponses[questionId] = valeur;
+  if (step < QUESTIONS.length - 1) {
+    step++;
+    afficherQuestion();
+  } else {
+    afficherResultat();
+  }
+}
+
+function reculer() {
+  if (step > 0) {
+    step--;
+    afficherQuestion();
+  }
+}
+
+function calculerProfil() {
+  const facteurs = [];
+  if (reponses.temperature === "chaud") facteurs.push("Chaleur");
+  if (reponses.travail === "debout") facteurs.push("Station debout");
+  if (reponses.travail === "physique") facteurs.push("Activité physique intense");
+  if (reponses.travail === "assise") facteurs.push("Position assise prolongée");
+  if (reponses.eau === "peu") facteurs.push("Hydratation insuffisante");
+  if (reponses.gene === "stress") facteurs.push("Stress");
+  if (reponses.gene === "fatigue") facteurs.push("Fatigue");
+
+  const titre = facteurs.length > 0 ? facteurs.slice(0, 2).join(" & ") : "Un besoin de douceur aujourd'hui";
+
+  let gestes = [];
+  if (reponses.eau === "peu" || reponses.temperature === "chaud") {
+    gestes.push("Bois un grand verre d'eau maintenant.");
+  }
+  if (reponses.gene === "jambes-lourdes" || reponses.travail === "debout") {
+    gestes.push("Surélève tes jambes 5 minutes ce soir.");
+  }
+  if (reponses.gene === "stress") {
+    gestes.push("Prends 3 respirations profondes, lentement, les yeux fermés.");
+  }
+  if (reponses.gene === "fatigue") {
+    gestes.push("Accorde-toi une micro-pause de 5 minutes sans écran.");
+  }
+  if (reponses.gene === "ventre-gonfle") {
+    gestes.push("Masse doucement ton ventre dans le sens des aiguilles d'une montre.");
+  }
+  if (reponses.gene === "visage-gonfle") {
+    gestes.push("Passe un gant d'eau fraîche sur ton visage quelques instants.");
+  }
+  gestes.push("Fais une routine de 5 minutes, rien que pour toi.");
+
+  gestes = [...new Set(gestes)].slice(0, 3);
+
+  const situationsAvecContenu = ["jambes-lourdes"];
+  const situationSlug = situationsAvecContenu.includes(reponses.gene) ? reponses.gene : "jambes-lourdes";
+
+  return { titre, gestes, situationSlug };
+}
+
+function afficherResultat() {
+  document.getElementById('screen-questions').classList.add('hidden');
+  document.getElementById('screen-resultat').classList.remove('hidden');
+
+  const resultat = calculerProfil();
+  document.getElementById('profil-titre').textContent = "Aujourd'hui : " + resultat.titre;
+
+  const liste = document.getElementById('gestes-liste');
+  liste.innerHTML = '';
+  resultat.gestes.forEach(g => {
+    const li = document.createElement('li');
+    li.textContent = g;
+    liste.appendChild(li);
+  });
+
+  document.getElementById('lien-lymia').href = "https://lymia-opal.vercel.app/situation/" + resultat.situationSlug;
+}
+
+function envoyerEmail() {
+  const email = document.getElementById('email-input').value;
+  if (!email.includes('@')) return;
+  try {
+    localStorage.setItem('profil_email', email);
+  } catch (e) {}
+  document.getElementById('email-block').classList.add('hidden');
+  document.getElementById('email-merci').classList.remove('hidden');
+}
+</script>
+</body>
+</html>
