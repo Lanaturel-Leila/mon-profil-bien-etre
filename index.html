@@ -4,6 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Découvre ton Profil Bien-être</title>
+<meta name="description" content="Quelques petites questions avec Glouglou et découvre ton profil bien-être personnalisé : circulation, digestion, hydratation, détente. Moins de 2 minutes.">
+<meta name="theme-color" content="#fdf6f3">
+<meta property="og:title" content="Découvre ton Profil Bien-être">
+<meta property="og:description" content="Réponds à quelques questions avec Glouglou et reçois ta routine bien-être personnalisée.">
+<meta property="og:image" content="glouglou.png">
+<meta property="og:type" content="website">
+<link rel="icon" type="image/png" href="glouglou.png">
+<link rel="apple-touch-icon" href="glouglou.png">
+<link rel="preload" as="image" href="glouglou.png">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -12,6 +21,12 @@
     display: flex; align-items: center; justify-content: center; padding: 24px;
   }
   .app { max-width: 440px; width: 100%; text-align: center; }
+  .app > div:not(.hidden) { animation: screenIn 0.35s ease; }
+  @keyframes screenIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  @media (prefers-reduced-motion: reduce) {
+    .app > div:not(.hidden), .glouglou-img { animation: none; }
+    .dim-bar-fill { transition: none; }
+  }
 
   .glouglou-img { width: 92px; height: auto; display: block; margin: 0 auto; animation: gentleFloat 3.5s ease-in-out infinite; }
   .glouglou-img.small { width: 64px; }
@@ -32,6 +47,8 @@
     cursor: pointer; text-decoration: none; width: 100%; margin-top: 8px;
   }
   .btn:active { opacity: 0.85; }
+  .btn:hover { filter: brightness(1.08); }
+  .btn:focus-visible, .option-btn:focus-visible { outline: 3px solid #0099CC; outline-offset: 2px; }
   .btn-secondary { background: white; color: #7a2e3b; border: 1.5px solid #e8c9cf; }
   .btn-video {
     background: #0099CC; margin-top: 14px; display: flex; align-items: center;
@@ -48,6 +65,7 @@
     cursor: pointer; width: 100%; margin-bottom: 10px; display: block;
   }
   .option-btn:active { background: #fbeaec; }
+  .option-btn:hover { border-color: #7a2e3b; background: #fdf3f4; }
 
   .card {
     background: white; border-radius: 16px; padding: 20px; text-align: left;
@@ -80,12 +98,12 @@
 </head>
 <body>
 
-<button class="sound-toggle" id="sound-toggle" onclick="toggleSon()">🔈 Son</button>
+<button class="sound-toggle" id="sound-toggle" onclick="toggleSon()" aria-pressed="false">🔈 Son</button>
 
 <div class="app">
 
   <div id="screen-intro">
-    <img class="glouglou-img" src="glouglou.png" alt="Glouglou">
+    <img class="glouglou-img" src="glouglou.png" alt="Glouglou" width="300" height="381">
     <div class="glouglou-bulle">Bonjour 🌸 Moi c'est Glouglou. Aujourd'hui, j'aimerais apprendre à mieux te connaître.</div>
     <h1>Découvre ton Profil Bien-être</h1>
     <p class="subtitle">Quelques petites questions, moins de 2 minutes, et je te prépare ton profil personnalisé 💧</p>
@@ -93,54 +111,54 @@
   </div>
 
   <div id="screen-q1" class="hidden">
-    <div class="progress" data-progress></div>
-    <img class="glouglou-img small" src="glouglou.png" alt="Glouglou">
+    <div class="progress" data-progress role="progressbar" aria-label="Progression du questionnaire"></div>
+    <img class="glouglou-img small" src="glouglou.png" alt="Glouglou" width="300" height="381">
     <div class="glouglou-bulle">Dis-moi, qu'est-ce qui te gêne le plus aujourd'hui ?</div>
     <div id="options-q1"></div>
   </div>
 
   <div id="screen-q2" class="hidden">
-    <div class="progress" data-progress></div>
-    <img class="glouglou-img small" src="glouglou.png" alt="Glouglou">
+    <div class="progress" data-progress role="progressbar" aria-label="Progression du questionnaire"></div>
+    <img class="glouglou-img small" src="glouglou.png" alt="Glouglou" width="300" height="381">
     <div class="glouglou-bulle">Merci 💙 Je comprends. Et ça t'arrive souvent ?</div>
     <div id="options-q2"></div>
   </div>
 
   <div id="screen-q3" class="hidden">
-    <div class="progress" data-progress></div>
-    <img class="glouglou-img small" src="glouglou.png" alt="Glouglou">
+    <div class="progress" data-progress role="progressbar" aria-label="Progression du questionnaire"></div>
+    <img class="glouglou-img small" src="glouglou.png" alt="Glouglou" width="300" height="381">
     <div class="glouglou-bulle">C'est noté. Et dans ta journée, tu es plutôt...</div>
     <div id="options-q3"></div>
   </div>
 
   <div id="screen-q4" class="hidden">
-    <div class="progress" data-progress></div>
-    <img class="glouglou-img small" src="glouglou.png" alt="Glouglou">
+    <div class="progress" data-progress role="progressbar" aria-label="Progression du questionnaire"></div>
+    <img class="glouglou-img small" src="glouglou.png" alt="Glouglou" width="300" height="381">
     <div class="glouglou-bulle">Je commence à mieux comprendre ton quotidien 🌸 Et chez toi aujourd'hui, il fait...</div>
     <div id="options-q4"></div>
   </div>
 
   <div id="screen-q5" class="hidden">
-    <div class="progress" data-progress></div>
-    <img class="glouglou-img small" src="glouglou.png" alt="Glouglou">
+    <div class="progress" data-progress role="progressbar" aria-label="Progression du questionnaire"></div>
+    <img class="glouglou-img small" src="glouglou.png" alt="Glouglou" width="300" height="381">
     <div class="glouglou-bulle">On continue ? Petite question d'eau, forcément ma préférée 💧 Tu bois environ...</div>
     <div id="options-q5"></div>
   </div>
 
   <div id="screen-q6" class="hidden">
-    <div class="progress" data-progress></div>
-    <img class="glouglou-img small" src="glouglou.png" alt="Glouglou">
+    <div class="progress" data-progress role="progressbar" aria-label="Progression du questionnaire"></div>
+    <img class="glouglou-img small" src="glouglou.png" alt="Glouglou" width="300" height="381">
     <div class="glouglou-bulle">Dernière chose : combien de temps peux-tu t'accorder aujourd'hui, rien que pour toi ?</div>
     <div id="options-q6"></div>
   </div>
 
   <div id="screen-preparing" class="hidden">
-    <img class="glouglou-img" src="glouglou.png" alt="Glouglou">
+    <img class="glouglou-img" src="glouglou.png" alt="Glouglou" width="300" height="381">
     <div class="glouglou-bulle">Je réfléchis à ton Profil Bien-être...</div>
   </div>
 
   <div id="screen-result" class="hidden">
-    <img class="glouglou-img small" src="glouglou.png" alt="Glouglou">
+    <img class="glouglou-img small" src="glouglou.png" alt="Glouglou" width="300" height="381">
     <div class="glouglou-bulle">Voilà ce que j'ai découvert aujourd'hui 🌸</div>
 
     <div class="card">
@@ -166,13 +184,13 @@
 
   <div id="screen-flower" class="hidden">
     <div class="flower-emoji">🌸</div>
-    <img class="glouglou-img small" src="glouglou.png" alt="Glouglou">
+    <img class="glouglou-img small" src="glouglou.png" alt="Glouglou" width="300" height="381">
     <div class="glouglou-bulle">Félicitations 🌸 Tu viens de planter la première fleur de ton Jardin Bien-être. Chaque petit geste que tu feras aidera ton jardin à grandir.</div>
     <button class="btn" style="margin-top:14px;" onclick="goTo('email')">Continuer</button>
   </div>
 
   <div id="screen-email" class="hidden">
-    <img class="glouglou-img small" src="glouglou.png" alt="Glouglou">
+    <img class="glouglou-img small" src="glouglou.png" alt="Glouglou" width="300" height="381">
     <div class="glouglou-bulle">Souhaites-tu recevoir gratuitement ton Plan Bien-être personnalisé ?</div>
     <input type="email" id="email-input" placeholder="ton@email.com">
     <div class="consent">
@@ -184,9 +202,10 @@
   </div>
 
   <div id="screen-end" class="hidden">
-    <img class="glouglou-img" src="glouglou.png" alt="Glouglou">
+    <img class="glouglou-img" src="glouglou.png" alt="Glouglou" width="300" height="381">
     <div class="glouglou-bulle">Merci de m'avoir fait confiance aujourd'hui 🌸 Prends soin de toi.</div>
     <h2 style="margin-top:14px;">À très bientôt dans ton Jardin Bien-être</h2>
+    <button class="btn btn-secondary" style="margin-top:18px;" onclick="restart()">🌱 Refaire le test</button>
   </div>
 
 </div>
@@ -273,9 +292,18 @@ const questions = {
 };
 
 const order = ['intro', 'q1', 'q2', 'q3', 'q4', 'q5', 'q6', 'preparing', 'result', 'flower', 'email', 'end'];
-const answers = {};
+let answers = {};
 let collectedTags = [];
 const scores = { Circulation: 90, Digestion: 90, Hydratation: 90, Détente: 90 };
+
+function restart() {
+  answers = {};
+  collectedTags = [];
+  Object.keys(scores).forEach(dim => { scores[dim] = 90; });
+  document.getElementById('email-input').value = '';
+  renderProgress(0);
+  goTo('intro');
+}
 
 function goTo(screen) {
   document.querySelectorAll('.app > div').forEach(d => d.classList.add('hidden'));
@@ -411,6 +439,10 @@ function submitEmail() {
     alert('Merci de renseigner ton email et de cocher la case.');
     return;
   }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+    alert("Hmm, cet email ne semble pas valide. Peux-tu vérifier ? 💧");
+    return;
+  }
   const payload = {
     email: email,
     answers: answers,
@@ -438,7 +470,9 @@ let audioCtx = null, nodes = [];
 
 function toggleSon() {
   soundOn = !soundOn;
-  document.getElementById('sound-toggle').textContent = soundOn ? '🔊 Son' : '🔈 Son';
+  const toggle = document.getElementById('sound-toggle');
+  toggle.textContent = soundOn ? '🔊 Son' : '🔈 Son';
+  toggle.setAttribute('aria-pressed', String(soundOn));
   if (soundOn) startAmbiance(); else stopAmbiance();
 }
 
