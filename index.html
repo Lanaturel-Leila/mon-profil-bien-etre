@@ -8,55 +8,24 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    background: #fdf6f3;
-    color: #4a3b34;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
+    background: #fdf6f3; color: #4a3b34; min-height: 100vh;
+    display: flex; align-items: center; justify-content: center; padding: 24px;
   }
   .app { max-width: 440px; width: 100%; text-align: center; }
-  .glouglou {
-    width: 72px; height: 72px;
-    margin: 0 auto 16px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 35% 30%, #4dd8ff, #00BFFF 60%, #0099CC);
-    position: relative;
-    box-shadow: 0 4px 14px rgba(0,153,204,0.35);
-  }
-  .glouglou::before, .glouglou::after {
-    content: "";
-    position: absolute;
-    width: 10px; height: 14px;
-    background: #17324a;
-    border-radius: 50%;
-    top: 26px;
-  }
-  .glouglou::before { left: 20px; }
-  .glouglou::after { right: 20px; }
-  .glouglou-mouth {
-    position: absolute;
-    bottom: 16px; left: 50%;
-    transform: translateX(-50%);
-    width: 24px; height: 12px;
-    border: 3px solid #17324a;
-    border-top: none;
-    border-radius: 0 0 20px 20px;
-  }
-  .sound-toggle {
-    position: fixed; top: 16px; right: 16px;
-    background: white; border: 1.5px solid #e8c9cf;
-    border-radius: 999px; padding: 8px 14px;
-    font-size: 13px; cursor: pointer; color: #7a2e3b;
-  }
+
+  .glouglou-img { width: 92px; height: auto; display: block; margin: 0 auto; animation: gentleFloat 3.5s ease-in-out infinite; }
+  .glouglou-img.small { width: 64px; }
+  @keyframes gentleFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
   .glouglou-bulle {
-    background: white; border-radius: 14px; padding: 10px 16px;
-    font-size: 13px; color: #5a4a42; margin-bottom: 18px;
-    display: inline-block; border: 1px solid #f0e0dd;
+    background: white; border: 1.5px solid #cdeafd; border-radius: 16px;
+    padding: 11px 16px; font-size: 14px; color: #4a3b34; margin: 10px auto 18px;
+    max-width: 320px; box-shadow: 0 2px 8px rgba(0,153,204,0.08); line-height: 1.5;
   }
-  h1 { font-size: 21px; font-weight: 700; margin-bottom: 12px; color: #7a2e3b; }
-  p.subtitle { font-size: 14px; line-height: 1.6; color: #6b5a52; margin-bottom: 24px; }
+
+  h1 { font-size: 21px; font-weight: 700; margin-bottom: 10px; color: #7a2e3b; }
+  h2 { font-size: 17px; font-weight: 700; margin-bottom: 14px; color: #7a2e3b; line-height: 1.4; }
+  p.subtitle { font-size: 14px; line-height: 1.6; color: #6b5a52; margin-bottom: 22px; }
+
   .btn {
     display: inline-block; background: #7a2e3b; color: white; border: none;
     padding: 14px 28px; border-radius: 999px; font-size: 15px; font-weight: 600;
@@ -64,37 +33,49 @@
   }
   .btn:active { opacity: 0.85; }
   .btn-secondary { background: white; color: #7a2e3b; border: 1.5px solid #e8c9cf; }
-  .btn-ghost {
-    background: none; border: none; color: #a08d84; font-size: 13px;
-    text-decoration: underline; cursor: pointer; margin-top: 10px;
+  .btn-video {
+    background: #0099CC; margin-top: 14px; display: flex; align-items: center;
+    justify-content: center; gap: 8px;
   }
-  .progress { display: flex; justify-content: center; gap: 5px; margin-bottom: 22px; flex-wrap: wrap; }
-  .dot { width: 7px; height: 7px; border-radius: 50%; background: #e8c9cf; }
+
+  .progress { display: flex; justify-content: center; gap: 6px; margin-bottom: 18px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: #f0d9d4; }
   .dot.active { background: #7a2e3b; }
-  .question-title { font-size: 18px; font-weight: 600; margin-bottom: 18px; line-height: 1.4; }
-  .options { display: flex; flex-direction: column; gap: 9px; margin-bottom: 12px; }
+
   .option-btn {
     background: white; border: 1.5px solid #e8c9cf; border-radius: 12px;
-    padding: 13px 16px; font-size: 14.5px; color: #4a3b34; text-align: left; cursor: pointer;
+    padding: 13px 16px; font-size: 14.5px; color: #4a3b34; text-align: left;
+    cursor: pointer; width: 100%; margin-bottom: 10px; display: block;
   }
   .option-btn:active { background: #fbeaec; }
+
   .card {
-    background: white; border-radius: 16px; padding: 18px; text-align: left;
+    background: white; border-radius: 16px; padding: 20px; text-align: left;
     margin-bottom: 14px; border: 1px solid #f0e0dd;
   }
-  .card p.card-title { font-weight: 700; margin-bottom: 10px; font-size: 15px; }
+  .card p.card-title { font-weight: 700; margin-bottom: 4px; font-size: 16px; color: #7a2e3b; }
+  .card p.card-duration { font-size: 12.5px; color: #a08d84; margin-bottom: 12px; }
+  .steps-list { padding-left: 18px; font-size: 14px; line-height: 1.9; color: #5a4a42; }
+
   .dim-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 13px; }
-  .dim-label { width: 130px; text-align: left; }
+  .dim-label { width: 120px; text-align: left; color: #5a4a42; }
   .dim-bar-bg { flex: 1; background: #f4e4e0; border-radius: 999px; height: 8px; overflow: hidden; }
-  .dim-bar-fill { height: 100%; background: #7a2e3b; border-radius: 999px; }
-  .priorites-list, .gestes-list { padding-left: 18px; font-size: 14px; line-height: 1.8; color: #5a4a42; text-align: left; }
+  .dim-bar-fill { height: 100%; background: #7a2e3b; border-radius: 999px; transition: width 0.8s ease; }
+  .axes-list { padding-left: 18px; font-size: 14px; line-height: 1.9; color: #5a4a42; text-align: left; }
+
+  .flower-emoji { font-size: 54px; margin-bottom: 6px; }
+
   input[type="email"] {
     width: 100%; padding: 12px 14px; border-radius: 10px; border: 1.5px solid #e8c9cf;
     font-size: 14px; margin-bottom: 10px;
   }
   .consent { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; color: #6b5a52; margin-bottom: 12px; text-align: left; }
   .hidden { display: none; }
-  .disclaimer { font-size: 11px; color: #a08d84; margin-top: 4px; }
+
+  .sound-toggle {
+    position: fixed; top: 14px; right: 14px; background: white; border: 1.5px solid #cdeafd;
+    border-radius: 999px; padding: 7px 12px; font-size: 12px; color: #0099CC; z-index: 10; cursor: pointer;
+  }
 </style>
 </head>
 <body>
@@ -104,69 +85,369 @@
 <div class="app">
 
   <div id="screen-intro">
-    <div class="glouglou"><div class="glouglou-mouth"></div></div>
-    <div class="glouglou-bulle">Bonjour 🌸 Moi c'est Glouglou.</div>
+    <img class="glouglou-img" src="glouglou.png" alt="Glouglou">
+    <div class="glouglou-bulle">Bonjour 🌸 Moi c'est Glouglou. Aujourd'hui, j'aimerais apprendre à mieux te connaître.</div>
     <h1>Découvre ton Profil Bien-être</h1>
-    <p class="subtitle">En moins de 3 minutes, nous allons découvrir ce qui influence probablement ton bien-être aujourd'hui. Promis… ce n'est pas un examen.</p>
-    <button class="btn" onclick="demarrer()">Commencer</button>
+    <p class="subtitle">Quelques petites questions, moins de 2 minutes, et je te prépare ton profil personnalisé 💧</p>
+    <button class="btn" onclick="startMusicIfOn(); goTo('q1')">Commencer</button>
   </div>
 
-  <div id="screen-questions" class="hidden">
-    <div class="progress" id="progress"></div>
-    <div class="question-title" id="question-title"></div>
-    <div class="options" id="options"></div>
-    <button class="btn-ghost hidden" id="btn-retour" onclick="reculer()">Question précédente</button>
+  <div id="screen-q1" class="hidden">
+    <div class="progress" data-progress></div>
+    <img class="glouglou-img small" src="glouglou.png" alt="Glouglou">
+    <div class="glouglou-bulle">Dis-moi, qu'est-ce qui te gêne le plus aujourd'hui ?</div>
+    <div id="options-q1"></div>
   </div>
 
-  <div id="screen-resultat" class="hidden">
-    <div class="glouglou"><div class="glouglou-mouth"></div></div>
-    <div class="glouglou-bulle" id="glouglou-bonjour"></div>
-    <h1>Ton Portrait Bien-être</h1>
+  <div id="screen-q2" class="hidden">
+    <div class="progress" data-progress></div>
+    <img class="glouglou-img small" src="glouglou.png" alt="Glouglou">
+    <div class="glouglou-bulle">Merci 💙 Je comprends. Et ça t'arrive souvent ?</div>
+    <div id="options-q2"></div>
+  </div>
+
+  <div id="screen-q3" class="hidden">
+    <div class="progress" data-progress></div>
+    <img class="glouglou-img small" src="glouglou.png" alt="Glouglou">
+    <div class="glouglou-bulle">C'est noté. Et dans ta journée, tu es plutôt...</div>
+    <div id="options-q3"></div>
+  </div>
+
+  <div id="screen-q4" class="hidden">
+    <div class="progress" data-progress></div>
+    <img class="glouglou-img small" src="glouglou.png" alt="Glouglou">
+    <div class="glouglou-bulle">Je commence à mieux comprendre ton quotidien 🌸 Et chez toi aujourd'hui, il fait...</div>
+    <div id="options-q4"></div>
+  </div>
+
+  <div id="screen-q5" class="hidden">
+    <div class="progress" data-progress></div>
+    <img class="glouglou-img small" src="glouglou.png" alt="Glouglou">
+    <div class="glouglou-bulle">On continue ? Petite question d'eau, forcément ma préférée 💧 Tu bois environ...</div>
+    <div id="options-q5"></div>
+  </div>
+
+  <div id="screen-q6" class="hidden">
+    <div class="progress" data-progress></div>
+    <img class="glouglou-img small" src="glouglou.png" alt="Glouglou">
+    <div class="glouglou-bulle">Dernière chose : combien de temps peux-tu t'accorder aujourd'hui, rien que pour toi ?</div>
+    <div id="options-q6"></div>
+  </div>
+
+  <div id="screen-preparing" class="hidden">
+    <img class="glouglou-img" src="glouglou.png" alt="Glouglou">
+    <div class="glouglou-bulle">Je réfléchis à ton Profil Bien-être...</div>
+  </div>
+
+  <div id="screen-result" class="hidden">
+    <img class="glouglou-img small" src="glouglou.png" alt="Glouglou">
+    <div class="glouglou-bulle">Voilà ce que j'ai découvert aujourd'hui 🌸</div>
 
     <div class="card">
-      <p class="card-title">Ton portrait aujourd'hui</p>
-      <div id="dimensions"></div>
-      <p class="disclaimer">Ces indicateurs sont uniquement des repères de bien-être et ne constituent pas un diagnostic médical.</p>
+      <p class="card-title" id="profile-name"></p>
+      <p style="font-size:13px; color:#6b5a52; margin-bottom:14px;" id="profile-desc"></p>
+      <div id="dims"></div>
     </div>
 
     <div class="card">
-      <p class="card-title">Les 3 priorités du jour</p>
-      <ol class="priorites-list" id="priorites-liste"></ol>
+      <p class="card-title">🌱 Tes axes à travailler</p>
+      <ul class="axes-list" id="axes-list"></ul>
     </div>
 
     <div class="card">
-      <p class="card-title" id="routine-titre"></p>
-      <ol class="gestes-list" id="routine-gestes"></ol>
+      <p class="card-title" id="result-title"></p>
+      <p class="card-duration" id="result-duration"></p>
+      <ol class="steps-list" id="result-steps"></ol>
+      <a class="btn btn-video" id="result-video" href="#" target="_blank">💙 Leïla t'accompagne en vidéo</a>
     </div>
 
-    <button class="btn btn-secondary" onclick="autreRoutine()">✨ Voir une autre routine</button>
+    <button class="btn" onclick="goTo('flower')">Continuer</button>
+  </div>
 
-    <div class="card" id="email-block">
-      <p style="margin-bottom:10px; font-size:14px;">Souhaites-tu recevoir gratuitement ton plan personnalisé ?</p>
-      <input type="email" id="email-input" placeholder="ton@email.com">
-      <label class="consent">
-        <input type="checkbox" id="consent-checkbox">
-        <span>J'accepte que mes réponses soient utilisées pour personnaliser mes conseils.</span>
-      </label>
-      <button class="btn" onclick="envoyerEmail()">Recevoir mon plan</button>
+  <div id="screen-flower" class="hidden">
+    <div class="flower-emoji">🌸</div>
+    <img class="glouglou-img small" src="glouglou.png" alt="Glouglou">
+    <div class="glouglou-bulle">Félicitations 🌸 Tu viens de planter la première fleur de ton Jardin Bien-être. Chaque petit geste que tu feras aidera ton jardin à grandir.</div>
+    <button class="btn" style="margin-top:14px;" onclick="goTo('email')">Continuer</button>
+  </div>
+
+  <div id="screen-email" class="hidden">
+    <img class="glouglou-img small" src="glouglou.png" alt="Glouglou">
+    <div class="glouglou-bulle">Souhaites-tu recevoir gratuitement ton Plan Bien-être personnalisé ?</div>
+    <input type="email" id="email-input" placeholder="ton@email.com">
+    <div class="consent">
+      <input type="checkbox" id="consent-check" checked style="margin-top:2px;">
+      <label for="consent-check">J'accepte de recevoir mon Plan Bien-être et des conseils par email.</label>
     </div>
-    <p id="email-merci" class="hidden" style="font-size:14px; color:#7a2e3b; margin-bottom:16px;">Merci 🌸 Tu vas recevoir ton plan très vite.</p>
+    <button class="btn" onclick="submitEmail()">Recevoir mon Plan Bien-être</button>
+    <button class="btn btn-secondary" onclick="goTo('end')">Non merci, passer</button>
+  </div>
 
-    <a class="btn btn-secondary" href="https://lymia-opal.vercel.app" id="lien-lymia">Découvrir Lymia</a>
+  <div id="screen-end" class="hidden">
+    <img class="glouglou-img" src="glouglou.png" alt="Glouglou">
+    <div class="glouglou-bulle">Merci de m'avoir fait confiance aujourd'hui 🌸 Prends soin de toi.</div>
+    <h2 style="margin-top:14px;">À très bientôt dans ton Jardin Bien-être</h2>
   </div>
 
 </div>
 
 <script>
-/* ---------- SON D'AMBIANCE (généré, sans fichier externe) ---------- */
-let audioCtx = null, oscillators = [], sonActif = false;
+const routineLibrary = [
+  {
+    id: 'R001',
+    title: 'Auto-drainage des chevilles',
+    duration: '5 min',
+    steps: [
+      "Installe-toi assise, jambes surélevées si possible.",
+      "Masse doucement de la cheville vers le genou, par pressions circulaires.",
+      "Termine par quelques respirations profondes."
+    ],
+    videoUrl: 'https://www.instagram.com/reel/DW6JWcvCBKn/?igsh=eGE2b3o1bG5qdHYx',
+    tags: ['jambes lourdes', 'station debout', 'chaleur', 'gonflements']
+  },
+  {
+    id: 'R002',
+    title: 'Auto-drainage du ventre',
+    duration: '5 min',
+    steps: [
+      "Allonge-toi ou assieds-toi confortablement.",
+      "Effectue des mouvements circulaires doux autour du nombril, dans le sens des aiguilles d'une montre.",
+      "Respire profondément entre chaque cycle."
+    ],
+    videoUrl: 'https://www.instagram.com/reel/DabApXVIBwW/?igsh=ZWFuMWR3anN4Mnd6',
+    tags: ['ventre gonflé', 'ballonnements', 'digestion', 'rétention d’eau']
+  },
+  {
+    id: 'R003',
+    title: 'Auto-drainage du visage',
+    duration: '5 min',
+    steps: [
+      "Assieds-toi confortablement, mains propres.",
+      "Effectue de légers effleurages du centre du visage vers les oreilles.",
+      "Termine par une pression douce le long du cou."
+    ],
+    videoUrl: 'https://www.instagram.com/reel/DZP6ypPIYev/?igsh=bTh1bmxrMzB5azZw',
+    tags: ['visage gonflé', 'rétention d’eau', 'détente']
+  }
+];
+
+const DIMS = ['Circulation', 'Digestion', 'Hydratation', 'Détente'];
+
+const questions = {
+  q1: [
+    { label: 'Jambes lourdes', tags: ['jambes lourdes'], impact: { Circulation: -40 } },
+    { label: 'Ventre gonflé', tags: ['ventre gonflé', 'ballonnements'], impact: { Digestion: -40 } },
+    { label: 'Visage gonflé', tags: ['visage gonflé'], impact: { Circulation: -25, Hydratation: -15 } },
+    { label: 'Fatigue', tags: ['détente'], impact: { Détente: -35 } },
+    { label: 'Stress', tags: ['détente'], impact: { Détente: -40 } },
+    { label: 'Je veux simplement prendre soin de moi', tags: ['détente'], impact: {} }
+  ],
+  q2: [
+    { label: 'Tous les jours', tags: [], impact: { Circulation: -15, Détente: -10 } },
+    { label: 'Plusieurs fois par semaine', tags: [], impact: { Circulation: -10 } },
+    { label: 'De temps en temps', tags: [], impact: {} },
+    { label: 'Rarement', tags: [], impact: {} }
+  ],
+  q3: [
+    { label: 'Plutôt assise', tags: [], impact: { Circulation: -15 } },
+    { label: 'Plutôt debout', tags: ['station debout'], impact: { Circulation: -20 } },
+    { label: 'Très physique', tags: ['station debout'], impact: { Circulation: -15, Détente: -10 } },
+    { label: 'Ça varie beaucoup', tags: [], impact: {} }
+  ],
+  q4: [
+    { label: 'Très chaud', tags: ['chaleur', 'gonflements'], impact: { Circulation: -15, Hydratation: -15 } },
+    { label: 'Température normale', tags: [], impact: {} },
+    { label: 'Froid', tags: [], impact: {} }
+  ],
+  q5: [
+    { label: "Moins d'1 litre", tags: ['rétention d’eau'], impact: { Hydratation: -35, Digestion: -10 } },
+    { label: 'Entre 1 et 2 litres', tags: [], impact: { Hydratation: -10 } },
+    { label: 'Plus de 2 litres', tags: [], impact: {} }
+  ],
+  q6: [
+    { label: '5 minutes', tags: [], impact: {} },
+    { label: '10 minutes', tags: [], impact: {} },
+    { label: '20 minutes', tags: [], impact: {} },
+    { label: 'Plus de 30 minutes', tags: [], impact: {} }
+  ]
+};
+
+const order = ['intro', 'q1', 'q2', 'q3', 'q4', 'q5', 'q6', 'preparing', 'result', 'flower', 'email', 'end'];
+const answers = {};
+let collectedTags = [];
+const scores = { Circulation: 90, Digestion: 90, Hydratation: 90, Détente: 90 };
+
+function goTo(screen) {
+  document.querySelectorAll('.app > div').forEach(d => d.classList.add('hidden'));
+  document.getElementById('screen-' + screen).classList.remove('hidden');
+  if (screen === 'preparing') setTimeout(() => goTo('result'), 1800);
+  if (screen === 'result') renderResult();
+  window.scrollTo(0, 0);
+}
+
+function renderProgress(step) {
+  document.querySelectorAll('[data-progress]').forEach(bar => {
+    bar.innerHTML = '';
+    for (let i = 1; i <= 6; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'dot' + (i <= step ? ' active' : '');
+      bar.appendChild(dot);
+    }
+  });
+}
+
+function renderOptions() {
+  Object.keys(questions).forEach(qKey => {
+    const container = document.getElementById('options-' + qKey);
+    container.innerHTML = '';
+    questions[qKey].forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.textContent = opt.label;
+      btn.onclick = () => answerQuestion(qKey, opt);
+      container.appendChild(btn);
+    });
+  });
+}
+
+function answerQuestion(qKey, opt) {
+  answers[qKey] = opt.label;
+  collectedTags = collectedTags.concat(opt.tags);
+  Object.keys(opt.impact || {}).forEach(dim => {
+    scores[dim] = Math.max(10, scores[dim] + opt.impact[dim]);
+  });
+  const nextIndex = order.indexOf(qKey) + 1;
+  goTo(order[nextIndex]);
+  if (questions[order[nextIndex]]) renderProgress(nextIndex);
+}
+
+function buildProfile() {
+  const sorted = DIMS.slice().sort((a, b) => scores[a] - scores[b]);
+  const weakest = sorted[0];
+  const second = sorted[1];
+
+  const names = {
+    Circulation: 'Profil Circulation & Légèreté',
+    Digestion: 'Profil Digestion & Confort',
+    Hydratation: 'Profil Hydratation & Équilibre',
+    Détente: 'Profil Détente & Sérénité'
+  };
+  const descs = {
+    Circulation: "Aujourd'hui, ton corps te demande surtout de relancer la circulation et de retrouver de la légèreté.",
+    Digestion: "Aujourd'hui, ton confort digestif semble être le point qui mérite le plus d'attention.",
+    Hydratation: "Aujourd'hui, ton corps semble avoir besoin d'un meilleur équilibre en eau.",
+    Détente: "Aujourd'hui, c'est surtout ton besoin de calme et de détente qui ressort."
+  };
+  const axes = {
+    Circulation: 'Bouger un peu plus et surélever tes jambes en fin de journée.',
+    Digestion: 'Prendre le temps de manger calmement et masser doucement ton ventre.',
+    Hydratation: "Boire un peu plus d'eau, régulièrement, tout au long de la journée.",
+    Détente: "T'accorder chaque jour un vrai moment rien que pour toi."
+  };
+
+  return {
+    name: names[weakest],
+    desc: descs[weakest],
+    axes: [axes[weakest], axes[second]],
+    weakest: weakest
+  };
+}
+
+function pickRoutine() {
+  let best = routineLibrary[0];
+  let bestScore = -1;
+  routineLibrary.forEach(r => {
+    const score = r.tags.filter(t => collectedTags.includes(t)).length;
+    if (score > bestScore) { bestScore = score; best = r; }
+  });
+  return best;
+}
+
+function renderResult() {
+  const profile = buildProfile();
+  window.chosenProfile = profile;
+  document.getElementById('profile-name').textContent = profile.name;
+  document.getElementById('profile-desc').textContent = profile.desc;
+
+  const dimsEl = document.getElementById('dims');
+  dimsEl.innerHTML = '';
+  DIMS.forEach(dim => {
+    const row = document.createElement('div');
+    row.className = 'dim-row';
+    row.innerHTML = '<div class="dim-label">' + dim + '</div>' +
+      '<div class="dim-bar-bg"><div class="dim-bar-fill" style="width:0%"></div></div>';
+    dimsEl.appendChild(row);
+    setTimeout(() => { row.querySelector('.dim-bar-fill').style.width = scores[dim] + '%'; }, 100);
+  });
+
+  const axesEl = document.getElementById('axes-list');
+  axesEl.innerHTML = '';
+  profile.axes.forEach(a => {
+    const li = document.createElement('li');
+    li.textContent = a;
+    axesEl.appendChild(li);
+  });
+
+  const routine = pickRoutine();
+  window.chosenRoutine = routine;
+  document.getElementById('result-title').textContent = routine.title;
+  document.getElementById('result-duration').textContent = routine.duration;
+  const stepsEl = document.getElementById('result-steps');
+  stepsEl.innerHTML = '';
+  routine.steps.forEach(s => {
+    const li = document.createElement('li');
+    li.textContent = s;
+    stepsEl.appendChild(li);
+  });
+  document.getElementById('result-video').href = routine.videoUrl;
+}
+
+const FORMSPREE_ENDPOINT = '';
+
+function submitEmail() {
+  const email = document.getElementById('email-input').value.trim();
+  const consent = document.getElementById('consent-check').checked;
+  if (!email || !consent) {
+    alert('Merci de renseigner ton email et de cocher la case.');
+    return;
+  }
+  const payload = {
+    email: email,
+    answers: answers,
+    profile: window.chosenProfile ? window.chosenProfile.name : null,
+    scores: scores,
+    routine: window.chosenRoutine ? window.chosenRoutine.id : null,
+    date: new Date().toISOString()
+  };
+  const saved = JSON.parse(localStorage.getItem('profils_bien_etre') || '[]');
+  saved.push(payload);
+  localStorage.setItem('profils_bien_etre', JSON.stringify(saved));
+
+  if (FORMSPREE_ENDPOINT) {
+    fetch(FORMSPREE_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).catch(() => {});
+  }
+  goTo('end');
+}
+
+let soundOn = false;
+let audioCtx = null, nodes = [];
+
 function toggleSon() {
-  sonActif = !sonActif;
-  document.getElementById('sound-toggle').textContent = sonActif ? '🔊 Son' : '🔈 Son';
-  if (sonActif) {
-    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const notes = [261.6, 329.6, 392.0];
-    oscillators = notes.map((freq, i) => {
+  soundOn = !soundOn;
+  document.getElementById('sound-toggle').textContent = soundOn ? '🔊 Son' : '🔈 Son';
+  if (soundOn) startAmbiance(); else stopAmbiance();
+}
+
+function startMusicIfOn() { if (soundOn && !audioCtx) startAmbiance(); }
+
+function startAmbiance() {
+  try {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    [220, 277.18].forEach(freq => {
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
       osc.type = 'sine';
@@ -174,269 +455,19 @@ function toggleSon() {
       gain.gain.value = 0.015;
       osc.connect(gain).connect(audioCtx.destination);
       osc.start();
-      return osc;
+      nodes.push(osc);
     });
-  } else {
-    oscillators.forEach(o => o.stop());
-    oscillators = [];
-  }
-}
-
-/* ---------- QUESTIONS ---------- */
-const QUESTIONS = [
-  { id: "objectif", libelle: "Quel est ton objectif aujourd'hui ?", options: [
-    { libelle: "Retrouver des jambes légères", valeur: "jambes-legeres" },
-    { libelle: "Diminuer les gonflements", valeur: "gonflements" },
-    { libelle: "Retrouver de l'énergie", valeur: "energie" },
-    { libelle: "Me sentir plus sereine", valeur: "serenite" },
-    { libelle: "Prendre davantage soin de moi", valeur: "soin" }
-  ]},
-  { id: "rythme", libelle: "Comment se passent généralement tes journées ?", options: [
-    { libelle: "Je cours partout", valeur: "cours-partout" },
-    { libelle: "J'ai très peu de temps pour moi", valeur: "peu-de-temps" },
-    { libelle: "Mes journées sont plutôt calmes", valeur: "calmes" },
-    { libelle: "Chaque journée est différente", valeur: "variable" }
-  ]},
-  { id: "travail", libelle: "Ton travail est principalement :", options: [
-    { libelle: "Assise", valeur: "assise" },
-    { libelle: "Debout", valeur: "debout" },
-    { libelle: "Physique", valeur: "physique" },
-    { libelle: "Variable", valeur: "variable" }
-  ]},
-  { id: "mouvement", libelle: "En dehors du travail, tu bouges ?", options: [
-    { libelle: "Jamais", valeur: "jamais" },
-    { libelle: "1 à 2 fois par semaine", valeur: "1-2" },
-    { libelle: "3 à 4 fois par semaine", valeur: "3-4" },
-    { libelle: "Tous les jours", valeur: "tous-les-jours" }
-  ]},
-  { id: "energie_soir", libelle: "À la fin de la journée, tu te sens :", options: [
-    { libelle: "Pleine d'énergie", valeur: "energie" },
-    { libelle: "Fatiguée", valeur: "fatiguee" },
-    { libelle: "Très fatiguée", valeur: "tres-fatiguee" },
-    { libelle: "Complètement épuisée", valeur: "epuisee" }
-  ]},
-  { id: "dernier_moment", libelle: "Quand as-tu pris un vrai moment pour toi ?", options: [
-    { libelle: "Aujourd'hui", valeur: "aujourdhui" },
-    { libelle: "Cette semaine", valeur: "cette-semaine" },
-    { libelle: "Je ne m'en souviens même plus", valeur: "jamais" }
-  ]},
-  { id: "gene", libelle: "Aujourd'hui, qu'est-ce qui te gêne le plus ?", options: [
-    { libelle: "Jambes lourdes", valeur: "jambes-lourdes" },
-    { libelle: "Ventre gonflé", valeur: "ventre-gonfle" },
-    { libelle: "Fatigue", valeur: "fatigue" },
-    { libelle: "Stress", valeur: "stress" },
-    { libelle: "Visage gonflé", valeur: "visage-gonfle" }
-  ]},
-  { id: "temps", libelle: "Combien de temps peux-tu consacrer à toi aujourd'hui ?", options: [
-    { libelle: "5 minutes", valeur: "5" },
-    { libelle: "10 minutes", valeur: "10" },
-    { libelle: "20 minutes", valeur: "20" },
-    { libelle: "Plus de 30 minutes", valeur: "30" }
-  ]},
-  { id: "eau", libelle: "Tu bois en moyenne :", options: [
-    { libelle: "Moins d'un litre", valeur: "moins-1L" },
-    { libelle: "Entre 1 et 2 litres", valeur: "1-2L" },
-    { libelle: "Plus de 2 litres", valeur: "plus-2L" }
-  ]}
-];
-
-/* ---------- MOTEUR DE ROUTINES (10 profils, évolutif) ---------- */
-const ROUTINES = [
-  { id: 1, dims: ["chargeMentale"], duree: 5, titre: "Pause respiration (5 min)",
-    gestes: ["Ferme les yeux et respire profondément pendant 1 minute.", "Note 3 choses qui te pèsent aujourd'hui.", "Relâche consciemment tes épaules et ta mâchoire."] },
-  { id: 2, dims: ["chargeMentale", "mouvement"], duree: 7, titre: "Recentrage actif (7 min)",
-    gestes: ["Bois un grand verre d'eau.", "Fais 2 minutes d'étirements doux.", "Marche 3 minutes, même sur place.", "Respire profondément 1 minute."] },
-  { id: 3, dims: ["mouvement"], duree: 5, titre: "Réveil des jambes (5 min)",
-    gestes: ["Pompages de cheville, 20 rotations chaque sens.", "Marche ou monte quelques escaliers.", "Étire tes mollets contre un mur."] },
-  { id: 4, dims: ["mouvement", "hydratation"], duree: 10, titre: "Circulation & hydratation (10 min)",
-    gestes: ["Bois un grand verre d'eau.", "Lissages du bas vers le haut, mollet puis genou.", "Marche 5 minutes.", "Surélève tes jambes 2 minutes."] },
-  { id: 5, dims: ["hydratation"], duree: 5, titre: "Réhydratation express (5 min)",
-    gestes: ["Bois un grand verre d'eau maintenant.", "Prépare une bouteille à garder près de toi aujourd'hui.", "Ajoute une rondelle de citron pour varier."] },
-  { id: 6, dims: ["hydratation", "recuperation"], duree: 7, titre: "Douceur & hydratation (7 min)",
-    gestes: ["Bois un grand verre d'eau.", "Passe un gant d'eau fraîche sur ton visage.", "Accorde-toi 5 minutes allongée, jambes surélevées."] },
-  { id: 7, dims: ["recuperation"], duree: 5, titre: "Micro-pause récupération (5 min)",
-    gestes: ["Éloigne-toi des écrans 5 minutes.", "Ferme les yeux et respire lentement.", "Bois un verre d'eau à la fin."] },
-  { id: 8, dims: ["recuperation", "chargeMentale"], duree: 10, titre: "Ressourcement complet (10 min)",
-    gestes: ["Installe-toi confortablement, sans écran.", "Respire profondément pendant 3 minutes.", "Note une chose positive de ta journée.", "Étire doucement ton corps."] },
-  { id: 9, dims: ["mouvement", "recuperation"], duree: 10, titre: "Mouvement doux & repos (10 min)",
-    gestes: ["Marche tranquillement 5 minutes.", "Étire tes jambes et ton dos.", "Termine allongée, jambes surélevées 3 minutes."] },
-  { id: 10, dims: ["general"], duree: 5, titre: "Un moment rien que pour toi (5 min)",
-    gestes: ["Bois un grand verre d'eau.", "Respire profondément quelques instants.", "Offre-toi un geste doux : une crème, une musique, un silence."] }
-];
-
-const LABELS_PRIORITE = {
-  chargeMentale: "💗 Réduire la charge mentale.",
-  mouvement: "🌿 Bouger un peu plus.",
-  hydratation: "💧 Améliorer ton hydratation.",
-  recuperation: "😴 Prendre plus de temps pour récupérer."
-};
-
-const LABELS_DIM = {
-  chargeMentale: "💗 Charge mentale",
-  mouvement: "🌿 Mouvement",
-  hydratation: "💧 Hydratation",
-  recuperation: "😴 Récupération"
-};
-
-let step = 0;
-let reponses = {};
-let dimensions = {};
-let topDims = [];
-let routineActuelleId = null;
-
-function demarrer() {
-  document.getElementById('screen-intro').classList.add('hidden');
-  document.getElementById('screen-questions').classList.remove('hidden');
-  afficherQuestion();
-}
-
-function afficherQuestion() {
-  const q = QUESTIONS[step];
-  document.getElementById('question-title').textContent = q.libelle;
-
-  const progress = document.getElementById('progress');
-  progress.innerHTML = '';
-  QUESTIONS.forEach((_, i) => {
-    const dot = document.createElement('div');
-    dot.className = 'dot' + (i <= step ? ' active' : '');
-    progress.appendChild(dot);
-  });
-
-  const optionsDiv = document.getElementById('options');
-  optionsDiv.innerHTML = '';
-  q.options.forEach(opt => {
-    const btn = document.createElement('button');
-    btn.className = 'option-btn';
-    btn.textContent = opt.libelle;
-    btn.onclick = () => choisir(q.id, opt.valeur);
-    optionsDiv.appendChild(btn);
-  });
-
-  document.getElementById('btn-retour').classList.toggle('hidden', step === 0);
-}
-
-function choisir(questionId, valeur) {
-  reponses[questionId] = valeur;
-  if (step < QUESTIONS.length - 1) {
-    step++;
-    afficherQuestion();
-  } else {
-    calculerEtAfficherResultat();
-  }
-}
-
-function reculer() {
-  if (step > 0) { step--; afficherQuestion(); }
-}
-
-/* ---------- CALCUL DU PORTRAIT ---------- */
-function calculerDimensions() {
-  const d = { chargeMentale: 20, mouvement: 20, hydratation: 20, recuperation: 20 };
-
-  const map2 = { "jambes-legeres": ["mouvement",20], "gonflements": ["hydratation",20], "energie": ["recuperation",20], "serenite": ["chargeMentale",20], "soin": ["recuperation",10] };
-  if (map2[reponses.objectif]) d[map2[reponses.objectif][0]] += map2[reponses.objectif][1];
-
-  const map3 = { "cours-partout": 20, "peu-de-temps": 15, "calmes": 0, "variable": 10 };
-  d.chargeMentale += map3[reponses.rythme] || 0;
-
-  const map4 = { "assise": 15, "debout": 5, "physique": -10, "variable": 5 };
-  d.mouvement += Math.max(0, map4[reponses.travail] || 0);
-  if (reponses.travail === "physique") d.recuperation += 15;
-  if (reponses.travail === "debout") d.recuperation += 10;
-
-  const map5 = { "jamais": 25, "1-2": 15, "3-4": 5, "tous-les-jours": 0 };
-  d.mouvement += map5[reponses.mouvement] || 0;
-
-  const map6 = { "energie": 0, "fatiguee": 15, "tres-fatiguee": 25, "epuisee": 35 };
-  d.recuperation += map6[reponses.energie_soir] || 0;
-
-  const map7 = { "aujourdhui": 0, "cette-semaine": 10, "jamais": 25 };
-  d.chargeMentale += map7[reponses.dernier_moment] || 0;
-
-  const map8 = { "jambes-lourdes": ["mouvement"], "ventre-gonfle": ["hydratation"], "fatigue": ["recuperation"], "stress": ["chargeMentale"], "visage-gonfle": ["hydratation"] };
-  if (map8[reponses.gene]) d[map8[reponses.gene][0]] += 15;
-
-  const map10 = { "moins-1L": 30, "1-2L": 10, "plus-2L": 0 };
-  d.hydratation += map10[reponses.eau] || 0;
-
-  Object.keys(d).forEach(k => d[k] = Math.min(100, d[k]));
-  return d;
-}
-
-function calculerEtAfficherResultat() {
-  dimensions = calculerDimensions();
-  topDims = Object.entries(dimensions).sort((a,b) => b[1]-a[1]).map(e => e[0]).slice(0,3);
-
-  document.getElementById('screen-questions').classList.add('hidden');
-  document.getElementById('screen-resultat').classList.remove('hidden');
-  document.getElementById('glouglou-bonjour').textContent = "Merci pour tes réponses 🌸 Ton portrait est prêt.";
-
-  const dimsDiv = document.getElementById('dimensions');
-  dimsDiv.innerHTML = '';
-  Object.entries(dimensions).forEach(([key, val]) => {
-    const row = document.createElement('div');
-    row.className = 'dim-row';
-    row.innerHTML = '<span class="dim-label">' + LABELS_DIM[key] + '</span><div class="dim-bar-bg"><div class="dim-bar-fill" style="width:' + val + '%"></div></div><span>' + val + '%</span>';
-    dimsDiv.appendChild(row);
-  });
-
-  const listePriorites = document.getElementById('priorites-liste');
-  listePriorites.innerHTML = '';
-  topDims.forEach(dim => {
-    const li = document.createElement('li');
-    li.textContent = LABELS_PRIORITE[dim];
-    listePriorites.appendChild(li);
-  });
-
-  afficherRoutine(choisirRoutine());
-
-  const situationsAvecContenu = { "jambes-lourdes": "jambes-lourdes" };
-  const slug = situationsAvecContenu[reponses.gene] || "jambes-lourdes";
-  document.getElementById('lien-lymia').href = "https://lymia-opal.vercel.app/situation/" + slug;
-}
-
-function choisirRoutine(exclureId) {
-  const tempsDispo = parseInt(reponses.temps, 10) || 5;
-  let candidates = ROUTINES.filter(r => r.duree <= tempsDispo && r.id !== exclureId);
-  if (candidates.length === 0) candidates = ROUTINES.filter(r => r.id !== exclureId);
-
-  candidates.forEach(r => {
-    r._score = r.dims.reduce((acc, dim) => acc + (topDims.includes(dim) ? (topDims.indexOf(dim) === 0 ? 3 : 2) : 0), 0);
-  });
-  candidates.sort((a,b) => b._score - a._score);
-
-  const meilleurScore = candidates[0]._score;
-  const meilleurs = candidates.filter(r => r._score === meilleurScore);
-  return meilleurs[Math.floor(Math.random() * meilleurs.length)];
-}
-
-function afficherRoutine(routine) {
-  routineActuelleId = routine.id;
-  document.getElementById('routine-titre').textContent = routine.titre;
-  const liste = document.getElementById('routine-gestes');
-  liste.innerHTML = '';
-  routine.gestes.forEach(g => {
-    const li = document.createElement('li');
-    li.textContent = g;
-    liste.appendChild(li);
-  });
-}
-
-function autreRoutine() {
-  afficherRoutine(choisirRoutine(routineActuelleId));
-}
-
-function envoyerEmail() {
-  const email = document.getElementById('email-input').value;
-  const consent = document.getElementById('consent-checkbox').checked;
-  if (!email.includes('@') || !consent) return;
-  try {
-    localStorage.setItem('profil_email', email);
-    localStorage.setItem('profil_reponses', JSON.stringify(reponses));
   } catch (e) {}
-  document.getElementById('email-block').classList.add('hidden');
-  document.getElementById('email-merci').classList.remove('hidden');
 }
+
+function stopAmbiance() {
+  nodes.forEach(n => { try { n.stop(); } catch (e) {} });
+  nodes = [];
+  if (audioCtx) { audioCtx.close(); audioCtx = null; }
+}
+
+renderOptions();
+renderProgress(0);
 </script>
 </body>
 </html>
