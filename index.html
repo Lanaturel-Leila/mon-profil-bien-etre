@@ -54,6 +54,10 @@
     background: #0099CC; margin-top: 14px; display: flex; align-items: center;
     justify-content: center; gap: 8px;
   }
+  .btn-music {
+    background: white; color: #0099CC; border: 1.5px solid #cdeafd; margin-top: 14px;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
 
   .progress { display: flex; justify-content: center; gap: 6px; margin-bottom: 18px; }
   .dot { width: 8px; height: 8px; border-radius: 50%; background: #f0d9d4; }
@@ -113,69 +117,73 @@
   <div id="screen-q1" class="hidden">
     <div class="progress" data-progress role="progressbar" aria-label="Progression du questionnaire"></div>
     <img class="glouglou-img small" src="glouglou.png" alt="Glouglou" width="300" height="381">
-    <div class="glouglou-bulle">Dis-moi, qu'est-ce qui te gêne le plus aujourd'hui ?</div>
+    <div class="glouglou-bulle" id="bulle-q1">Dis-moi, qu'est-ce qui te gêne le plus aujourd'hui ?</div>
     <div id="options-q1"></div>
   </div>
 
   <div id="screen-q2" class="hidden">
     <div class="progress" data-progress role="progressbar" aria-label="Progression du questionnaire"></div>
     <img class="glouglou-img small" src="glouglou.png" alt="Glouglou" width="300" height="381">
-    <div class="glouglou-bulle">Merci 💙 Je comprends. Et ça t'arrive souvent ?</div>
+    <div class="glouglou-bulle" id="bulle-q2"></div>
     <div id="options-q2"></div>
   </div>
 
   <div id="screen-q3" class="hidden">
     <div class="progress" data-progress role="progressbar" aria-label="Progression du questionnaire"></div>
     <img class="glouglou-img small" src="glouglou.png" alt="Glouglou" width="300" height="381">
-    <div class="glouglou-bulle">C'est noté. Et dans ta journée, tu es plutôt...</div>
+    <div class="glouglou-bulle" id="bulle-q3"></div>
     <div id="options-q3"></div>
   </div>
 
   <div id="screen-q4" class="hidden">
     <div class="progress" data-progress role="progressbar" aria-label="Progression du questionnaire"></div>
     <img class="glouglou-img small" src="glouglou.png" alt="Glouglou" width="300" height="381">
-    <div class="glouglou-bulle">Je commence à mieux comprendre ton quotidien 🌸 Et chez toi aujourd'hui, il fait...</div>
+    <div class="glouglou-bulle" id="bulle-q4"></div>
     <div id="options-q4"></div>
   </div>
 
   <div id="screen-q5" class="hidden">
     <div class="progress" data-progress role="progressbar" aria-label="Progression du questionnaire"></div>
     <img class="glouglou-img small" src="glouglou.png" alt="Glouglou" width="300" height="381">
-    <div class="glouglou-bulle">On continue ? Petite question d'eau, forcément ma préférée 💧 Tu bois environ...</div>
+    <div class="glouglou-bulle" id="bulle-q5"></div>
     <div id="options-q5"></div>
   </div>
 
   <div id="screen-q6" class="hidden">
     <div class="progress" data-progress role="progressbar" aria-label="Progression du questionnaire"></div>
     <img class="glouglou-img small" src="glouglou.png" alt="Glouglou" width="300" height="381">
-    <div class="glouglou-bulle">Dernière chose : combien de temps peux-tu t'accorder aujourd'hui, rien que pour toi ?</div>
+    <div class="glouglou-bulle" id="bulle-q6"></div>
     <div id="options-q6"></div>
   </div>
 
   <div id="screen-preparing" class="hidden">
     <img class="glouglou-img" src="glouglou.png" alt="Glouglou" width="300" height="381">
-    <div class="glouglou-bulle">Je réfléchis à ton Profil Bien-être...</div>
+    <div class="glouglou-bulle" id="bulle-preparing">Je prépare ton moment bien-être, rien que pour toi...</div>
   </div>
 
   <div id="screen-result" class="hidden">
     <img class="glouglou-img small" src="glouglou.png" alt="Glouglou" width="300" height="381">
-    <div class="glouglou-bulle">Voilà ce que j'ai découvert aujourd'hui 🌸</div>
+    <div class="glouglou-bulle">Ça y est 🌸 Merci pour ta confiance... Voici ce que ton corps m'a doucement raconté aujourd'hui.</div>
 
     <div class="card">
       <p class="card-title" id="profile-name"></p>
       <p style="font-size:13px; color:#6b5a52; margin-bottom:14px;" id="profile-desc"></p>
       <div id="dims"></div>
+      <p style="font-size:12px; color:#a08d84; margin-top:12px;">Ce n'est pas un bilan, juste une petite photo de ton moment présent 🌸</p>
     </div>
 
     <div class="card">
-      <p class="card-title">🌱 Tes axes à travailler</p>
+      <p class="card-title">🌱 Mes petites idées douces pour toi</p>
       <ul class="axes-list" id="axes-list"></ul>
     </div>
 
     <div class="card">
+      <p style="font-size:12.5px; color:#0099CC; font-weight:600; margin-bottom:6px;">💝 Ta routine, choisie rien que pour toi</p>
       <p class="card-title" id="result-title"></p>
       <p class="card-duration" id="result-duration"></p>
+      <p style="font-size:13px; color:#6b5a52; margin-bottom:12px; line-height:1.5;" id="routine-why"></p>
       <ol class="steps-list" id="result-steps"></ol>
+      <button class="btn btn-music" id="music-btn" onclick="toggleRoutineMusic()">🎵 Lancer la musique douce</button>
       <a class="btn btn-video" id="result-video" href="#" target="_blank">💙 Leïla t'accompagne en vidéo</a>
     </div>
 
@@ -216,6 +224,8 @@ const routineLibrary = [
     id: 'R001',
     title: 'Auto-drainage des chevilles',
     duration: '5 min',
+    minutes: 5,
+    mood: 'legerete',
     steps: [
       "Installe-toi assise, jambes surélevées si possible.",
       "Masse doucement de la cheville vers le genou, par pressions circulaires.",
@@ -228,6 +238,8 @@ const routineLibrary = [
     id: 'R002',
     title: 'Auto-drainage du ventre',
     duration: '5 min',
+    minutes: 5,
+    mood: 'douceur',
     steps: [
       "Allonge-toi ou assieds-toi confortablement.",
       "Effectue des mouvements circulaires doux autour du nombril, dans le sens des aiguilles d'une montre.",
@@ -240,6 +252,8 @@ const routineLibrary = [
     id: 'R003',
     title: 'Auto-drainage du visage',
     duration: '5 min',
+    minutes: 5,
+    mood: 'fraicheur',
     steps: [
       "Assieds-toi confortablement, mains propres.",
       "Effectue de légers effleurages du centre du visage vers les oreilles.",
@@ -247,47 +261,134 @@ const routineLibrary = [
     ],
     videoUrl: 'https://www.instagram.com/reel/DZP6ypPIYev/?igsh=bTh1bmxrMzB5azZw',
     tags: ['visage gonflé', 'rétention d’eau', 'détente']
+  },
+  {
+    id: 'R004',
+    title: 'Respiration cœur tranquille',
+    duration: '5 min',
+    minutes: 5,
+    mood: 'calme',
+    steps: [
+      "Assieds-toi confortablement, une main posée sur le cœur.",
+      "Inspire doucement par le nez pendant 4 secondes, puis souffle lentement par la bouche pendant 6 secondes.",
+      "Répète pendant 5 minutes, en laissant tes épaules se relâcher un peu plus à chaque souffle."
+    ],
+    tags: ['stress', 'détente']
+  },
+  {
+    id: 'R005',
+    title: 'Étirements douceur anti-fatigue',
+    duration: '10 min',
+    minutes: 10,
+    mood: 'douceur',
+    steps: [
+      "Debout ou assise, étire lentement les bras vers le ciel en inspirant profondément.",
+      "Penche doucement la tête d'un côté puis de l'autre, sans forcer.",
+      "Enroule le dos vers l'avant, laisse tes bras pendre, puis remonte très lentement.",
+      "Termine allongée quelques minutes, les yeux fermés, en respirant calmement."
+    ],
+    tags: ['fatigue', 'détente']
+  },
+  {
+    id: 'R006',
+    title: 'Rituel hydratation plaisir',
+    duration: '5 min',
+    minutes: 5,
+    mood: 'fraicheur',
+    steps: [
+      "Prépare-toi un grand verre d'eau, avec une rondelle de citron ou une feuille de menthe si tu en as.",
+      "Bois-le lentement, par petites gorgées, en pleine conscience.",
+      "Garde une jolie bouteille près de toi pour le reste de la journée."
+    ],
+    tags: ['rétention d’eau', 'hydratation']
+  },
+  {
+    id: 'R007',
+    title: 'Jambes légères au mur',
+    duration: '20 min',
+    minutes: 20,
+    mood: 'legerete',
+    steps: [
+      "Allonge-toi près d'un mur et pose tes jambes dessus, à la verticale.",
+      "Reste ainsi 10 à 15 minutes, en respirant profondément.",
+      "Masse ensuite doucement tes chevilles et tes mollets, de bas en haut.",
+      "Termine par quelques rotations douces des chevilles."
+    ],
+    tags: ['jambes lourdes', 'station debout', 'gonflements', 'chaleur']
   }
 ];
 
 const DIMS = ['Circulation', 'Digestion', 'Hydratation', 'Détente'];
 
+const baseBubbles = {
+  q1: "Dis-moi, qu'est-ce qui te gêne le plus aujourd'hui ?",
+  q2: "Et ça t'arrive souvent ?",
+  q3: "Et dans ta journée, tu es plutôt...",
+  q4: "Et chez toi aujourd'hui, il fait...",
+  q5: "Petite question d'eau, forcément ma préférée 💧 Tu bois environ...",
+  q6: "Dernière petite question : combien de temps peux-tu t'accorder aujourd'hui, rien que pour toi ?"
+};
+
 const questions = {
   q1: [
-    { label: 'Jambes lourdes', tags: ['jambes lourdes'], impact: { Circulation: -40 } },
-    { label: 'Ventre gonflé', tags: ['ventre gonflé', 'ballonnements'], impact: { Digestion: -40 } },
-    { label: 'Visage gonflé', tags: ['visage gonflé'], impact: { Circulation: -25, Hydratation: -15 } },
-    { label: 'Fatigue', tags: ['détente'], impact: { Détente: -35 } },
-    { label: 'Stress', tags: ['détente'], impact: { Détente: -40 } },
-    { label: 'Je veux simplement prendre soin de moi', tags: ['détente'], impact: {} }
+    { label: 'Jambes lourdes', tags: ['jambes lourdes'], impact: { Circulation: -40 },
+      reaction: "Les jambes lourdes en fin de journée, je comprends tellement... On va les soulager ensemble 💙" },
+    { label: 'Ventre gonflé', tags: ['ventre gonflé', 'ballonnements'], impact: { Digestion: -40 },
+      reaction: "Un ventre qui tiraille, ce n'est vraiment pas agréable... Merci de me le confier 💙" },
+    { label: 'Visage gonflé', tags: ['visage gonflé'], impact: { Circulation: -25, Hydratation: -15 },
+      reaction: "Je vois... On va aider ton visage à retrouver toute sa fraîcheur, en douceur 💙" },
+    { label: 'Fatigue', tags: ['fatigue', 'détente'], impact: { Détente: -35 },
+      reaction: "Cette fatigue qui s'installe... Ton corps te demande une pause, et on va l'écouter 💙" },
+    { label: 'Stress', tags: ['stress', 'détente'], impact: { Détente: -40 },
+      reaction: "Le stress, ce petit nuage qui pèse... Ensemble, on va faire de la place au calme 💙" },
+    { label: 'Je veux simplement prendre soin de moi', tags: ['détente'], impact: {},
+      reaction: "Quelle belle intention 🌸 Prendre soin de soi, c'est déjà un cadeau." }
   ],
   q2: [
-    { label: 'Tous les jours', tags: [], impact: { Circulation: -15, Détente: -10 } },
-    { label: 'Plusieurs fois par semaine', tags: [], impact: { Circulation: -10 } },
-    { label: 'De temps en temps', tags: [], impact: {} },
-    { label: 'Rarement', tags: [], impact: {} }
+    { label: 'Tous les jours', tags: [], impact: { Circulation: -15, Détente: -10 },
+      reaction: "Tous les jours... Tu mérites vraiment un peu de douceur." },
+    { label: 'Plusieurs fois par semaine', tags: [], impact: { Circulation: -10 },
+      reaction: "Plusieurs fois par semaine, c'est déjà beaucoup à porter." },
+    { label: 'De temps en temps', tags: [], impact: {},
+      reaction: "De temps en temps, d'accord... On va éviter que ça s'installe 🌸" },
+    { label: 'Rarement', tags: [], impact: {},
+      reaction: "Tant mieux si ça reste rare 🌸" }
   ],
   q3: [
-    { label: 'Plutôt assise', tags: [], impact: { Circulation: -15 } },
-    { label: 'Plutôt debout', tags: ['station debout'], impact: { Circulation: -20 } },
-    { label: 'Très physique', tags: ['station debout'], impact: { Circulation: -15, Détente: -10 } },
-    { label: 'Ça varie beaucoup', tags: [], impact: {} }
+    { label: 'Plutôt assise', tags: [], impact: { Circulation: -15 },
+      reaction: "Beaucoup de temps assise... Ton corps rêve sûrement d'un peu de mouvement doux." },
+    { label: 'Plutôt debout', tags: ['station debout'], impact: { Circulation: -20 },
+      reaction: "Debout une bonne partie de la journée : tes jambes travaillent dur, bravo à elles !" },
+    { label: 'Très physique', tags: ['station debout'], impact: { Circulation: -15, Détente: -10 },
+      reaction: "Un quotidien bien physique... Ton corps mérite une vraie récupération." },
+    { label: 'Ça varie beaucoup', tags: [], impact: {},
+      reaction: "Un rythme qui change tout le temps, je vois 🌸" }
   ],
   q4: [
-    { label: 'Très chaud', tags: ['chaleur', 'gonflements'], impact: { Circulation: -15, Hydratation: -15 } },
-    { label: 'Température normale', tags: [], impact: {} },
-    { label: 'Froid', tags: [], impact: {} }
+    { label: 'Très chaud', tags: ['chaleur', 'gonflements'], impact: { Circulation: -15, Hydratation: -15 },
+      reaction: "La chaleur n'aide pas du tout, c'est vrai..." },
+    { label: 'Température normale', tags: [], impact: {},
+      reaction: "Une température agréable, parfait 🌸" },
+    { label: 'Froid', tags: [], impact: {},
+      reaction: "Brrr... Pense à rester bien au chaud 🌸" }
   ],
   q5: [
-    { label: "Moins d'1 litre", tags: ['rétention d’eau'], impact: { Hydratation: -35, Digestion: -10 } },
-    { label: 'Entre 1 et 2 litres', tags: [], impact: { Hydratation: -10 } },
-    { label: 'Plus de 2 litres', tags: [], impact: {} }
+    { label: "Moins d'1 litre", tags: ['rétention d’eau', 'hydratation'], impact: { Hydratation: -35, Digestion: -10 },
+      reaction: "Oh, un peu plus d'eau ferait tellement de bien à ton corps 💧 On va y aller en douceur." },
+    { label: 'Entre 1 et 2 litres', tags: [], impact: { Hydratation: -10 },
+      reaction: "C'est un joli rythme, continue comme ça 💧" },
+    { label: 'Plus de 2 litres', tags: [], impact: {},
+      reaction: "Bravo, ton corps te dit merci 💧" }
   ],
   q6: [
-    { label: '5 minutes', tags: [], impact: {} },
-    { label: '10 minutes', tags: [], impact: {} },
-    { label: '20 minutes', tags: [], impact: {} },
-    { label: 'Plus de 30 minutes', tags: [], impact: {} }
+    { label: '5 minutes', tags: [], impact: {}, time: 5,
+      reaction: "Même 5 petites minutes peuvent faire beaucoup de bien 💙" },
+    { label: '10 minutes', tags: [], impact: {}, time: 10,
+      reaction: "10 minutes rien que pour toi, c'est précieux 💙" },
+    { label: '20 minutes', tags: [], impact: {}, time: 20,
+      reaction: "20 minutes de douceur, quel beau cadeau à te faire 💙" },
+    { label: 'Plus de 30 minutes', tags: [], impact: {}, time: 30,
+      reaction: "Tout ce temps pour toi... Ton corps va adorer 💙" }
   ]
 };
 
@@ -301,6 +402,7 @@ function restart() {
   collectedTags = [];
   Object.keys(scores).forEach(dim => { scores[dim] = 90; });
   document.getElementById('email-input').value = '';
+  if (musicOn) toggleRoutineMusic();
   renderProgress(0);
   goTo('intro');
 }
@@ -340,13 +442,21 @@ function renderOptions() {
 
 function answerQuestion(qKey, opt) {
   answers[qKey] = opt.label;
+  if (opt.time) answers.timeBudget = opt.time;
   collectedTags = collectedTags.concat(opt.tags);
   Object.keys(opt.impact || {}).forEach(dim => {
     scores[dim] = Math.max(10, scores[dim] + opt.impact[dim]);
   });
   const nextIndex = order.indexOf(qKey) + 1;
-  goTo(order[nextIndex]);
-  if (questions[order[nextIndex]]) renderProgress(nextIndex);
+  const next = order[nextIndex];
+  const reaction = opt.reaction ? opt.reaction + ' ' : '';
+  if (baseBubbles[next]) {
+    document.getElementById('bulle-' + next).textContent = reaction + baseBubbles[next];
+  } else if (next === 'preparing') {
+    document.getElementById('bulle-preparing').textContent = reaction + "Je prépare ton moment bien-être, rien que pour toi...";
+  }
+  goTo(next);
+  if (questions[next]) renderProgress(nextIndex);
 }
 
 function buildProfile() {
@@ -361,16 +471,16 @@ function buildProfile() {
     Détente: 'Profil Détente & Sérénité'
   };
   const descs = {
-    Circulation: "Aujourd'hui, ton corps te demande surtout de relancer la circulation et de retrouver de la légèreté.",
-    Digestion: "Aujourd'hui, ton confort digestif semble être le point qui mérite le plus d'attention.",
-    Hydratation: "Aujourd'hui, ton corps semble avoir besoin d'un meilleur équilibre en eau.",
-    Détente: "Aujourd'hui, c'est surtout ton besoin de calme et de détente qui ressort."
+    Circulation: "Ton corps me souffle qu'il a envie de légèreté... Ensemble, on va relancer tout ça en douceur 💙",
+    Digestion: "Ton ventre a besoin de douceur et d'attention aujourd'hui... Je suis là pour t'aider 💙",
+    Hydratation: "Ton corps me murmure qu'il a soif d'équilibre... Quelques gorgées de douceur vont tout changer 💧",
+    Détente: "Ce que j'entends surtout, c'est ton besoin de calme... Offrons à ton corps une vraie pause 💙"
   };
   const axes = {
-    Circulation: 'Bouger un peu plus et surélever tes jambes en fin de journée.',
-    Digestion: 'Prendre le temps de manger calmement et masser doucement ton ventre.',
-    Hydratation: "Boire un peu plus d'eau, régulièrement, tout au long de la journée.",
-    Détente: "T'accorder chaque jour un vrai moment rien que pour toi."
+    Circulation: 'Offre à tes jambes quelques minutes surélevées ce soir : elles vont adorer.',
+    Digestion: 'Mange tranquillement, en savourant chaque bouchée, et offre un massage tout doux à ton ventre.',
+    Hydratation: "Garde un joli verre d'eau près de toi et bois par petites gorgées plaisir, tout au long de la journée.",
+    Détente: "Réserve-toi chaque jour un petit moment rien qu'à toi, même tout petit : il compte énormément."
   };
 
   return {
@@ -382,13 +492,36 @@ function buildProfile() {
 }
 
 function pickRoutine() {
-  let best = routineLibrary[0];
+  const budget = answers.timeBudget || 10;
+  const fits = routineLibrary.filter(r => r.minutes <= budget);
+  const pool = fits.length ? fits : routineLibrary;
+  let best = pool[0];
   let bestScore = -1;
-  routineLibrary.forEach(r => {
+  pool.forEach(r => {
     const score = r.tags.filter(t => collectedTags.includes(t)).length;
-    if (score > bestScore) { bestScore = score; best = r; }
+    if (score > bestScore || (score === bestScore && r.minutes > best.minutes)) {
+      bestScore = score;
+      best = r;
+    }
   });
   return best;
+}
+
+function routineReason(routine) {
+  const why = {
+    'Jambes lourdes': 'pour soulager tes jambes et leur rendre leur légèreté',
+    'Ventre gonflé': 'pour apaiser ton ventre en douceur',
+    'Visage gonflé': 'pour défatiguer ton visage et raviver ton éclat',
+    'Fatigue': 'pour recharger ton énergie tout en douceur',
+    'Stress': "pour t'offrir une vraie bulle de calme",
+    'Je veux simplement prendre soin de moi': 'pour te faire du bien, tout simplement'
+  };
+  const part = why[answers.q1] || 'pour prendre soin de toi en douceur';
+  const budget = answers.timeBudget;
+  const timePart = budget
+    ? ' Et elle tient parfaitement dans les ' + (budget >= 30 ? '30 minutes et plus' : budget + ' minutes') + ' que tu peux t\'accorder aujourd\'hui.'
+    : '';
+  return "Je l'ai choisie spécialement " + part + " 💙" + timePart;
 }
 
 function renderResult() {
@@ -420,6 +553,7 @@ function renderResult() {
   window.chosenRoutine = routine;
   document.getElementById('result-title').textContent = routine.title;
   document.getElementById('result-duration').textContent = routine.duration;
+  document.getElementById('routine-why').textContent = routineReason(routine);
   const stepsEl = document.getElementById('result-steps');
   stepsEl.innerHTML = '';
   routine.steps.forEach(s => {
@@ -427,7 +561,15 @@ function renderResult() {
     li.textContent = s;
     stepsEl.appendChild(li);
   });
-  document.getElementById('result-video').href = routine.videoUrl;
+  const videoBtn = document.getElementById('result-video');
+  if (routine.videoUrl) {
+    videoBtn.href = routine.videoUrl;
+    videoBtn.classList.remove('hidden');
+  } else {
+    videoBtn.classList.add('hidden');
+  }
+  if (musicOn) toggleRoutineMusic();
+  document.getElementById('music-btn').textContent = '🎵 Lancer la musique douce';
 }
 
 const FORMSPREE_ENDPOINT = '';
@@ -466,30 +608,70 @@ function submitEmail() {
 }
 
 let soundOn = false;
+let musicOn = false;
 let audioCtx = null, nodes = [];
+
+const moodChords = {
+  calme: [174.61, 220.0, 261.63],
+  douceur: [196.0, 246.94, 293.66],
+  fraicheur: [220.0, 277.18, 329.63],
+  legerete: [261.63, 329.63, 392.0]
+};
 
 function toggleSon() {
   soundOn = !soundOn;
   const toggle = document.getElementById('sound-toggle');
   toggle.textContent = soundOn ? '🔊 Son' : '🔈 Son';
   toggle.setAttribute('aria-pressed', String(soundOn));
-  if (soundOn) startAmbiance(); else stopAmbiance();
+  stopAmbiance();
+  if (musicOn) {
+    musicOn = false;
+    const btn = document.getElementById('music-btn');
+    if (btn) btn.textContent = '🎵 Lancer la musique douce';
+  }
+  if (soundOn) startAmbiance();
 }
 
 function startMusicIfOn() { if (soundOn && !audioCtx) startAmbiance(); }
 
-function startAmbiance() {
+function toggleRoutineMusic() {
+  musicOn = !musicOn;
+  const btn = document.getElementById('music-btn');
+  stopAmbiance();
+  if (soundOn) {
+    soundOn = false;
+    const toggle = document.getElementById('sound-toggle');
+    toggle.textContent = '🔈 Son';
+    toggle.setAttribute('aria-pressed', 'false');
+  }
+  if (musicOn) {
+    const mood = (window.chosenRoutine && window.chosenRoutine.mood) || 'calme';
+    startAmbiance(moodChords[mood]);
+    btn.textContent = '🔇 Arrêter la musique';
+  } else {
+    btn.textContent = '🎵 Lancer la musique douce';
+  }
+}
+
+function startAmbiance(freqs) {
   try {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    [220, 277.18].forEach(freq => {
+    (freqs || [220, 277.18]).forEach((freq, i) => {
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
+      const lfo = audioCtx.createOscillator();
+      const lfoGain = audioCtx.createGain();
       osc.type = 'sine';
       osc.frequency.value = freq;
-      gain.gain.value = 0.015;
+      gain.gain.value = 0.012;
+      lfo.type = 'sine';
+      lfo.frequency.value = 0.07 + i * 0.03;
+      lfoGain.gain.value = 0.006;
+      lfo.connect(lfoGain).connect(gain.gain);
       osc.connect(gain).connect(audioCtx.destination);
       osc.start();
-      nodes.push(osc);
+      lfo.start();
+      nodes.push(osc, lfo);
     });
   } catch (e) {}
 }
