@@ -24,7 +24,8 @@
   .app > div:not(.hidden) { animation: screenIn 0.35s ease; }
   @keyframes screenIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
   @media (prefers-reduced-motion: reduce) {
-    .app > div:not(.hidden), .glouglou-img { animation: none; }
+    .app > div:not(.hidden), .glouglou-img, .garden .gift-glow, .garden .main-flower, .garden .sparkle { animation: none; }
+    .garden .bloom { animation: none; }
     .dim-bar-fill { transition: none; }
   }
 
@@ -54,10 +55,13 @@
     background: #0099CC; margin-top: 14px; display: flex; align-items: center;
     justify-content: center; gap: 8px;
   }
+  .music-row { display: flex; gap: 10px; margin-top: 14px; }
   .btn-music {
-    background: white; color: #0099CC; border: 1.5px solid #cdeafd; margin-top: 14px;
-    display: flex; align-items: center; justify-content: center; gap: 8px;
+    background: white; color: #0099CC; border: 1.5px solid #cdeafd; margin-top: 0;
+    display: flex; align-items: center; justify-content: center; gap: 6px; flex: 1;
+    font-size: 13.5px; padding: 12px 10px;
   }
+  .btn-music.playing { background: #0099CC; color: white; border-color: #0099CC; }
 
   .progress { display: flex; justify-content: center; gap: 6px; margin-bottom: 18px; }
   .dot { width: 8px; height: 8px; border-radius: 50%; background: #f0d9d4; }
@@ -85,7 +89,18 @@
   .dim-bar-fill { height: 100%; background: #7a2e3b; border-radius: 999px; transition: width 0.8s ease; }
   .axes-list { padding-left: 18px; font-size: 14px; line-height: 1.9; color: #5a4a42; text-align: left; }
 
-  .flower-emoji { font-size: 54px; margin-bottom: 6px; }
+  .garden { max-width: 330px; margin: 0 auto 14px; }
+  .garden svg { width: 100%; height: auto; display: block; }
+  .garden .gift-glow { transform-box: fill-box; transform-origin: center; animation: glowPulse 3.2s ease-in-out infinite; }
+  .garden .bloom { transform-box: fill-box; transform-origin: center; animation: bloomIn 1.3s cubic-bezier(0.34, 1.4, 0.64, 1) both; }
+  .garden .main-flower { transform-box: fill-box; transform-origin: 50% 100%; animation: gentleSway 5s ease-in-out 1.3s infinite; }
+  .garden .sparkle { animation: twinkle 2.4s ease-in-out infinite; }
+  .garden .sparkle:nth-of-type(2) { animation-delay: 0.8s; }
+  .garden .sparkle:nth-of-type(3) { animation-delay: 1.6s; }
+  @keyframes bloomIn { 0% { transform: scale(0); } 70% { transform: scale(1.12); } 100% { transform: scale(1); } }
+  @keyframes gentleSway { 0%,100% { transform: rotate(-1.6deg); } 50% { transform: rotate(1.6deg); } }
+  @keyframes glowPulse { 0%,100% { opacity: 0.35; transform: scale(1); } 50% { opacity: 0.7; transform: scale(1.12); } }
+  @keyframes twinkle { 0%,100% { opacity: 0.15; } 50% { opacity: 1; } }
 
   input[type="email"] {
     width: 100%; padding: 12px 14px; border-radius: 10px; border: 1.5px solid #e8c9cf;
@@ -183,7 +198,11 @@
       <p class="card-duration" id="result-duration"></p>
       <p style="font-size:13px; color:#6b5a52; margin-bottom:12px; line-height:1.5;" id="routine-why"></p>
       <ol class="steps-list" id="result-steps"></ol>
-      <button class="btn btn-music" id="music-btn" onclick="toggleRoutineMusic()">🎵 Lancer la musique douce</button>
+      <p style="font-size:12.5px; color:#6b5a52; margin-top:14px;">🎧 Choisis ta musique pour t'accompagner :</p>
+      <div class="music-row">
+        <button class="btn btn-music" id="music-entrainante" onclick="toggleMusic('entrainante')">✨ Entraînante</button>
+        <button class="btn btn-music" id="music-douce" onclick="toggleMusic('douce')">🌙 Douce</button>
+      </div>
       <a class="btn btn-video" id="result-video" href="#" target="_blank">💙 Leïla t'accompagne en vidéo</a>
     </div>
 
@@ -191,9 +210,69 @@
   </div>
 
   <div id="screen-flower" class="hidden">
-    <div class="flower-emoji">🌸</div>
+    <div class="garden">
+      <svg viewBox="0 0 320 230" role="img" aria-label="Une belle fleur rose éclot dans ton Jardin Bien-être">
+        <defs>
+          <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#fdeef4"/>
+            <stop offset="1" stop-color="#fff9ee"/>
+          </linearGradient>
+          <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+            <stop offset="0" stop-color="#ffe9a8" stop-opacity="0.9"/>
+            <stop offset="1" stop-color="#ffd6e4" stop-opacity="0"/>
+          </radialGradient>
+          <clipPath id="frame"><rect width="320" height="230" rx="18"/></clipPath>
+        </defs>
+        <g clip-path="url(#frame)">
+          <rect width="320" height="230" fill="url(#sky)"/>
+          <circle cx="272" cy="42" r="26" fill="#ffe9a8" opacity="0.85"/>
+          <circle cx="272" cy="42" r="38" fill="#ffe9a8" opacity="0.25"/>
+          <ellipse cx="160" cy="238" rx="230" ry="78" fill="#cdeab8"/>
+          <ellipse cx="160" cy="252" rx="205" ry="62" fill="#b7e0a3"/>
+
+          <g stroke="#6fae5c" stroke-width="3" stroke-linecap="round">
+            <path d="M56 196 C55 184 57 176 56 168" fill="none"/>
+            <path d="M262 192 C261 182 263 174 262 166" fill="none"/>
+            <path d="M108 208 C107 200 109 194 108 188" fill="none"/>
+            <path d="M216 210 C215 202 217 196 216 190" fill="none"/>
+          </g>
+          <g fill="#a8c7f0"><circle cx="56" cy="163" r="6"/><circle cx="50" cy="168" r="6"/><circle cx="62" cy="168" r="6"/><circle cx="56" cy="172" r="6"/></g>
+          <circle cx="56" cy="167" r="4" fill="#fff3b0"/>
+          <g fill="#f5b8a0"><circle cx="262" cy="161" r="6"/><circle cx="256" cy="166" r="6"/><circle cx="268" cy="166" r="6"/><circle cx="262" cy="170" r="6"/></g>
+          <circle cx="262" cy="165" r="4" fill="#fff3b0"/>
+          <g fill="#e6c8f0"><circle cx="108" cy="184" r="5"/><circle cx="103" cy="188" r="5"/><circle cx="113" cy="188" r="5"/><circle cx="108" cy="192" r="5"/></g>
+          <circle cx="108" cy="187" r="3" fill="#fff3b0"/>
+          <g fill="#f0d8a8"><circle cx="216" cy="186" r="5"/><circle cx="211" cy="190" r="5"/><circle cx="221" cy="190" r="5"/><circle cx="216" cy="194" r="5"/></g>
+          <circle cx="216" cy="189" r="3" fill="#f5b8c8"/>
+
+          <path class="sparkle" d="M84 66 l3 8 8 3 -8 3 -3 8 -3 -8 -8 -3 8 -3 z" fill="#ffd66b"/>
+          <path class="sparkle" d="M238 88 l2.5 7 7 2.5 -7 2.5 -2.5 7 -2.5 -7 -7 -2.5 7 -2.5 z" fill="#f7a6c4"/>
+          <path class="sparkle" d="M148 38 l2.5 7 7 2.5 -7 2.5 -2.5 7 -2.5 -7 -7 -2.5 7 -2.5 z" fill="#a8c7f0"/>
+
+          <circle class="gift-glow" cx="160" cy="105" r="52" fill="url(#glow)"/>
+
+          <g class="main-flower">
+            <path d="M160 214 C158 178 162 155 160 130" fill="none" stroke="#5f9e4f" stroke-width="5" stroke-linecap="round"/>
+            <path d="M160 178 C146 172 138 160 137 148 C151 152 159 162 160 178 Z" fill="#7bbd66"/>
+            <path d="M160 192 C174 186 182 174 183 162 C169 166 161 176 160 192 Z" fill="#8fcc7a"/>
+            <g class="bloom">
+              <g fill="#f7a6c4" stroke="#e77ba6" stroke-width="2.5">
+                <ellipse cx="160" cy="83" rx="13" ry="23"/>
+                <ellipse cx="160" cy="83" rx="13" ry="23" transform="rotate(60 160 105)"/>
+                <ellipse cx="160" cy="83" rx="13" ry="23" transform="rotate(120 160 105)"/>
+                <ellipse cx="160" cy="83" rx="13" ry="23" transform="rotate(180 160 105)"/>
+                <ellipse cx="160" cy="83" rx="13" ry="23" transform="rotate(240 160 105)"/>
+                <ellipse cx="160" cy="83" rx="13" ry="23" transform="rotate(300 160 105)"/>
+              </g>
+              <circle cx="160" cy="105" r="13" fill="#ffd66b" stroke="#eab04b" stroke-width="2.5"/>
+              <circle cx="156" cy="101" r="4" fill="#fff3b0"/>
+            </g>
+          </g>
+        </g>
+      </svg>
+    </div>
     <img class="glouglou-img small" src="glouglou.png" alt="Glouglou" width="300" height="381">
-    <div class="glouglou-bulle">Félicitations 🌸 Tu viens de planter la première fleur de ton Jardin Bien-être. Chaque petit geste que tu feras aidera ton jardin à grandir.</div>
+    <div class="glouglou-bulle">Ce moment que tu viens de t'offrir a fait éclore la première fleur de ton Jardin Bien-être 💝 C'est mon cadeau pour toi. Chaque petit geste que tu feras le fera grandir.</div>
     <button class="btn" style="margin-top:14px;" onclick="goTo('email')">Continuer</button>
   </div>
 
@@ -402,7 +481,8 @@ function restart() {
   collectedTags = [];
   Object.keys(scores).forEach(dim => { scores[dim] = 90; });
   document.getElementById('email-input').value = '';
-  if (musicOn) toggleRoutineMusic();
+  stopMusic();
+  updateMusicButtons();
   renderProgress(0);
   goTo('intro');
 }
@@ -568,11 +648,23 @@ function renderResult() {
   } else {
     videoBtn.classList.add('hidden');
   }
-  if (musicOn) toggleRoutineMusic();
-  document.getElementById('music-btn').textContent = '🎵 Lancer la musique douce';
+  stopMusic();
+  updateMusicButtons();
 }
 
-const FORMSPREE_ENDPOINT = '';
+// Chaque demande est envoyée sur cette adresse email (service gratuit FormSubmit.co).
+// Au tout premier envoi, FormSubmit vous enverra un email « Activate » : cliquez dessus une fois,
+// puis toutes les demandes suivantes arriveront directement dans votre boîte mail.
+const NOTIFY_EMAIL = 'ounissileila23@gmail.com';
+
+const QUESTION_LABELS = {
+  q1: 'Gêne principale',
+  q2: 'Fréquence',
+  q3: 'Type de journée',
+  q4: 'Température chez elle',
+  q5: 'Hydratation',
+  q6: 'Temps disponible'
+};
 
 function submitEmail() {
   const email = document.getElementById('email-input').value.trim();
@@ -597,18 +689,27 @@ function submitEmail() {
   saved.push(payload);
   localStorage.setItem('profils_bien_etre', JSON.stringify(saved));
 
-  if (FORMSPREE_ENDPOINT) {
-    fetch(FORMSPREE_ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    }).catch(() => {});
-  }
+  const mail = {
+    _subject: '🌸 Nouvelle demande de Plan Bien-être',
+    _template: 'table',
+    'Email de la personne': email,
+    'Profil détecté': payload.profile || '-',
+    'Routine conseillée': window.chosenRoutine ? (window.chosenRoutine.title + ' (' + window.chosenRoutine.duration + ')') : '-',
+    'Date': new Date().toLocaleString('fr-FR')
+  };
+  Object.keys(QUESTION_LABELS).forEach(q => { mail[QUESTION_LABELS[q]] = answers[q] || '-'; });
+  DIMS.forEach(dim => { mail['Score ' + dim] = scores[dim] + '/100'; });
+
+  fetch('https://formsubmit.co/ajax/' + NOTIFY_EMAIL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify(mail)
+  }).catch(() => {});
+
   goTo('end');
 }
 
 let soundOn = false;
-let musicOn = false;
 let audioCtx = null, nodes = [];
 
 const moodChords = {
@@ -618,45 +719,26 @@ const moodChords = {
   legerete: [261.63, 329.63, 392.0]
 };
 
+// Pour utiliser vos propres morceaux (MP3 libres de droits), indiquez leur URL ici :
+const CUSTOM_TRACKS = { entrainante: '', douce: '' };
+
 function toggleSon() {
   soundOn = !soundOn;
   const toggle = document.getElementById('sound-toggle');
   toggle.textContent = soundOn ? '🔊 Son' : '🔈 Son';
   toggle.setAttribute('aria-pressed', String(soundOn));
   stopAmbiance();
-  if (musicOn) {
-    musicOn = false;
-    const btn = document.getElementById('music-btn');
-    if (btn) btn.textContent = '🎵 Lancer la musique douce';
-  }
+  stopMusic();
+  updateMusicButtons();
   if (soundOn) startAmbiance();
 }
 
 function startMusicIfOn() { if (soundOn && !audioCtx) startAmbiance(); }
 
-function toggleRoutineMusic() {
-  musicOn = !musicOn;
-  const btn = document.getElementById('music-btn');
-  stopAmbiance();
-  if (soundOn) {
-    soundOn = false;
-    const toggle = document.getElementById('sound-toggle');
-    toggle.textContent = '🔈 Son';
-    toggle.setAttribute('aria-pressed', 'false');
-  }
-  if (musicOn) {
-    const mood = (window.chosenRoutine && window.chosenRoutine.mood) || 'calme';
-    startAmbiance(moodChords[mood]);
-    btn.textContent = '🔇 Arrêter la musique';
-  } else {
-    btn.textContent = '🎵 Lancer la musique douce';
-  }
-}
-
-function startAmbiance(freqs) {
+function startAmbiance() {
   try {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    (freqs || [220, 277.18]).forEach((freq, i) => {
+    [220, 277.18].forEach((freq, i) => {
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
       const lfo = audioCtx.createOscillator();
@@ -680,6 +762,162 @@ function stopAmbiance() {
   nodes.forEach(n => { try { n.stop(); } catch (e) {} });
   nodes = [];
   if (audioCtx) { audioCtx.close(); audioCtx = null; }
+}
+
+// ------- Moteur musical des routines -------
+let musicCtx = null, musicTimer = null, musicEl = null, currentStyle = null;
+
+function toggleMusic(style) {
+  const wasPlaying = currentStyle === style;
+  stopMusic();
+  stopAmbiance();
+  if (soundOn) {
+    soundOn = false;
+    const toggle = document.getElementById('sound-toggle');
+    toggle.textContent = '🔈 Son';
+    toggle.setAttribute('aria-pressed', 'false');
+  }
+  if (!wasPlaying) startMusic(style);
+  updateMusicButtons();
+}
+
+function updateMusicButtons() {
+  [['entrainante', '✨', 'Entraînante'], ['douce', '🌙', 'Douce']].forEach(([style, emoji, name]) => {
+    const btn = document.getElementById('music-' + style);
+    if (!btn) return;
+    const playing = currentStyle === style;
+    btn.classList.toggle('playing', playing);
+    btn.textContent = playing ? '⏸ ' + name : emoji + ' ' + name;
+    btn.setAttribute('aria-pressed', String(playing));
+  });
+}
+
+function stopMusic() {
+  if (musicTimer) { clearInterval(musicTimer); musicTimer = null; }
+  if (musicCtx) { try { musicCtx.close(); } catch (e) {} musicCtx = null; }
+  if (musicEl) { musicEl.pause(); musicEl = null; }
+  currentStyle = null;
+}
+
+function startMusic(style) {
+  currentStyle = style;
+  if (CUSTOM_TRACKS[style]) {
+    musicEl = new Audio(CUSTOM_TRACKS[style]);
+    musicEl.loop = true;
+    musicEl.volume = 0.65;
+    musicEl.play().catch(() => {});
+    return;
+  }
+  try {
+    const ctx = musicCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const master = ctx.createGain();
+    master.gain.value = style === 'douce' ? 0.5 : 0.42;
+    master.connect(ctx.destination);
+    const noiseBuf = makeNoise(ctx);
+    const stepDur = style === 'entrainante' ? 60 / 106 / 4 : 60 / 72;
+    let step = 0;
+    let nextTime = ctx.currentTime + 0.06;
+    const schedule = style === 'entrainante' ? scheduleModerne : scheduleDouce;
+    musicTimer = setInterval(() => {
+      while (nextTime < ctx.currentTime + 0.25) {
+        schedule(ctx, master, noiseBuf, step, nextTime, stepDur);
+        nextTime += stepDur;
+        step++;
+      }
+    }, 60);
+  } catch (e) {}
+}
+
+function makeNoise(ctx) {
+  const buf = ctx.createBuffer(1, ctx.sampleRate * 0.3, ctx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+  return buf;
+}
+
+function tone(ctx, dest, type, freq, t, dur, vol, filterFreq, slideTo) {
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = type;
+  osc.frequency.setValueAtTime(freq, t);
+  if (slideTo) osc.frequency.exponentialRampToValueAtTime(slideTo, t + dur * 0.6);
+  gain.gain.setValueAtTime(0, t);
+  gain.gain.linearRampToValueAtTime(vol, t + 0.012);
+  gain.gain.exponentialRampToValueAtTime(0.0008, t + dur);
+  let node = osc;
+  if (filterFreq) {
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = filterFreq;
+    osc.connect(filter);
+    node = filter;
+  }
+  node.connect(gain).connect(dest);
+  osc.start(t);
+  osc.stop(t + dur + 0.05);
+}
+
+function hit(ctx, dest, noiseBuf, t, dur, vol, filterType, filterFreq) {
+  const src = ctx.createBufferSource();
+  src.buffer = noiseBuf;
+  const filter = ctx.createBiquadFilter();
+  filter.type = filterType;
+  filter.frequency.value = filterFreq;
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(vol, t);
+  gain.gain.exponentialRampToValueAtTime(0.0008, t + dur);
+  src.connect(filter).connect(gain).connect(dest);
+  src.start(t);
+  src.stop(t + dur + 0.05);
+}
+
+// Progression Am - F - C - G, mélodie pentatonique
+const MOD_BASS = [110.0, 87.31, 130.81, 98.0];
+const MOD_CHORDS = [
+  [220.0, 261.63, 329.63],
+  [174.61, 220.0, 261.63],
+  [261.63, 329.63, 392.0],
+  [196.0, 246.94, 293.66]
+];
+const MOD_RIFF_A = [440, 0, 523.25, 0, 659.25, 0, 587.33, 0, 523.25, 0, 440, 0, 587.33, 0, 523.25, 0];
+const MOD_RIFF_B = [659.25, 0, 587.33, 0, 523.25, 0, 440, 0, 392, 0, 440, 0, 523.25, 0, 587.33, 0];
+
+function scheduleModerne(ctx, master, noiseBuf, step, t, stepDur) {
+  const bar = Math.floor(step / 16) % 4;
+  const s = step % 16;
+  if (s % 4 === 0) tone(ctx, master, 'sine', 140, t, 0.28, 0.9, 0, 45); // kick
+  if (s % 2 === 0) hit(ctx, master, noiseBuf, t, 0.05, s % 4 === 2 ? 0.22 : 0.1, 'highpass', 7500); // charley
+  if (s === 4 || s === 12) hit(ctx, master, noiseBuf, t, 0.16, 0.3, 'bandpass', 1800); // clap
+  if ([0, 3, 6, 10, 12].includes(s)) tone(ctx, master, 'sawtooth', MOD_BASS[bar], t, 0.2, 0.28, 480); // basse
+  if (s === 2 || s === 10) MOD_CHORDS[bar].forEach(f => tone(ctx, master, 'triangle', f, t, 0.32, 0.1, 2500)); // accords
+  const riff = (bar % 2 === 0 ? MOD_RIFF_A : MOD_RIFF_B)[s];
+  if (riff) tone(ctx, master, 'square', riff, t, 0.22, 0.055, 2200); // mélodie
+}
+
+function scheduleDouce(ctx, master, noiseBuf, step, t, stepDur) {
+  const mood = (window.chosenRoutine && window.chosenRoutine.mood) || 'calme';
+  const base = moodChords[mood];
+  const bar = Math.floor(step / 4);
+  const chord = bar % 2 === 0 ? base : [base[1], base[2], base[0] * 2];
+  const beat = step % 4;
+  if (beat === 0) {
+    chord.forEach((f, i) => { // nappe avec attaque très douce
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = f * (i === 1 ? 1.002 : 1);
+      const dur = stepDur * 4;
+      gain.gain.setValueAtTime(0, t);
+      gain.gain.linearRampToValueAtTime(0.055, t + dur * 0.4);
+      gain.gain.linearRampToValueAtTime(0.0008, t + dur * 1.15);
+      osc.connect(gain).connect(master);
+      osc.start(t);
+      osc.stop(t + dur * 1.2);
+    });
+    tone(ctx, master, 'sine', base[0] / 2, t, stepDur * 3.5, 0.09, 0); // basse ronde
+  }
+  const arp = [chord[0] * 2, chord[1] * 2, chord[2] * 2, chord[1] * 2][beat];
+  tone(ctx, master, 'triangle', arp, t, stepDur * 1.4, 0.05, 3000); // arpège cristallin
 }
 
 renderOptions();
