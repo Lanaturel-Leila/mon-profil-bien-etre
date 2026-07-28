@@ -13,6 +13,8 @@
  * miniature de référence (IMG_2034), pas choisies à l'œil.
  */
 
+import type { NomFiltre } from "./filtres";
+
 export const MODELE = {
   /** L'accroche : le bloc blanc à lettres roses */
   hook: {
@@ -53,6 +55,11 @@ export const MODELE = {
     /** Zoom lent par défaut : on se rapproche de 9 % sur la durée de l'extrait */
     zoom: "avant" as const,
     intensiteZoom: 0.09,
+    /**
+     * Le filtre appliqué à l'image, à choisir dans src/filtres.ts.
+     * Il s'applique tout seul à chaque vidéo — rien à refaire à la main.
+     */
+    filtre: "aucun" as NomFiltre,
     /** Le son d'origine est conservé */
     sonDesClips: true,
     /** Musique de fond posée sous la voix (0 = muet, 1 = fort) */

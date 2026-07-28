@@ -17,6 +17,7 @@ import { clips as clipsParDefaut, Clip } from "./clips";
 import { TexteIncruste } from "./components/TexteIncruste";
 import { Hook } from "./components/Hook";
 import { MODELE } from "./modele";
+import { FILTRES, NomFiltre } from "./filtres";
 
 // Le rythme vient du modèle : voir src/modele.ts
 export const FPS = MODELE.montage.fps;
@@ -37,6 +38,8 @@ export type MontageProps = {
   volumeMusique: number;
   /** Garder le son d'origine des extraits */
   sonDesClips: boolean;
+  /** Le filtre d'image appliqué à tous les extraits */
+  filtre: NomFiltre;
   /** L'accroche affichée en haut de l'image (vide = pas d'accroche) */
   hook: string;
   /** Combien de secondes elle reste à l'écran. 0 = toute la vidéo. */
@@ -58,6 +61,7 @@ export const montageParDefaut: MontageProps = {
   musique: "",
   volumeMusique: MODELE.montage.volumeMusique,
   sonDesClips: MODELE.montage.sonDesClips,
+  filtre: MODELE.montage.filtre,
   hook: "",
   dureeHook: 0,
   hookPosition: MODELE.hook.positionDebout,
@@ -196,7 +200,8 @@ const ExtraitAvecZoom: React.FC<{
   clip: Clip;
   duree: number;
   sonDesClips: boolean;
-}> = ({ clip, duree, sonDesClips }) => {
+  filtre: NomFiltre;
+}> = ({ clip, duree, sonDesClips, filtre }) => {
   const frame = useCurrentFrame();
   const intensite = clip.intensite ?? MODELE.montage.intensiteZoom;
 
@@ -220,6 +225,7 @@ const ExtraitAvecZoom: React.FC<{
           height: "100%",
           objectFit: "cover",
           transform: `scale(${echelle})`,
+          filter: FILTRES[filtre].css,
         }}
       />
       {clip.texte ? <TexteIncruste texte={clip.texte} /> : null}
@@ -232,6 +238,7 @@ export const Montage: React.FC<MontageProps> = ({
   musique,
   volumeMusique,
   sonDesClips,
+  filtre,
   hook,
   dureeHook,
   hookPosition,
@@ -267,6 +274,7 @@ export const Montage: React.FC<MontageProps> = ({
                   clip={clip}
                   duree={duree}
                   sonDesClips={sonDesClips}
+                  filtre={filtre}
                 />
               </TransitionSeries.Sequence>
             </React.Fragment>

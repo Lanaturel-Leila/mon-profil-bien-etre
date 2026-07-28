@@ -11,6 +11,7 @@ import {
   comparaisonEspacesParDefaut,
 } from "./ComparaisonEspaces";
 import { PlancheTemps, plancheTempsParDefaut } from "./PlancheTemps";
+import { PlancheFiltres, plancheFiltresParDefaut } from "./PlancheFiltres";
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -58,6 +59,15 @@ export const RemotionRoot: React.FC = () => {
         width={1200}
         height={2133}
         defaultProps={plancheTempsParDefaut}
+      />
+
+      {/* La planche d'essai des filtres */}
+      <Still
+        id="PlancheFiltres"
+        component={PlancheFiltres}
+        width={920}
+        height={2454}
+        defaultProps={plancheFiltresParDefaut}
       />
 
       {/* La planche d'essai des espacements */}
