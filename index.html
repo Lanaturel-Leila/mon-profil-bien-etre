@@ -982,12 +982,12 @@
   let couleurAnswers = {};
 
   const COULEUR_INFO = {
-    rose: { emoji: '🌸', nom: 'Rose poudré — Douceur', texte: "Tu sembles avoir besoin de ralentir et de prendre soin de toi.", reco: ['Un moment de repos, sans culpabiliser', 'Auto-massage relaxant du visage ou du ventre', 'Une tisane et 10 minutes rien que pour toi'] },
-    lavande: { emoji: '💜', nom: 'Lavande — Apaisement', texte: "Tu sembles avoir besoin de ralentir et de retrouver du calme.", reco: ['Respiration cœur tranquille, 5 minutes', 'Un moment déconnecté, sans écran', 'Une routine détente ce soir'] },
-    sauge: { emoji: '🌿', nom: 'Vert sauge — Équilibre', texte: "Ton corps te demande un peu plus de routine et de mouvement doux.", reco: ['Auto-drainage du ventre', 'Quelques étirements doux', "Un grand verre d'eau, lentement"] },
-    peche: { emoji: '🍑', nom: 'Pêche — Vitalité', texte: "Tu sembles avoir besoin de bouger et de retrouver de l'énergie.", reco: ['Quelques étirements dynamiques', 'Une marche même courte', 'Une routine jambes légères'] },
-    jaune: { emoji: '🌼', nom: 'Jaune doux — Rayonnement', texte: "Tu es plutôt en forme aujourd'hui, profites-en pour avancer.", reco: ['Garde ce bel élan avec un peu de mouvement', 'Une bonne hydratation pour tenir la journée', 'Prends un instant pour savourer ce que tu ressens'] },
-    creme: { emoji: '🤍', nom: 'Crème — Recentrage', texte: "Un jour plutôt neutre : revenons aux fondamentaux.", reco: ["Un grand verre d'eau", 'Quelques respirations profondes', 'Écoute simplement ce dont ton corps a envie'] }
+    rose: { emoji: '🌸', nom: 'Rose poudré — Douceur', texte: "Tu sembles avoir besoin de ralentir et de prendre soin de toi.", reco: ['Auto-massage', 'Bain ou sauna', 'Routine cocooning'] },
+    lavande: { emoji: '💜', nom: 'Lavande — Apaisement', texte: "Tu sembles avoir besoin de ralentir et de retrouver du calme.", reco: ['Respiration', 'Méditation', 'Sommeil réparateur'] },
+    sauge: { emoji: '🌿', nom: 'Vert sauge — Équilibre', texte: "Ton corps te demande un peu plus de routine et de mouvement doux.", reco: ['Auto-drainage', 'Alimentation légère', 'Mouvement doux'] },
+    peche: { emoji: '🍑', nom: 'Pêche — Vitalité', texte: "Tu sembles avoir besoin de bouger et de retrouver de l'énergie.", reco: ['Sport ou marche', 'Booster énergie', 'Objectif du jour'] },
+    jaune: { emoji: '🌼', nom: 'Jaune doux — Rayonnement', texte: "Tu es plutôt en forme aujourd'hui, profites-en pour avancer.", reco: ['Gratitude', 'Affirmations positives', 'Projets & créativité'] },
+    creme: { emoji: '🤍', nom: 'Crème — Recentrage', texte: "Un jour plutôt neutre : revenons aux fondamentaux.", reco: ['Écoute de soi', 'Hydratation', 'Rituel simple'] }
   };
 
   function answerCouleur(key, value, next) {
