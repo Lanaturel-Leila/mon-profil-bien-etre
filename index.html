@@ -155,12 +155,6 @@
         <div id="options-q3"></div>
     </div>
   
-    <div id="screen-q4" class="hidden">
-        <div class="progress" data-progress role="progressbar" aria-label="Progression du questionnaire"></div>
-        <div class="glouglou-bulle" id="bulle-q4"></div>
-        <div id="options-q4"></div>
-    </div>
-  
     <div id="screen-q5" class="hidden">
         <div class="progress" data-progress role="progressbar" aria-label="Progression du questionnaire"></div>
         <div class="glouglou-bulle" id="bulle-q5"></div>
@@ -477,7 +471,6 @@
       q1: "Dis-moi, qu'est-ce qui te gêne le plus aujourd'hui ?",
       q2: "Et ça t'arrive souvent ?",
       q3: "Et dans ta journée, tu es plutôt...",
-      q4: "Et chez toi aujourd'hui, il fait...",
       q5: "Petite question d'eau, forcément ma préférée 💧 Tu bois environ...",
       q6: "Dernière petite question : combien de temps peux-tu t'accorder aujourd'hui, rien que pour toi ?"
    };
@@ -517,14 +510,6 @@
        { label: 'Ça varie beaucoup', tags: [], impact: {},
               reaction: "Un rythme qui change tout le temps, je vois 🌸" }
          ],
-      q4: [
-       { label: 'Très chaud', tags: ['chaleur', 'gonflements'], impact: { Circulation: -15, Hydratation: -15 },
-              reaction: "La chaleur n'aide pas du tout, c'est vrai..." },
-       { label: 'Température normale', tags: [], impact: {},
-              reaction: "Une température agréable, parfait 🌸" },
-       { label: 'Froid', tags: [], impact: {},
-              reaction: "Brrr... Pense à rester bien au chaud 🌸" }
-         ],
       q5: [
        { label: "Moins d'1 litre", tags: ['rétention d’eau', 'hydratation'], impact: { Hydratation: -35, Digestion: -10 },
               reaction: "Oh, un peu plus d'eau ferait tellement de bien à ton corps 💧 On va y aller en douceur." },
@@ -546,7 +531,7 @@
        
   };
 
-  const order = ['intro', 'q1', 'q2', 'q3', 'q4', 'q5', 'q6', 'preparing', 'result', 'flower', 'email', 'end'];
+  const order = ['intro', 'q1', 'q2', 'q3', 'q5', 'q6', 'preparing', 'result', 'flower', 'email', 'end'];
   let answers = {};
   let collectedTags = [];
   const scores = { Circulation: 90, Digestion: 90, Hydratation: 90, Détente: 90 };
@@ -573,7 +558,7 @@
   function renderProgress(step) {
     document.querySelectorAll('[data-progress]').forEach(bar => {
       bar.innerHTML = '';
-      for (let i = 1; i <= 6; i++) {
+      for (let i = 1; i <= 5; i++) {
              const dot = document.createElement('div');
              dot.className = 'dot' + (i <= step ? ' active' : '');
                     bar.appendChild(dot);
@@ -742,7 +727,6 @@
                    q1: 'Gêne principale',
                    q2: 'Fréquence',
                    q3: 'Type de journée',
-                   q4: 'Température chez elle',
                    q5: 'Hydratation',
                    q6: 'Temps disponible'
                  };
