@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mon espace Lymia</title>
+<meta name="theme-color" content="#fdf6f3">
+<link rel="icon" type="image/png" href="glouglou.png">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #fdf6f3; color: #4a3b34; min-height: 100vh;
+    display: flex; align-items: center; justify-content: center; padding: 24px;
+  }
+  .app { max-width: 440px; width: 100%; }
+  h1 { font-size: 21px; font-weight: 700; margin-bottom: 6px; color: #7a2e3b; text-align: center; }
+  p.subtitle { font-size: 14px; color: #8a746a; text-align: center; margin-bottom: 22px; }
+  .card {
+    background: white; border-radius: 16px; padding: 22px;
+    box-shadow: 0 2px 12px rgba(122,46,59,0.08); margin-bottom: 16px;
+  }
+  .tabs { display: flex; gap: 8px; margin-bottom: 18px; }
+  .tab-btn {
+    flex: 1; padding: 10px; border-radius: 10px; border: 1.5px solid #f0e0dd;
+    background: white; color: #8a746a; font-size: 14px; font-weight: 600; cursor: pointer;
+  }
+  .tab-btn.active { background: #7a2e3b; border-color: #7a2e3b; color: white; }
+  label { display: block; font-size: 13px; font-weight: 600; color: #6b5a52; margin: 12px 0 6px; }
+  input {
+    width: 100%; padding: 11px 13px; border-radius: 10px; border: 1.5px solid #f0e0dd;
+    font-size: 14px; color: #4a3b34; background: #fffaf9;
+  }
+  input:focus { outline: none; border-color: #cdeafd; }
+  .btn {
+    width: 100%; padding: 13px; border-radius: 12px; border: none;
+    background: #7a2e3b; color: white; font-size: 15px; font-weight: 700;
+    cursor: pointer; margin-top: 18px; transition: transform 0.15s ease;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  .btn-secondary { background: white; color: #7a2e3b; border: 1.5px solid #7a2e3b; }
+  .msg { font-size: 13px; padding: 10px 12px; border-radius: 10px; margin-top: 14px; line-height: 1.5; }
+  .msg-error { background: #fdecec; color: #a13b3b; }
+  .msg-success { background: #eaf6ec; color: #2e6b3f; }
+  .msg-info { background: #eaf5fb; color: #285f7a; }
+  .hidden { display: none; }
+  .dash-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+  .dash-header h2 { font-size: 18px; color: #7a2e3b; }
+  .logout-link { font-size: 13px; color: #a08d84; text-decoration: underline; cursor: pointer; background: none; border: none; }
+  .offer-card {
+    border: 1.5px solid #f0e0dd; border-radius: 14px; padding: 16px; margin-top: 12px;
+  }
+  .offer-card.active-offer { border-color: #7a2e3b; background: #fdf3f0; }
+  .offer-title { font-size: 15px; font-weight: 700; color: #7a2e3b; margin-bottom: 4px; }
+  .offer-price { font-size: 13px; color: #6b5a52; margin-bottom: 8px; }
+  .offer-list { font-size: 13px; color: #6b5a52; line-height: 1.6; padding-left: 18px; }
+  .pill {
+    display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 9px;
+    border-radius: 20px; background: #eaf6ec; color: #2e6b3f; margin-bottom: 8px;
+  }
+  .back-link { display: block; text-align: center; font-size: 13px; color: #a08d84; margin-top: 8px; }
+  a { color: #0099CC; }
+</style>
+</head>
+<body>
+<div class="app">
+  <h1>Mon espace Lymia</h1>
+  <p class="subtitle">Retrouve ton profil, ton abonnement et ta progression.</p>
+
+  <div id="auth-view">
+    <div class="card">
+      <div class="tabs">
+        <button class="tab-btn active" id="tab-login" onclick="switchTab('login')">Se connecter</button>
+        <button class="tab-btn" id="tab-signup" onclick="switchTab('signup')">Créer un compte</button>
+      </div>
+
+      <form id="login-form" onsubmit="return handleLogin(event)">
+        <label for="login-email">Email</label>
+        <input type="email" id="login-email" required autocomplete="email">
+        <label for="login-password">Mot de passe</label>
+        <input type="password" id="login-password" required autocomplete="current-password">
+        <button class="btn" type="submit" id="login-btn">Se connecter</button>
+      </form>
+
+      <form id="signup-form" class="hidden" onsubmit="return handleSignup(event)">
+        <label for="signup-prenom">Prénom</label>
+        <input type="text" id="signup-prenom" required autocomplete="given-name">
+        <label for="signup-email">Email</label>
+        <input type="email" id="signup-email" required autocomplete="email">
+        <label for="signup-password">Mot de passe</label>
+        <input type="password" id="signup-password" required minlength="6" autocomplete="new-password">
+        <button class="btn" type="submit" id="signup-btn">Créer mon compte</button>
+      </form>
+
+      <div id="auth-msg"></div>
+    </div>
+    <a class="back-link" href="index.html">← Retour au bilan bien-être</a>
+  </div>
+
+  <div id="dash-view" class="hidden">
+    <div class="card">
+      <div class="dash-header">
+        <h2 id="dash-greeting">Bonjour 👋</h2>
+        <button class="logout-link" onclick="handleLogout()">Se déconnecter</button>
+      </div>
+      <div id="prenom-setup" class="hidden">
+        <label for="dash-prenom">Comment veux-tu qu'on t'appelle ?</label>
+        <input type="text" id="dash-prenom" placeholder="Ton prénom">
+        <button class="btn" onclick="saveProfile()">Enregistrer</button>
+      </div>
+    </div>
+
+    <div class="card" id="abonnement-card">
+      <div id="abonnement-content">Chargement de ton abonnement…</div>
+    </div>
+
+    <a class="back-link" href="index.html">← Refaire le bilan bien-être</a>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+  const SUPABASE_URL = "https://xaogpgqryngmcwmnqxqe.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_zUlNoZGrhwDGO4YX7DkeKg_kI0P1AMV";
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  const OFFERS = [
+    { key: 'basique', label: 'Basique', price: '9,99€/mois — sans engagement',
+      items: ['Accès à l\'intelligence de la plateforme', 'Routines adaptées à ton temps disponible', 'Suivi de ta progression'] },
+    { key: 'intermediaire', label: 'Intermédiaire', price: '39,99€/mois — engagement 3 mois',
+      items: ['Tout Basique', 'Accès au coaching personnalisé', 'Groupe WhatsApp'] },
+    { key: 'premium', label: 'Premium', price: '89,99€/mois — engagement 6 mois',
+      items: ['Tout Intermédiaire', 'Compléments alimentaires inclus', 'Rendez-vous individuels'] },
+  ];
+
+  function switchTab(tab) {
+    document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+    document.getElementById('tab-signup').classList.toggle('active', tab === 'signup');
+    document.getElementById('login-form').classList.toggle('hidden', tab !== 'login');
+    document.getElementById('signup-form').classList.toggle('hidden', tab !== 'signup');
+    document.getElementById('auth-msg').innerHTML = '';
+  }
+
+  function showMsg(text, type) {
+    document.getElementById('auth-msg').innerHTML = '<div class="msg msg-' + type + '">' + text + '</div>';
+  }
+
+  async function handleLogin(e) {
+    e.preventDefault();
+    const btn = document.getElementById('login-btn');
+    btn.disabled = true; btn.textContent = 'Connexion…';
+    const email = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value;
+    const { data, error } = await sb.auth.signInWithPassword({ email, password });
+    btn.disabled = false; btn.textContent = 'Se connecter';
+    if (error) { showMsg(translateError(error.message), 'error'); return false; }
+    await onAuthenticated(data.user);
+    return false;
+  }
+
+  async function handleSignup(e) {
+    e.preventDefault();
+    const btn = document.getElementById('signup-btn');
+    btn.disabled = true; btn.textContent = 'Création…';
+    const prenom = document.getElementById('signup-prenom').value.trim();
+    const email = document.getElementById('signup-email').value.trim();
+    const password = document.getElementById('signup-password').value;
+    const { data, error } = await sb.auth.signUp({ email, password });
+    btn.disabled = false; btn.textContent = 'Créer mon compte';
+    if (error) { showMsg(translateError(error.message), 'error'); return false; }
+    if (data.session) {
+      await sb.from('profiles').update({ prenom }).eq('id', data.user.id);
+      await onAuthenticated(data.user);
+    } else {
+      sessionStorage.setItem('lymia_pending_prenom', prenom);
+      showMsg('Compte créé ! Vérifie ta boîte mail pour confirmer ton adresse, puis reviens te connecter ici.', 'success');
+    }
+    return false;
+  }
+
+  function translateError(msg) {
+    if (/already registered|already exists/i.test(msg)) return 'Un compte existe déjà avec cet email. Essaie de te connecter.';
+    if (/invalid login credentials/i.test(msg)) return 'Email ou mot de passe incorrect.';
+    if (/password.*at least/i.test(msg)) return 'Le mot de passe doit contenir au moins 6 caractères.';
+    return msg;
+  }
+
+  async function handleLogout() {
+    await sb.auth.signOut();
+    document.getElementById('dash-view').classList.add('hidden');
+    document.getElementById('auth-view').classList.remove('hidden');
+    document.getElementById('login-form').reset();
+  }
+
+  async function onAuthenticated(user) {
+    document.getElementById('auth-view').classList.add('hidden');
+    document.getElementById('dash-view').classList.remove('hidden');
+
+    let { data: profile } = await sb.from('profiles').select('*').eq('id', user.id).maybeSingle();
+
+    const pendingPrenom = sessionStorage.getItem('lymia_pending_prenom');
+    if (pendingPrenom && profile && !profile.prenom) {
+      await sb.from('profiles').update({ prenom: pendingPrenom }).eq('id', user.id);
+      sessionStorage.removeItem('lymia_pending_prenom');
+      profile.prenom = pendingPrenom;
+    }
+
+    if (profile && profile.prenom) {
+      document.getElementById('dash-greeting').textContent = 'Bonjour ' + profile.prenom + ' 👋';
+      document.getElementById('prenom-setup').classList.add('hidden');
+    } else {
+      document.getElementById('dash-greeting').textContent = 'Bienvenue 👋';
+      document.getElementById('prenom-setup').classList.remove('hidden');
+    }
+
+    const { data: abonnement } = await sb.from('abonnements').select('*').eq('user_id', user.id).eq('statut', 'actif').maybeSingle();
+    renderAbonnement(abonnement);
+  }
+
+  async function saveProfile() {
+    const { data: { user } } = await sb.auth.getUser();
+    const prenom = document.getElementById('dash-prenom').value.trim();
+    if (!prenom) return;
+    await sb.from('profiles').update({ prenom }).eq('id', user.id);
+    document.getElementById('dash-greeting').textContent = 'Bonjour ' + prenom + ' 👋';
+    document.getElementById('prenom-setup').classList.add('hidden');
+  }
+
+  function renderAbonnement(abonnement) {
+    const el = document.getElementById('abonnement-content');
+    if (abonnement) {
+      const offer = OFFERS.find(o => o.key === abonnement.offre) || OFFERS[0];
+      el.innerHTML =
+        '<span class="pill">Abonnement actif</span>' +
+        '<div class="offer-title">' + offer.label + '</div>' +
+        '<div class="offer-price">' + offer.price + '</div>' +
+        '<ul class="offer-list">' + offer.items.map(i => '<li>' + i + '</li>').join('') + '</ul>' +
+        '<p style="font-size:12.5px; color:#a08d84; margin-top:12px;">Le contenu personnalisé (routines, coaching, jardin) arrive très bientôt dans cet espace.</p>';
+    } else {
+      el.innerHTML =
+        '<p style="font-size:14px; margin-bottom:10px;">Tu n\'as pas encore d\'abonnement actif.</p>' +
+        OFFERS.map(o =>
+          '<div class="offer-card">' +
+          '<div class="offer-title">' + o.label + '</div>' +
+          '<div class="offer-price">' + o.price + '</div>' +
+          '<ul class="offer-list">' + o.items.map(i => '<li>' + i + '</li>').join('') + '</ul>' +
+          '</div>'
+        ).join('') +
+        '<p style="font-size:12.5px; color:#a08d84; margin-top:14px;">Le paiement en ligne arrive bientôt. En attendant, écris à Leïla sur <a href="https://instagram.com/lanaturelbyleila" target="_blank">Instagram</a> pour réserver ta place.</p>';
+    }
+  }
+
+  (async function init() {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) await onAuthenticated(session.user);
+  })();
+</script>
+</body>
+</html>
