@@ -194,9 +194,77 @@
               <a class="btn btn-video" id="result-video" href="#" target="_blank">💙 Leïla t'accompagne en vidéo</a>
         </div>
     
-        <button class="btn" onclick="goTo('flower')">Continuer</button>
+        <button class="btn" onclick="goTo('couleur-intro')">Continuer</button>
     </div>
   
+    <div id="screen-couleur-intro" class="hidden">
+        <div class="glouglou-bulle">Coucou 🌸 Comment tu te sens aujourd'hui ? Réponds à quelques questions et je te donne ta couleur du jour.</div>
+        <button class="btn" onclick="goTo('couleur-q1')">C'est parti</button>
+    </div>
+
+    <div id="screen-couleur-q1" class="hidden">
+        <div class="glouglou-bulle">Quel est ton niveau d'énergie aujourd'hui ?</div>
+        <button class="option-btn" onclick="answerCouleur('energie',1,'couleur-q2')">1 · À plat</button>
+        <button class="option-btn" onclick="answerCouleur('energie',2,'couleur-q2')">2</button>
+        <button class="option-btn" onclick="answerCouleur('energie',3,'couleur-q2')">3</button>
+        <button class="option-btn" onclick="answerCouleur('energie',4,'couleur-q2')">4</button>
+        <button class="option-btn" onclick="answerCouleur('energie',5,'couleur-q2')">5 · Pleine forme</button>
+    </div>
+
+    <div id="screen-couleur-q2" class="hidden">
+        <div class="glouglou-bulle">Comment est ta charge mentale aujourd'hui ?</div>
+        <button class="option-btn" onclick="answerCouleur('stress',1,'couleur-q3')">1 · Très calme</button>
+        <button class="option-btn" onclick="answerCouleur('stress',2,'couleur-q3')">2</button>
+        <button class="option-btn" onclick="answerCouleur('stress',3,'couleur-q3')">3</button>
+        <button class="option-btn" onclick="answerCouleur('stress',4,'couleur-q3')">4</button>
+        <button class="option-btn" onclick="answerCouleur('stress',5,'couleur-q3')">5 · Très élevée</button>
+    </div>
+
+    <div id="screen-couleur-q3" class="hidden">
+        <div class="glouglou-bulle">Comment as-tu dormi ?</div>
+        <button class="option-btn" onclick="answerCouleur('sommeil',1,'couleur-q4')">1 · Très mal</button>
+        <button class="option-btn" onclick="answerCouleur('sommeil',2,'couleur-q4')">2</button>
+        <button class="option-btn" onclick="answerCouleur('sommeil',3,'couleur-q4')">3</button>
+        <button class="option-btn" onclick="answerCouleur('sommeil',4,'couleur-q4')">4</button>
+        <button class="option-btn" onclick="answerCouleur('sommeil',5,'couleur-q4')">5 · Très bien</button>
+    </div>
+
+    <div id="screen-couleur-q4" class="hidden">
+        <div class="glouglou-bulle">Comment se sent ton ventre aujourd'hui ?</div>
+        <button class="option-btn" onclick="answerCouleur('digestion','leger','couleur-q5')">Léger et confortable</button>
+        <button class="option-btn" onclick="answerCouleur('digestion','gonfle','couleur-q5')">Un peu gonflé</button>
+        <button class="option-btn" onclick="answerCouleur('digestion','ballonne','couleur-q5')">Très ballonné</button>
+        <button class="option-btn" onclick="answerCouleur('digestion','transit','couleur-q5')">Transit ralenti</button>
+        <button class="option-btn" onclick="answerCouleur('digestion','inconfort','couleur-q5')">Inconfort digestif</button>
+    </div>
+
+    <div id="screen-couleur-q5" class="hidden">
+        <div class="glouglou-bulle">Aujourd'hui, ton corps a plutôt envie de…</div>
+        <button class="option-btn" onclick="answerCouleur('mouvement','repos','couleur-q6')">Se reposer</button>
+        <button class="option-btn" onclick="answerCouleur('mouvement','doux','couleur-q6')">Bouger doucement</button>
+        <button class="option-btn" onclick="answerCouleur('mouvement','davantage','couleur-q6')">Bouger davantage</button>
+        <button class="option-btn" onclick="answerCouleur('mouvement','depense','couleur-q6')">Se dépenser</button>
+    </div>
+
+    <div id="screen-couleur-q6" class="hidden">
+        <div class="glouglou-bulle">Quelle phrase te ressemble le plus aujourd'hui ?</div>
+        <button class="option-btn" onclick="answerCouleur('emotion','douceur','couleur-result')">J'ai besoin de douceur</button>
+        <button class="option-btn" onclick="answerCouleur('emotion','calme','couleur-result')">J'ai besoin de calme</button>
+        <button class="option-btn" onclick="answerCouleur('emotion','equilibre','couleur-result')">J'ai besoin de retrouver mon équilibre</button>
+        <button class="option-btn" onclick="answerCouleur('emotion','boost','couleur-result')">J'ai besoin d'un coup de boost</button>
+        <button class="option-btn" onclick="answerCouleur('emotion','avancer','couleur-result')">Je me sens bien et j'ai envie d'avancer</button>
+    </div>
+
+    <div id="screen-couleur-result" class="hidden">
+        <div class="glouglou-bulle">Aujourd'hui, ta couleur est <span id="couleur-emoji"></span> <strong id="couleur-nom"></strong>. <span id="couleur-texte"></span></div>
+        <div class="card">
+              <p class="card-title">🌱 Pour prendre soin de toi aujourd'hui</p>
+              <ul class="axes-list" id="couleur-reco"></ul>
+        </div>
+        <p style="font-size:11.5px; color:#a08d84; margin-top:8px;">Les couleurs Lymia représentent ton ressenti du jour, ce n'est pas un diagnostic médical.</p>
+        <button class="btn" style="margin-top:14px;" onclick="goTo('flower')">Continuer</button>
+    </div>
+
     <div id="screen-flower" class="hidden">
         <div class="garden">
               <svg viewBox="0 0 320 230" role="img" aria-label="Une belle fleur rose éclot dans ton Jardin Bien-être">
@@ -910,7 +978,62 @@
                           tone(ctx, master, 'triangle', arp, t, stepDur * 1.4, 0.05, 3000); // arpège cristallin
                         }
 
-                        renderOptions();
+                        // ------- Couleur du jour -------
+  let couleurAnswers = {};
+
+  const COULEUR_INFO = {
+    rose: { emoji: '🌸', nom: 'Rose poudré — Douceur', texte: "Tu sembles avoir besoin de ralentir et de prendre soin de toi.", reco: ['Un moment de repos, sans culpabiliser', 'Auto-massage relaxant du visage ou du ventre', 'Une tisane et 10 minutes rien que pour toi'] },
+    lavande: { emoji: '💜', nom: 'Lavande — Apaisement', texte: "Tu sembles avoir besoin de ralentir et de retrouver du calme.", reco: ['Respiration cœur tranquille, 5 minutes', 'Un moment déconnecté, sans écran', 'Une routine détente ce soir'] },
+    sauge: { emoji: '🌿', nom: 'Vert sauge — Équilibre', texte: "Ton corps te demande un peu plus de routine et de mouvement doux.", reco: ['Auto-drainage du ventre', 'Quelques étirements doux', "Un grand verre d'eau, lentement"] },
+    peche: { emoji: '🍑', nom: 'Pêche — Vitalité', texte: "Tu sembles avoir besoin de bouger et de retrouver de l'énergie.", reco: ['Quelques étirements dynamiques', 'Une marche même courte', 'Une routine jambes légères'] },
+    jaune: { emoji: '🌼', nom: 'Jaune doux — Rayonnement', texte: "Tu es plutôt en forme aujourd'hui, profites-en pour avancer.", reco: ['Garde ce bel élan avec un peu de mouvement', 'Une bonne hydratation pour tenir la journée', 'Prends un instant pour savourer ce que tu ressens'] },
+    creme: { emoji: '🤍', nom: 'Crème — Recentrage', texte: "Un jour plutôt neutre : revenons aux fondamentaux.", reco: ["Un grand verre d'eau", 'Quelques respirations profondes', 'Écoute simplement ce dont ton corps a envie'] }
+  };
+
+  function answerCouleur(key, value, next) {
+    couleurAnswers[key] = value;
+    goTo(next);
+    if (next === 'couleur-result') renderCouleur();
+  }
+
+  function computeCouleur() {
+    const score = { rose: 0, lavande: 0, sauge: 0, peche: 0, jaune: 0, creme: 0 };
+    const energie = couleurAnswers.energie;
+    if (energie <= 2) { score.rose += 2; score.peche += 1; }
+    else if (energie === 3) { score.creme += 1; }
+    else { score.jaune += 2; }
+    const stress = couleurAnswers.stress;
+    if (stress >= 4) { score.lavande += 2; }
+    else if (stress === 3) { score.sauge += 1; }
+    else { score.jaune += 1; }
+    const sommeil = couleurAnswers.sommeil;
+    if (sommeil <= 2) { score.lavande += 1; score.rose += 1; }
+    else if (sommeil === 3) { score.creme += 1; }
+    else { score.jaune += 1; }
+    const digestionScores = { leger: { jaune: 1 }, gonfle: { sauge: 1 }, ballonne: { sauge: 2 }, transit: { sauge: 2 }, inconfort: { sauge: 1, rose: 1 } };
+    Object.entries(digestionScores[couleurAnswers.digestion] || {}).forEach(([c, v]) => score[c] += v);
+    const mouvementScores = { repos: { rose: 2 }, doux: { sauge: 1 }, davantage: { peche: 1 }, depense: { peche: 2 } };
+    Object.entries(mouvementScores[couleurAnswers.mouvement] || {}).forEach(([c, v]) => score[c] += v);
+    const emotionScores = { douceur: { rose: 3 }, calme: { lavande: 3 }, equilibre: { sauge: 3 }, boost: { peche: 3 }, avancer: { jaune: 3 } };
+    Object.entries(emotionScores[couleurAnswers.emotion] || {}).forEach(([c, v]) => score[c] += v);
+    let best = 'creme', bestScore = -1;
+    Object.keys(score).forEach(c => { if (score[c] > bestScore) { bestScore = score[c]; best = c; } });
+    if (bestScore <= 0) best = 'creme';
+    return best;
+  }
+
+  function renderCouleur() {
+    const c = computeCouleur();
+    const info = COULEUR_INFO[c];
+    document.getElementById('couleur-emoji').textContent = info.emoji;
+    document.getElementById('couleur-nom').textContent = info.nom;
+    document.getElementById('couleur-texte').textContent = info.texte;
+    const list = document.getElementById('couleur-reco');
+    list.innerHTML = '';
+    info.reco.forEach(r => { const li = document.createElement('li'); li.textContent = r; list.appendChild(li); });
+  }
+
+  renderOptions();
                         renderProgress(0);
 </script>
                 </body>
