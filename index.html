@@ -114,88 +114,88 @@
  </head>
  <body>
 
-  <button class="sound-toggle" id="sound-toggle" onclick="toggleSon()" aria-pressed="false">🔈 Son</button>button>
+  <button class="sound-toggle" id="sound-toggle" onclick="toggleSon()" aria-pressed="false">🔈 Son</button>
 
   <div class="app">
 
      <div id="screen-intro">
-          <div class="glouglou-bulle">Bonjour 🌸 C'est Leïla. Aujourd'hui, j'aimerais apprendre à mieux te connaître.</div>div>
+          <div class="glouglou-bulle">Bonjour 🌸 C'est Leïla. Aujourd'hui, j'aimerais apprendre à mieux te connaître.</div>
           <h1>Découvre ton Profil Bien-être</h1>
-         <p class="subtitle">Quelques petites questions, moins de 2 minutes, et je te prépare ton profil personnalisé 💧</p>p>
-         <button class="btn" onclick="startMusicIfOn(); goTo('q1')">Commencer</button>button>
-     </div>div>
+         <p class="subtitle">Quelques petites questions, moins de 2 minutes, et je te prépare ton profil personnalisé 💧</p>
+         <button class="btn" onclick="startMusicIfOn(); goTo('q1')">Commencer</button>
+     </div>
   
     <div id="screen-q1" class="hidden">
-        <div class="progress" data-progress role="progressbar" aria-label="Progression du questionnaire"></div>div>
-        <div class="glouglou-bulle" id="bulle-q1">Dis-moi, qu'est-ce qui te gêne le plus aujourd'hui ?</div>div>
-        <div id="options-q1"></div>div>
-    </div>div>
+        <div class="progress" data-progress role="progressbar" aria-label="Progression du questionnaire"></div>
+        <div class="glouglou-bulle" id="bulle-q1">Dis-moi, qu'est-ce qui te gêne le plus aujourd'hui ?</div>
+        <div id="options-q1"></div>
+    </div>
   
     <div id="screen-q2" class="hidden">
-        <div class="progress" data-progress role="progressbar" aria-label="Progression du questionnaire"></div>div>
-        <div class="glouglou-bulle" id="bulle-q2"></div>div>
-        <div id="options-q2"></div>div>
-    </div>div>
+        <div class="progress" data-progress role="progressbar" aria-label="Progression du questionnaire"></div>
+        <div class="glouglou-bulle" id="bulle-q2"></div>
+        <div id="options-q2"></div>
+    </div>
   
     <div id="screen-q3" class="hidden">
-        <div class="progress" data-progress role="progressbar" aria-label="Progression du questionnaire"></div>div>
-        <div class="glouglou-bulle" id="bulle-q3"></div>div>
-        <div id="options-q3"></div>div>
-    </div>div>
+        <div class="progress" data-progress role="progressbar" aria-label="Progression du questionnaire"></div>
+        <div class="glouglou-bulle" id="bulle-q3"></div>
+        <div id="options-q3"></div>
+    </div>
   
     <div id="screen-q4" class="hidden">
-        <div class="progress" data-progress role="progressbar" aria-label="Progression du questionnaire"></div>div>
-        <div class="glouglou-bulle" id="bulle-q4"></div>div>
-        <div id="options-q4"></div>div>
-    </div>div>
+        <div class="progress" data-progress role="progressbar" aria-label="Progression du questionnaire"></div>
+        <div class="glouglou-bulle" id="bulle-q4"></div>
+        <div id="options-q4"></div>
+    </div>
   
     <div id="screen-q5" class="hidden">
-        <div class="progress" data-progress role="progressbar" aria-label="Progression du questionnaire"></div>div>
-        <div class="glouglou-bulle" id="bulle-q5"></div>div>
-        <div id="options-q5"></div>div>
-    </div>div>
+        <div class="progress" data-progress role="progressbar" aria-label="Progression du questionnaire"></div>
+        <div class="glouglou-bulle" id="bulle-q5"></div>
+        <div id="options-q5"></div>
+    </div>
   
     <div id="screen-q6" class="hidden">
-        <div class="progress" data-progress role="progressbar" aria-label="Progression du questionnaire"></div>div>
-        <div class="glouglou-bulle" id="bulle-q6"></div>div>
-        <div id="options-q6"></div>div>
-    </div>div>
+        <div class="progress" data-progress role="progressbar" aria-label="Progression du questionnaire"></div>
+        <div class="glouglou-bulle" id="bulle-q6"></div>
+        <div id="options-q6"></div>
+    </div>
   
     <div id="screen-preparing" class="hidden">
-        <div class="glouglou-bulle" id="bulle-preparing">Je prépare ton moment bien-être, rien que pour toi...</div>div>
-    </div>div>
+        <div class="glouglou-bulle" id="bulle-preparing">Je prépare ton moment bien-être, rien que pour toi...</div>
+    </div>
   
     <div id="screen-result" class="hidden">
-        <div class="glouglou-bulle">Ça y est 🌸 Merci pour ta confiance... Voici ce que ton corps m'a doucement raconté aujourd'hui.</div>div>
+        <div class="glouglou-bulle">Ça y est 🌸 Merci pour ta confiance... Voici ce que ton corps m'a doucement raconté aujourd'hui.</div>
     
         <div class="card">
-              <p class="card-title" id="profile-name"></p>p>
-              <p style="font-size:13px; color:#6b5a52; margin-bottom:14px;" id="profile-desc"></p>p>
-              <div id="dims"></div>div>
-              <p style="font-size:12px; color:#a08d84; margin-top:12px;">Ce n'est pas un bilan, juste une petite photo de ton moment présent 🌸</p>p>
-        </div>div>
+              <p class="card-title" id="profile-name"></p>
+              <p style="font-size:13px; color:#6b5a52; margin-bottom:14px;" id="profile-desc"></p>
+              <div id="dims"></div>
+              <p style="font-size:12px; color:#a08d84; margin-top:12px;">Ce n'est pas un bilan, juste une petite photo de ton moment présent 🌸</p>
+        </div>
     
         <div class="card">
-              <p class="card-title">🌱 Mes petites idées douces pour toi</p>p>
-              <ul class="axes-list" id="axes-list"></ul>ul>
-        </div>div>
+              <p class="card-title">🌱 Mes petites idées douces pour toi</p>
+              <ul class="axes-list" id="axes-list"></ul>
+        </div>
     
         <div class="card">
-              <p style="font-size:12.5px; color:#0099CC; font-weight:600; margin-bottom:6px;">💝 Ta routine, choisie rien que pour toi</p>p>
-              <p class="card-title" id="result-title"></p>p>
-              <p class="card-duration" id="result-duration"></p>p>
-              <p style="font-size:13px; color:#6b5a52; margin-bottom:12px; line-height:1.5;" id="routine-why"></p>p>
-              <ol class="steps-list" id="result-steps"></ol>ol>
-              <p style="font-size:12.5px; color:#6b5a52; margin-top:14px;">🎧 Choisis ta musique pour t'accompagner :</p>p>
+              <p style="font-size:12.5px; color:#0099CC; font-weight:600; margin-bottom:6px;">💝 Ta routine, choisie rien que pour toi</p>
+              <p class="card-title" id="result-title"></p>
+              <p class="card-duration" id="result-duration"></p>
+              <p style="font-size:13px; color:#6b5a52; margin-bottom:12px; line-height:1.5;" id="routine-why"></p>
+              <ol class="steps-list" id="result-steps"></ol>
+              <p style="font-size:12.5px; color:#6b5a52; margin-top:14px;">🎧 Choisis ta musique pour t'accompagner :</p>
               <div class="music-row">
-                      <button class="btn btn-music" id="music-entrainante" onclick="toggleMusic('entrainante')">✨ Entraînante</button>button>
-                      <button class="btn btn-music" id="music-douce" onclick="toggleMusic('douce')">🌙 Douce</button>button>
-              </div>div>
-              <a class="btn btn-video" id="result-video" href="#" target="_blank">💙 Leïla t'accompagne en vidéo</a>a>
-        </div>div>
+                      <button class="btn btn-music" id="music-entrainante" onclick="toggleMusic('entrainante')">✨ Entraînante</button>
+                      <button class="btn btn-music" id="music-douce" onclick="toggleMusic('douce')">🌙 Douce</button>
+              </div>
+              <a class="btn btn-video" id="result-video" href="#" target="_blank">💙 Leïla t'accompagne en vidéo</a>
+        </div>
     
-        <button class="btn" onclick="goTo('flower')">Continuer</button>button>
-    </div>div>
+        <button class="btn" onclick="goTo('flower')">Continuer</button>
+    </div>
   
     <div id="screen-flower" class="hidden">
         <div class="garden">
@@ -204,12 +204,12 @@
                                  <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
                                               <stop offset="0" stop-color="#fdeef4"/>
                                               <stop offset="1" stop-color="#fff9ee"/>
-                                 </linearGradient>linearGradient>
+                                 </linearGradient>
                                  <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
                                               <stop offset="0" stop-color="#ffe9a8" stop-opacity="0.9"/>
                                               <stop offset="1" stop-color="#ffd6e4" stop-opacity="0"/>
-                                 </radialGradient>radialGradient>
-                                 <clipPath id="frame"><rect width="320" height="230" rx="18"/></clipPath>clipPath>
+                                 </radialGradient>
+                                 <clipPath id="frame"><rect width="320" height="230" rx="18"/></clipPath>
                       </defs>
                        <g clip-path="url(#frame)">
                                   <rect width="320" height="230" fill="url(#sky)"/>
@@ -223,18 +223,17 @@
                                                <path d="M262 192 C261 182 263 174 262 166" fill="none"/>
                                                <path d="M108 208 C107 200 109 194 108 188" fill="none"/>
                                                <path d="M216 210 C215 202 217 196 216 190" fill="none"/>
-                                  </g>g>
-                                  <g fill="#a8c7f0"><circle cx="56" cy="163" r="6"/><circle cx="50" cy="168" r="6"/><circle cx="62" cy="168" r="6"/><circle cx="56" cy="172" r="6"/></g>g>
+                                  </g>
+                                  <g fill="#a8c7f0"><circle cx="56" cy="163" r="6"/><circle cx="50" cy="168" r="6"/><circle cx="62" cy="168" r="6"/><circle cx="56" cy="172" r="6"/></g>
                                   <circle cx="56" cy="167" r="4" fill="#fff3b0"/>
                         
-                      </defs></h1>
- </body>
- </style></title>
- </head>          <g fill="#f5b8a0"><circle cx="262" cy="161" r="6"/><circle cx="256" cy="166" r="6"/><circle cx="268" cy="166" r="6"/><circle cx="262" cy="170" r="6"/></g>g>
+                      
+
+ <g fill="#f5b8a0"><circle cx="262" cy="161" r="6"/><circle cx="256" cy="166" r="6"/><circle cx="268" cy="166" r="6"/><circle cx="262" cy="170" r="6"/></g>
                                   <circle cx="262" cy="165" r="4" fill="#fff3b0"/>
-                                            <g fill="#e6c8f0"><circle cx="108" cy="184" r="5"/><circle cx="103" cy="188" r="5"/><circle cx="113" cy="188" r="5"/><circle cx="108" cy="192" r="5"/></g>g>
+                                            <g fill="#e6c8f0"><circle cx="108" cy="184" r="5"/><circle cx="103" cy="188" r="5"/><circle cx="113" cy="188" r="5"/><circle cx="108" cy="192" r="5"/></g>
                                   <circle cx="108" cy="187" r="3" fill="#fff3b0"/>
-                                            <g fill="#f0d8a8"><circle cx="216" cy="186" r="5"/><circle cx="211" cy="190" r="5"/><circle cx="221" cy="190" r="5"/><circle cx="216" cy="194" r="5"/></g>g>
+                                            <g fill="#f0d8a8"><circle cx="216" cy="186" r="5"/><circle cx="211" cy="190" r="5"/><circle cx="221" cy="190" r="5"/><circle cx="216" cy="194" r="5"/></g>
                                   <circle cx="216" cy="189" r="3" fill="#f5b8c8"/>
 
                                   <path class="sparkle" d="M84 66 l3 8 8 3 -8 3 -3 8 -3 -8 -8 -3 8 -3 z" fill="#ffd66b"/>
@@ -255,36 +254,36 @@
                                                                                                                                                                    <ellipse cx="160" cy="83" rx="13" ry="23" transform="rotate(180 160 105)"/>
                                                                                                                                                                                    <ellipse cx="160" cy="83" rx="13" ry="23" transform="rotate(240 160 105)"/>
                                                                                                                                                                                                    <ellipse cx="160" cy="83" rx="13" ry="23" transform="rotate(300 160 105)"/>
-                                                                                                                                                                                                                 </g>g>
+                                                                                                                                                                                                                 </g>
                                                                                                   <circle cx="160" cy="105" r="13" fill="#ffd66b" stroke="#eab04b" stroke-width="2.5"/>
                                                                                                                 <circle cx="156" cy="101" r="4" fill="#fff3b0"/>
-                                                                                    </g>g>
-                                  </g>g>
-                       </g>g>
-              </svg>svg>
-        </div>div>
-         <div class="glouglou-bulle">Ce moment que tu viens de t'offrir a fait éclore la première fleur de ton Jardin Bien-être 💝 C'est mon cadeau pour toi. Chaque petit geste que tu feras le fera grandir.</div>div>
-         <button class="btn" style="margin-top:14px;" onclick="goTo('email')">Continuer</button>button>
-    </div>div>
+                                                                                    </g>
+                                  </g>
+                       </g>
+              </svg>
+        </div>
+         <div class="glouglou-bulle">Ce moment que tu viens de t'offrir a fait éclore la première fleur de ton Jardin Bien-être 💝 C'est mon cadeau pour toi. Chaque petit geste que tu feras le fera grandir.</div>
+         <button class="btn" style="margin-top:14px;" onclick="goTo('email')">Continuer</button>
+    </div>
 
      <div id="screen-email" class="hidden">
-          <div class="glouglou-bulle">Souhaites-tu recevoir gratuitement ton Plan Bien-être personnalisé ?</div>div>
+          <div class="glouglou-bulle">Souhaites-tu recevoir gratuitement ton Plan Bien-être personnalisé ?</div>
           <input type="email" id="email-input" placeholder="ton@email.com">
               <div class="consent">
                      <input type="checkbox" id="consent-check" checked style="margin-top:2px;">
-                           <label for="consent-check">J'accepte de recevoir mon Plan Bien-être et des conseils par email.</label>label>
-              </div>div>
-          <button class="btn" onclick="submitEmail()">Recevoir mon Plan Bien-être</button>button>
-          <button class="btn btn-secondary" onclick="goTo('end')">Non merci, passer</button>button>
-     </div>div>
+                           <label for="consent-check">J'accepte de recevoir mon Plan Bien-être et des conseils par email.</label>
+              </div>
+          <button class="btn" onclick="submitEmail()">Recevoir mon Plan Bien-être</button>
+          <button class="btn btn-secondary" onclick="goTo('end')">Non merci, passer</button>
+     </div>
 
      <div id="screen-end" class="hidden">
-          <div class="glouglou-bulle">Merci de m'avoir fait confiance aujourd'hui 🌸 Prends soin de toi.</div>div>
-          <h2 style="margin-top:14px;">À très bientôt dans ton Jardin Bien-être</h2>h2>
-          <button class="btn btn-secondary" style="margin-top:18px;" onclick="restart()">🌱 Refaire le test</button>button>
-     </div>div>
+          <div class="glouglou-bulle">Merci de m'avoir fait confiance aujourd'hui 🌸 Prends soin de toi.</div>
+          <h2 style="margin-top:14px;">À très bientôt dans ton Jardin Bien-être</h2>
+          <button class="btn btn-secondary" style="margin-top:18px;" onclick="restart()">🌱 Refaire le test</button>
+     </div>
 
-  </div>div>
+  </div>
 
   <script>
    const routineLibrary = [
@@ -605,8 +604,8 @@
                    DIMS.forEach(dim => {
                      const row = document.createElement('div');
                      row.className = 'dim-row';
-                     row.innerHTML = '<div class="dim-label">' + dim + '</div>div>' +
-                       '<div class="dim-bar-bg"><div class="dim-bar-fill" style="width:0%"></div>div></div>div>';
+                     row.innerHTML = '<div class="dim-label">' + dim + '</div>' +
+                       '<div class="dim-bar-bg"><div class="dim-bar-fill" style="width:0%"></div></div>';
                      dimsEl.appendChild(row);
                      setTimeout(() => { row.querySelector('.dim-bar-fill').style.width = scores[dim] + '%'; }, 100);
                    });
