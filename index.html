@@ -192,6 +192,7 @@
                       <button class="btn btn-music" id="music-entrainante" onclick="toggleMusic('entrainante')">✨ Entraînante</button>
                       <button class="btn btn-music" id="music-douce" onclick="toggleMusic('douce')">🌙 Douce</button>
               </div>
+              <p style="font-size:10px; color:#a08d84; margin-top:6px;">Musique : Kevin MacLeod (incompetech.com), licence CC BY 3.0</p>
               <a class="btn btn-video" id="result-video" href="#" target="_blank">💙 Lymia t'accompagne en vidéo</a>
         </div>
     
@@ -784,7 +785,7 @@
                  };
 
                  // Pour utiliser vos propres morceaux (MP3 libres de droits), indiquez leur URL ici :
-                 const CUSTOM_TRACKS = { entrainante: '', douce: '' };
+                 const CUSTOM_TRACKS = { entrainante: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Carefree.mp3', douce: 'https://incompetech.com/music/royalty-free/mp3-royaltyfree/Meditation%20Impromptu%2002.mp3' };
 
                  function toggleSon() {
                    soundOn = !soundOn;
