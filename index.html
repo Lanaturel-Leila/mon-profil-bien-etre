@@ -119,7 +119,7 @@
   <div class="app">
 
      <div id="screen-intro">
-          <div class="glouglou-bulle">Bonjour 🌸 C'est Leïla. Aujourd'hui, j'aimerais apprendre à mieux te connaître.</div>
+          <div class="glouglou-bulle">Bonjour 🌸 C'est Lymia. Aujourd'hui, j'aimerais apprendre à mieux te connaître.</div>
           <h1>Découvre ton Profil Bien-être</h1>
          <p class="subtitle">Quelques petites questions, moins de 2 minutes, et je te prépare ton profil personnalisé 💧</p>
          <button class="btn" onclick="startMusicIfOn(); goTo('q1')">Commencer</button>
@@ -178,6 +178,7 @@
         <div class="card">
               <p class="card-title">🌱 Mes petites idées douces pour toi</p>
               <ul class="axes-list" id="axes-list"></ul>
+              <p style="font-size:12.5px; color:#6b5a52; margin-top:10px; border-top:1px solid #f0e0dd; padding-top:10px;">🌿 Huile doTERRA associée : <strong id="profile-oil"></strong><br>Envie de te la procurer ? <a href="https://instagram.com/lanaturelbyleila" target="_blank" style="color:#0099CC;">Écris-moi sur Instagram</a>.</p>
         </div>
     
         <div class="card">
@@ -191,7 +192,7 @@
                       <button class="btn btn-music" id="music-entrainante" onclick="toggleMusic('entrainante')">✨ Entraînante</button>
                       <button class="btn btn-music" id="music-douce" onclick="toggleMusic('douce')">🌙 Douce</button>
               </div>
-              <a class="btn btn-video" id="result-video" href="#" target="_blank">💙 Leïla t'accompagne en vidéo</a>
+              <a class="btn btn-video" id="result-video" href="#" target="_blank">💙 Lymia t'accompagne en vidéo</a>
         </div>
     
         <button class="btn" onclick="goTo('couleur-intro')">Continuer</button>
@@ -260,6 +261,7 @@
         <div class="card">
               <p class="card-title">🌱 Pour prendre soin de toi aujourd'hui</p>
               <ul class="axes-list" id="couleur-reco"></ul>
+              <p style="font-size:12.5px; color:#6b5a52; margin-top:10px; border-top:1px solid #f0e0dd; padding-top:10px;">🌿 Huile doTERRA associée : <strong id="couleur-oil"></strong><br>Envie de te la procurer ? <a href="https://instagram.com/lanaturelbyleila" target="_blank" style="color:#0099CC;">Écris-moi sur Instagram</a>.</p>
         </div>
         <p style="font-size:11.5px; color:#a08d84; margin-top:8px;">Les couleurs Lymia représentent ton ressenti du jour, ce n'est pas un diagnostic médical.</p>
         <button class="btn" style="margin-top:14px;" onclick="goTo('flower')">Continuer</button>
@@ -455,6 +457,8 @@
 
    const DIMS = ['Circulation', 'Digestion', 'Hydratation', 'Détente'];
 
+   const OILS_PROFIL = { Circulation: 'Cyprès', Digestion: 'Menthe poivrée', Hydratation: 'Citron', Détente: 'Lavande' };
+
    const baseBubbles = {
       q1: "Dis-moi, qu'est-ce qui te gêne le plus aujourd'hui ?",
       q2: "Et ça t'arrive souvent ?",
@@ -624,7 +628,8 @@
                   name: names[weakest],
                   desc: descs[weakest],
                   axes: [axes[weakest], axes[second]],
-                  weakest: weakest
+                  weakest: weakest,
+                  oil: OILS_PROFIL[weakest]
                 };
               }
 
@@ -685,6 +690,7 @@
                      li.textContent = a;
                      axesEl.appendChild(li);
                    });
+                   document.getElementById('profile-oil').textContent = profile.oil;
 
                    const routine = pickRoutine();
                    window.chosenRoutine = routine;
@@ -982,12 +988,12 @@
   let couleurAnswers = {};
 
   const COULEUR_INFO = {
-    rose: { emoji: '🌸', nom: 'Rose poudré — Douceur', texte: "Tu sembles avoir besoin de ralentir et de prendre soin de toi.", reco: ['Auto-massage', 'Bain ou sauna', 'Routine cocooning'] },
-    lavande: { emoji: '💜', nom: 'Lavande — Apaisement', texte: "Tu sembles avoir besoin de ralentir et de retrouver du calme.", reco: ['Respiration', 'Méditation', 'Sommeil réparateur'] },
-    sauge: { emoji: '🌿', nom: 'Vert sauge — Équilibre', texte: "Ton corps te demande un peu plus de routine et de mouvement doux.", reco: ['Auto-drainage', 'Alimentation légère', 'Mouvement doux'] },
-    peche: { emoji: '🍑', nom: 'Pêche — Vitalité', texte: "Tu sembles avoir besoin de bouger et de retrouver de l'énergie.", reco: ['Sport ou marche', 'Booster énergie', 'Objectif du jour'] },
-    jaune: { emoji: '🌼', nom: 'Jaune doux — Rayonnement', texte: "Tu es plutôt en forme aujourd'hui, profites-en pour avancer.", reco: ['Gratitude', 'Affirmations positives', 'Projets & créativité'] },
-    creme: { emoji: '🤍', nom: 'Crème — Recentrage', texte: "Un jour plutôt neutre : revenons aux fondamentaux.", reco: ['Écoute de soi', 'Hydratation', 'Rituel simple'] }
+    rose: { emoji: '🌸', nom: 'Rose poudré — Douceur', texte: "Tu sembles avoir besoin de ralentir et de prendre soin de toi.", reco: ['Auto-massage', 'Bain ou sauna', 'Routine cocooning'], oil: 'Géranium' },
+    lavande: { emoji: '💜', nom: 'Lavande — Apaisement', texte: "Tu sembles avoir besoin de ralentir et de retrouver du calme.", reco: ['Respiration', 'Méditation', 'Sommeil réparateur'], oil: 'Lavande' },
+    sauge: { emoji: '🌿', nom: 'Vert sauge — Équilibre', texte: "Ton corps te demande un peu plus de routine et de mouvement doux.", reco: ['Auto-drainage', 'Alimentation légère', 'Mouvement doux'], oil: 'Menthe poivrée' },
+    peche: { emoji: '🍑', nom: 'Pêche — Vitalité', texte: "Tu sembles avoir besoin de bouger et de retrouver de l'énergie.", reco: ['Sport ou marche', 'Booster énergie', 'Objectif du jour'], oil: 'Wild Orange' },
+    jaune: { emoji: '🌼', nom: 'Jaune doux — Rayonnement', texte: "Tu es plutôt en forme aujourd'hui, profites-en pour avancer.", reco: ['Gratitude', 'Affirmations positives', 'Projets & créativité'], oil: 'Bergamote' },
+    creme: { emoji: '🤍', nom: 'Crème — Recentrage', texte: "Un jour plutôt neutre : revenons aux fondamentaux.", reco: ['Écoute de soi', 'Hydratation', 'Rituel simple'], oil: 'Encens' }
   };
 
   function answerCouleur(key, value, next) {
@@ -1031,6 +1037,7 @@
     const list = document.getElementById('couleur-reco');
     list.innerHTML = '';
     info.reco.forEach(r => { const li = document.createElement('li'); li.textContent = r; list.appendChild(li); });
+    document.getElementById('couleur-oil').textContent = info.oil;
   }
 
   renderOptions();
