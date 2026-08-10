@@ -61,6 +61,8 @@
   }
   .back-link { display: block; text-align: center; font-size: 13px; color: #a08d84; margin-top: 8px; }
   a { color: #0099CC; }
+  .mantra-label { font-size: 12.5px; color: #0099CC; font-weight: 600; margin-bottom: 8px; }
+  .mantra-text { font-size: 16px; font-style: italic; font-weight: 600; color: #7a2e3b; line-height: 1.5; }
 </style>
 </head>
 <body>
@@ -111,6 +113,11 @@
       </div>
     </div>
 
+    <div class="card" id="mantra-card">
+      <div class="mantra-label">🌸 Ton mantra du jour</div>
+      <div class="mantra-text" id="mantra-text">…</div>
+    </div>
+
     <div class="card" id="abonnement-card">
       <div id="abonnement-content">Chargement de ton abonnement…</div>
     </div>
@@ -133,6 +140,57 @@
     { key: 'premium', label: 'Premium', price: '149,99€/mois — engagement 6 mois',
       items: ['Compléments alimentaires inclus', 'Huile essentielle doTERRA incluse', 'Accès au groupe WhatsApp privé', 'Accès complet à la plateforme', 'Coaching en ligne individuel une fois par semaine'] },
   ];
+
+  // Les 38 mantras du livre "Dégonfle (mais pas comme tu crois)" — un par jour, en rotation.
+  const MANTRAS = [
+    "Ce que je retiens, je choisis de le laisser circuler.",
+    "Je m'autorise à me montrer telle que je suis, ce matin.",
+    "Je ne me punis pas de ce que j'ai mangé, je prends soin de ce qui vient après.",
+    "Je dépose ce qui ne m'appartient pas.",
+    "Ce qui n'est pas réglé aujourd'hui, je le confie à demain.",
+    "Ces minutes m'appartiennent.",
+    "Je me remets en mouvement, doucement, sans me forcer.",
+    "Je m'autorise à bouger, même un tout petit peu.",
+    "J'écoute le rythme de mon corps, sans lutter contre lui.",
+    "Je prends soin de moi aujourd'hui, sans reproche pour hier.",
+    "Je laisse à mon corps le temps d'arriver.",
+    "Je traverse une transition, pas une panne.",
+    "Je me rends, à moi aussi, un peu de douceur.",
+    "Trois minutes en conscience valent plus qu'une heure promise.",
+    "Ce moment m'appartient, entre ce qui a été et ce qui sera.",
+    "Je donne à mon corps le temps de recevoir ce que je viens de lui offrir.",
+    "Je m'autorise à me demander ce que je porte, sans devoir tout comprendre.",
+    "Merci.",
+    "Je me rencontre moi-même avant de rencontrer le reste du monde.",
+    "Je retire, ce soir, ce que je porte pour être vue.",
+    "Je n'ai pas à tout digérer d'un coup.",
+    "Je m'autorise à me rafraîchir, dans tous les sens du terme.",
+    "Cette pause n'a pas besoin d'être méritée pour être prise.",
+    "Je suis prête, quoi qu'il arrive.",
+    "Ce soir, je n'ai plus à tenir pour personne.",
+    "Dix minutes, c'est déjà un vrai cadeau que je me fais.",
+    "Je dépose ce que je porte pour les autres.",
+    "J'écoute mon corps avant qu'il n'ait à insister.",
+    "Je me redonne l'énergie que j'ai donnée hier.",
+    "Comme la nature, j'ai le droit d'avoir mes saisons.",
+    "Rien à payer aujourd'hui pour hier.",
+    "Je laisse à mon corps, à lui aussi, une transition.",
+    "Je desserre, doucement, ce que je protège trop fort.",
+    "Je reviens habiter mon corps.",
+    "Je n'ai pas besoin d'une raison pour être douce avec moi-même.",
+    "Je peux relâcher sans tout comprendre d'abord.",
+    "Je commence cette semaine avec une intention, pas une appréhension.",
+    "Mon corps vient de faire son travail, avec moi, pas contre moi.",
+  ];
+
+  function renderMantraDuJour() {
+    const start = new Date(new Date().getFullYear(), 0, 0);
+    const diff = new Date() - start;
+    const dayOfYear = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const mantra = MANTRAS[dayOfYear % MANTRAS.length];
+    const el = document.getElementById('mantra-text');
+    if (el) el.textContent = '« ' + mantra + ' »';
+  }
 
   function switchTab(tab) {
     document.getElementById('tab-login').classList.toggle('active', tab === 'login');
@@ -213,6 +271,8 @@
       document.getElementById('dash-greeting').textContent = 'Bienvenue 👋';
       document.getElementById('prenom-setup').classList.remove('hidden');
     }
+
+    renderMantraDuJour();
 
     const { data: abonnement } = await sb.from('abonnements').select('*').eq('user_id', user.id).eq('statut', 'actif').maybeSingle();
     renderAbonnement(abonnement);
