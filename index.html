@@ -714,7 +714,7 @@
                      row.innerHTML = '<div class="dim-label">' + dim + '</div>' +
                        '<div class="dim-bar-bg"><div class="dim-bar-fill" style="width:0%"></div></div>';
                      dimsEl.appendChild(row);
-                     setTimeout(() => { row.querySelector('.dim-bar-fill').style.width = scores[dim] + '%'; }, 100); row.insertAdjacentHTML('beforeend', '<div class="setTimeout(() => { row.querySelector('.dim-bar-fill').style.width = scores[dim] + '%'; }, 100); row.insertAdjacentHTML('beforeend', '<div class="dim-score">' + Math.round(scores[dim]) + '</div>');">' + Math.round(scores[dim]) + '</div>');
+                     setTimeout(() => { row.querySelector('.dim-bar-fill').style.width = scores[dim] + '%'; row.insertAdjacentHTML('beforeend', '<div class="dim-score">' + Math.round(scores[dim]) + '</div>'); }, 100);
                    });
 
                    const axesEl = document.getElementById('axes-list');
