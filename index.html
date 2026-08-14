@@ -89,7 +89,7 @@
     .dim-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 13px; }
     .dim-label { width: 120px; text-align: left; color: #5a4a42; }
     .dim-bar-bg { flex: 1; background: #f4e4e0; border-radius: 999px; height: 8px; overflow: hidden; }
-    .dim-bar-fill { height: 100%; background: #7a2e3b; border-radius: 999px; transition: width 0.8s ease; }
+    .dim-bar-fill { height: 100%; background: #7a2e3b; border-radius: 999px; transition: width 0.8s ease; } .dim-score { width: 30px; text-align: right; font-weight: 700; color: #7a2e3b; font-size: 12.5px; }
     .axes-list { padding-left: 18px; font-size: 14px; line-height: 1.9; color: #5a4a42; text-align: left; }
 
     .garden { max-width: 330px; margin: 0 auto 14px; }
@@ -714,7 +714,7 @@
                      row.innerHTML = '<div class="dim-label">' + dim + '</div>' +
                        '<div class="dim-bar-bg"><div class="dim-bar-fill" style="width:0%"></div></div>';
                      dimsEl.appendChild(row);
-                     setTimeout(() => { row.querySelector('.dim-bar-fill').style.width = scores[dim] + '%'; }, 100);
+                     setTimeout(() => { row.querySelector('.dim-bar-fill').style.width = scores[dim] + '%'; }, 100); row.insertAdjacentHTML('beforeend', '<div class="setTimeout(() => { row.querySelector('.dim-bar-fill').style.width = scores[dim] + '%'; }, 100); row.insertAdjacentHTML('beforeend', '<div class="dim-score">' + Math.round(scores[dim]) + '</div>');">' + Math.round(scores[dim]) + '</div>');
                    });
 
                    const axesEl = document.getElementById('axes-list');
