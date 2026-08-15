@@ -79,6 +79,9 @@
   .checkin-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(110px,1fr)); gap:8px; margin-bottom:10px; }
   .checkin-item { display:flex; flex-direction:column; gap:4px; font-size:11.5px; color:#5c6b64; margin-bottom:8px; }
   .checkin-item select, .checkin-item input { padding:6px; border-radius:8px; border:1px solid #e4e8df; font-size:13px; }
+  .pf-checks { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+  .pf-check { display:flex; align-items:center; gap:6px; background:#f2f5ee; border-radius:20px; padding:6px 12px; font-size:12.5px; color:#16283d; cursor:pointer; }
+  .pf-check input[type="checkbox"] { width:auto; padding:0; margin:0; }
   .carte-jour { margin-top:14px; padding-top:14px; border-top:1px dashed #e4e8df; }
 
   .score-jour { text-align:center; margin-bottom:14px; padding-bottom:14px; border-bottom:1px solid #e4e8df; }
@@ -214,6 +217,12 @@
       <div id="abonnement-content">Chargement de ton abonnement…</div>
     </div>
 
+    <div class="card" id="profil-lymia-card">
+      <div class="mantra-label">Ton profil LYMIA</div>
+      <div id="profil-lymia-summary"><p class="rituel-texte">Chargement de ton profil...</p></div>
+      <button class="btn" style="margin-top:10px;" onclick="goToProfil()">Modifier mon profil</button>
+    </div>
+
     <a class="back-link" href="index.html">← Refaire le bilan bien-être</a>
   </div>
 <div id="journee-view" class="hidden">
@@ -278,7 +287,88 @@
     <a class="back-link" href="#" onclick="showJourneeFromDefis(); return false;">Retour à ma journée</a>
   </div>
 
+  <div id="profil-view" class="hidden">
+    <div class="card">
+      <div class="zone-label" style="text-align:center;">Ton profil LYMIA</div>
+      <p class="rituel-texte" style="text-align:center; margin-top:6px;">Ces informations aident LYMIA à personnaliser ce qu'elle te propose chaque jour. Rien n'est obligatoire.</p>
+    </div>
+
+    <div class="card">
+      <div class="mantra-label">À propos de toi</div>
+      <label class="checkin-item">Tranche d'âge
+        <select id="pf-tranche-age">
+          <option value="">Je préfère ne pas dire</option>
+          <option value="18-25">18-25 ans</option>
+          <option value="26-35">26-35 ans</option>
+          <option value="36-45">36-45 ans</option>
+          <option value="46-55">46-55 ans</option>
+          <option value="56-65">56-65 ans</option>
+          <option value="66+">66 ans et plus</option>
+        </select>
+      </label>
+      <label class="checkin-item">Sexe
+        <select id="pf-sexe">
+          <option value="">Je préfère ne pas dire</option>
+          <option value="femme">Femme</option>
+          <option value="homme">Homme</option>
+          <option value="autre">Autre</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="card">
+      <div class="mantra-label">Tes objectifs bien-être</div>
+      <p class="rituel-texte" style="margin-top:2px;">Sélectionne ce qui compte le plus pour toi en ce moment.</p>
+      <div id="pf-objectifs" class="pf-checks"></div>
+    </div>
+
+    <div class="card">
+      <div class="mantra-label">Ton alimentation</div>
+      <p class="rituel-texte" style="margin-top:2px;">Préférences alimentaires</p>
+      <div id="pf-preferences" class="pf-checks"></div>
+      <label class="checkin-item" style="margin-top:12px;">Allergies (séparées par une virgule)
+        <input type="text" id="pf-allergies" placeholder="Ex : arachides, fruits de mer">
+      </label>
+      <label class="checkin-item">Aliments que tu préfères éviter
+        <input type="text" id="pf-exclus" placeholder="Ex : coriandre, porc">
+      </label>
+      <label class="checkin-item">Ton rapport à la cuisine
+        <select id="pf-cuisine">
+          <option value="express">Je veux du rapide (10 min)</option>
+          <option value="simple">Une recette simple (20 min)</option>
+          <option value="jaime_cuisiner">J'aime prendre mon temps (45-60 min)</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="card">
+      <div class="mantra-label">Contexte de vie (optionnel)</div>
+      <p class="rituel-texte" style="margin-top:2px;">Pour affiner certaines suggestions, sans que ça influence jamais ton score.</p>
+      <label class="checkin-item">Ton contexte du moment
+        <select id="pf-hormonal">
+          <option value="">Je préfère ne pas dire</option>
+          <option value="cycle_regulier">Cycle menstruel régulier</option>
+          <option value="perimenopause">Périménopause / ménopause</option>
+          <option value="grossesse_postpartum">Grossesse ou post-partum</option>
+          <option value="non_concerne">Non concerné(e)</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="card">
+      <label class="checkin-item" style="flex-direction:row; align-items:center; gap:8px;">
+        <input type="checkbox" id="pf-kit" style="width:auto; padding:0; margin:0;">
+        J'ai déjà le Kit LYMIA physique chez moi
+      </label>
+    </div>
+
+    <button class="btn" onclick="saveProfilLymia()" id="pf-save-btn">Enregistrer mon profil</button>
+    <div id="pf-save-msg" class="objectif-feedback" style="text-align:center;"></div>
+
+    <a class="back-link" href="#" onclick="showDashFromProfil(); return false;">Retour à mon compte</a>
   </div>
+
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
@@ -410,6 +500,8 @@
     document.getElementById('dash-view').classList.remove('hidden');
 
     let { data: profile } = await sb.from('profiles').select('*').eq('id', user.id).maybeSingle();
+    PROFIL_CACHE = profile;
+    renderProfilSummary();
 
     const pendingPrenom = sessionStorage.getItem('lymia_pending_prenom');
     if (pendingPrenom && profile && !profile.prenom) {
@@ -448,6 +540,104 @@
     await sb.from('profiles').update({ prenom }).eq('id', user.id);
     document.getElementById('dash-greeting').textContent = 'Bonjour ' + prenom;
     document.getElementById('prenom-setup').classList.add('hidden');
+  }
+
+  const PF_OBJECTIFS = [
+    ['energie', "Plus d'énergie"],
+    ['digestion', 'Meilleure digestion'],
+    ['sommeil', 'Mieux dormir'],
+    ['equilibre', 'Retrouver un équilibre'],
+    ['apaisement', 'Apaisement, détente'],
+    ['recuperation', 'Récupération'],
+    ['satiete', 'Éviter les fringales'],
+    ['proteine', 'Plus de protéines'],
+    ['confort_digestif', 'Confort digestif'],
+    ['hydratation', 'Hydratation']
+  ];
+  const PF_PREFERENCES = [
+    ['vegetarien', 'Végétarien'],
+    ['vegetalien', 'Végétalien'],
+    ['sans_gluten', 'Sans gluten'],
+    ['sans_lactose', 'Sans lactose']
+  ];
+
+  function renderProfilSummary() {
+    const el = document.getElementById('profil-lymia-summary');
+    if (!el) return;
+    const p = PROFIL_CACHE || {};
+    const nb = (p.objectifs_nutrition || []).length;
+    const cuisineLabels = { express: 'rapide', simple: 'simple', jaime_cuisiner: 'gourmande' };
+    const parts = [];
+    if (nb) parts.push(nb + ' objectif' + (nb > 1 ? 's' : '') + ' bien-être sélectionné' + (nb > 1 ? 's' : ''));
+    if (p.preference_cuisine) parts.push('cuisine ' + (cuisineLabels[p.preference_cuisine] || p.preference_cuisine));
+    if (p.kit_lymia) parts.push('Kit LYMIA activé');
+    el.innerHTML = '<p class="rituel-texte">' + (parts.length ? parts.join(' · ') : "Complète ton profil pour des suggestions encore plus personnalisées.") + '</p>';
+  }
+
+  async function renderProfilForm() {
+    const { data: { user } } = await sb.auth.getUser();
+    if (!user) return;
+    const { data: profile } = await sb.from('profiles').select('*').eq('id', user.id).maybeSingle();
+    PROFIL_CACHE = profile || {};
+    const objectifs = (profile && profile.objectifs_nutrition) || [];
+    const prefs = (profile && profile.preferences_alimentaires) || [];
+    document.getElementById('pf-objectifs').innerHTML = PF_OBJECTIFS.map(function(o){
+      const checked = objectifs.indexOf(o[0]) !== -1 ? ' checked' : '';
+      return '<label class="pf-check"><input type="checkbox" value="' + o[0] + '" class="pf-obj-cb"' + checked + '> ' + o[1] + '</label>';
+    }).join('');
+    document.getElementById('pf-preferences').innerHTML = PF_PREFERENCES.map(function(o){
+      const checked = prefs.indexOf(o[0]) !== -1 ? ' checked' : '';
+      return '<label class="pf-check"><input type="checkbox" value="' + o[0] + '" class="pf-pref-cb"' + checked + '> ' + o[1] + '</label>';
+    }).join('');
+    document.getElementById('pf-tranche-age').value = (profile && profile.tranche_age) || '';
+    document.getElementById('pf-sexe').value = (profile && profile.sexe) || '';
+    document.getElementById('pf-allergies').value = ((profile && profile.allergies) || []).join(', ');
+    document.getElementById('pf-exclus').value = ((profile && profile.aliments_exclus) || []).join(', ');
+    document.getElementById('pf-cuisine').value = (profile && profile.preference_cuisine) || 'simple';
+    document.getElementById('pf-hormonal').value = (profile && profile.contexte_hormonal) || '';
+    document.getElementById('pf-kit').checked = !!(profile && profile.kit_lymia);
+    const msg = document.getElementById('pf-save-msg');
+    if (msg) msg.textContent = '';
+  }
+
+  async function saveProfilLymia() {
+    const btn = document.getElementById('pf-save-btn');
+    const msg = document.getElementById('pf-save-msg');
+    if (btn) { btn.disabled = true; btn.textContent = 'Enregistrement...'; }
+    const { data: { user } } = await sb.auth.getUser();
+    if (!user) return;
+    const objectifs_nutrition = Array.from(document.querySelectorAll('.pf-obj-cb:checked')).map(function(el){ return el.value; });
+    const preferences_alimentaires = Array.from(document.querySelectorAll('.pf-pref-cb:checked')).map(function(el){ return el.value; });
+    const allergies = document.getElementById('pf-allergies').value.split(',').map(function(s){ return s.trim(); }).filter(Boolean);
+    const aliments_exclus = document.getElementById('pf-exclus').value.split(',').map(function(s){ return s.trim(); }).filter(Boolean);
+    const payload = {
+      tranche_age: document.getElementById('pf-tranche-age').value || null,
+      sexe: document.getElementById('pf-sexe').value || null,
+      objectifs_nutrition: objectifs_nutrition,
+      preferences_alimentaires: preferences_alimentaires,
+      allergies: allergies,
+      aliments_exclus: aliments_exclus,
+      preference_cuisine: document.getElementById('pf-cuisine').value,
+      contexte_hormonal: document.getElementById('pf-hormonal').value || null,
+      kit_lymia: document.getElementById('pf-kit').checked
+    };
+    await sb.from('profiles').update(payload).eq('id', user.id);
+    PROFIL_CACHE = Object.assign({}, PROFIL_CACHE, payload);
+    if (btn) { btn.disabled = false; btn.textContent = 'Enregistrer mon profil'; }
+    if (msg) { msg.textContent = 'Ton profil a été mis à jour.'; }
+    renderProfilSummary();
+  }
+
+  function goToProfil() {
+    document.getElementById('dash-view').classList.add('hidden');
+    document.getElementById('profil-view').classList.remove('hidden');
+    renderProfilForm();
+  }
+
+  function showDashFromProfil() {
+    document.getElementById('profil-view').classList.add('hidden');
+    document.getElementById('dash-view').classList.remove('hidden');
+    renderProfilSummary();
   }
 
   function renderAbonnement(abonnement) {
@@ -517,6 +707,7 @@
   };
   let LAST_NIVEAU = null;
   let LAST_PRIORITES = [];
+  let PROFIL_CACHE = null;
 
   function renderResultatCheckin(scoreGlobal, niveau, priorites) {
     const el = document.getElementById('carte-du-jour');
