@@ -128,6 +128,16 @@
   .carte-titre { font-size:16px; font-weight:700; color:#16283d; font-style:italic; margin-bottom:4px; }
   .couleur-bloc { display:flex; gap:12px; align-items:flex-start; }
   .couleur-texte { flex:1; }
+
+  .defi-jour-card { background:linear-gradient(135deg, #3d5a4a, #16283d); color:#eef1ea; border-radius:16px; padding:20px; margin-bottom:16px; }
+  .defi-jour-card .zone-label { color:#c9d6cc; }
+  .defi-jour-card .jardin-next { color:#c9d6cc; }
+  .defi-progress-bar { background:rgba(255,255,255,0.15); border-radius:8px; height:6px; margin-top:8px; overflow:hidden; }
+  .defi-progress-fill { background:#eef1ea; height:100%; border-radius:8px; }
+  .defi-grid { display:flex; flex-direction:column; gap:10px; }
+  .defi-card-item { border:1px solid #eef1ea; border-radius:12px; padding:12px 14px; cursor:pointer; background:#fbfbf9; }
+  .defi-card-titre { font-size:14px; font-weight:700; color:#16283d; margin-bottom:2px; }
+  .defi-hero { text-align:center; }
 </style>
 </head>
 <body>
@@ -207,6 +217,7 @@
     <div class="card" id="journee-temps-card" style="text-align:center;">
       <div id="journee-temps-content"></div>
     </div>
+    <div id="defi-jour-wrapper"></div>
     <div class="card jardin-card" onclick="goToJardin()">
       <div class="mantra-label">Mon Jardin</div>
       <div id="jardin-preview-content"><p class="rituel-texte">Chargement de ton jardin...</p></div>
@@ -238,6 +249,23 @@
       <div id="jardin-page-content"><p class="rituel-texte" style="text-align:center;">Chargement...</p></div>
     </div>
     <a class="back-link" href="#" onclick="showJourneeFromJardin(); return false;">Retour a ma journee</a>
+  </div>
+
+  <div id="defis-view" class="hidden">
+    <div class="card defi-hero">
+      <div style="font-size:12px; letter-spacing:1px; color:#8a968f; text-transform:uppercase; text-align:center; margin-bottom:6px;">Defis LYMIA</div>
+      <p class="rituel-texte" style="text-align:center;">Avance un jour a la fois, vers un objectif precis.</p>
+    </div>
+    <div id="defi-en-cours-content"></div>
+    <div class="card">
+      <div class="zone-label">Pour toi</div>
+      <div id="defis-pour-toi-content"><p class="rituel-texte">Chargement...</p></div>
+    </div>
+    <div class="card">
+      <div class="zone-label">Tous les defis</div>
+      <div id="defis-tous-content"><p class="rituel-texte">Chargement...</p></div>
+    </div>
+    <a class="back-link" href="#" onclick="showJourneeFromDefis(); return false;">Retour a ma journee</a>
   </div>
 
   </div>
@@ -710,11 +738,14 @@
       : '<p class="rituel-texte">Temps non renseigné.</p>';
 
     const tempsEffectif = temps || 10;
+    renderDefiDuJour();
     renderEssentielEtRoutine(niveauNom, priorites, tempsEffectif);
     renderRecette(priorites);
     renderCarteEtCouleur();
     renderJardinPreview();
   }
+
+  
 
   
 
@@ -1216,6 +1247,157 @@
       renderJardinPreview();
     }
   }
+  async function getDefiEnCours(userId) {
+    const { data } = await sb.from('defi_progression').select('*, defis(*)').eq('user_id', userId).eq('statut', 'en_cours').order('demarre_le', { ascending: false }).limit(1).maybeSingle();
+    return data;
+  }
+
+  async function getDefiJourDuJour(defiId, jourNumero) {
+    const { data } = await sb.from('defi_jours').select('*').eq('defi_id', defiId).eq('jour_numero', jourNumero).maybeSingle();
+    return data;
+  }
+
+  async function renderDefiDuJour() {
+    const wrapper = document.getElementById('defi-jour-wrapper');
+    if (!wrapper) return;
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session || !session.user) { wrapper.innerHTML = ''; return; }
+    const userId = session.user.id;
+    const progression = await getDefiEnCours(userId);
+    if (!progression) {
+      wrapper.innerHTML = '<div class="card" style="text-align:center;">' +
+        '<div class="zone-label">Défis LYMIA</div>' +
+        '<p class="rituel-texte">Envie d\'aller plus loin ? Découvre les défis LYMIA, un objectif à la fois.</p>' +
+        '<a href="#" onclick="goToDefis(); return false;" class="action-btn" style="text-decoration:none; text-align:center; display:block;">Découvrir les défis</a>' +
+        '</div>';
+      return;
+    }
+    const jourNumero = Math.min(progression.jour_actuel, progression.defis.duree_jours);
+    const jour = await getDefiJourDuJour(progression.defi_id, jourNumero);
+    if (!jour) { wrapper.innerHTML = ''; return; }
+    const { data: valide } = await sb.from('defi_jours_valides').select('id').eq('user_id', userId).eq('defi_id', progression.defi_id).eq('jour_numero', jourNumero).maybeSingle();
+    const dejaValide = !!valide;
+    wrapper.innerHTML =
+      '<div class="card defi-jour-card">' +
+        '<div class="zone-label">Ton défi — Jour ' + jourNumero + '/' + progression.defis.duree_jours + '</div>' +
+        '<div class="essentiel-titre">' + progression.defis.titre + '</div>' +
+        '<div class="essentiel-titre" style="font-size:14px; margin-top:6px;">' + jour.titre + '</div>' +
+        (jour.texte ? '<p class="essentiel-desc">' + jour.texte + '</p>' : '') +
+        (jour.action ? '<p class="rituel-texte" style="margin-top:6px; font-weight:600;">' + jour.action + '</p>' : '') +
+        (jour.materiel ? '<div class="jardin-next">Matériel : ' + jour.materiel + '</div>' : '') +
+        '<button class="action-btn" id="defi-jour-btn" onclick="validerJourDefi(\'' + progression.defi_id + '\',' + jourNumero + ',' + progression.defis.duree_jours + ')"' + (dejaValide ? ' disabled' : '') + '>' + (dejaValide ? 'Fait aujourd\'hui' : 'J\'ai relevé mon défi') + '</button>' +
+        '<a href="#" onclick="goToDefis(); return false;" class="jardin-next" style="display:block; text-align:center; margin-top:8px;">Voir tous mes défis</a>' +
+      '</div>';
+  }
+
+  async function validerJourDefi(defiId, jourNumero, dureeJours) {
+    const btn = document.getElementById('defi-jour-btn');
+    if (btn) { btn.disabled = true; btn.textContent = 'Enregistrement...'; }
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session || !session.user) return;
+    const userId = session.user.id;
+    const { error: logErr } = await sb.from('defi_jours_valides').insert({ user_id: userId, defi_id: defiId, jour_numero: jourNumero });
+    if (logErr) { if (btn) { btn.textContent = 'Déjà fait aujourd\'hui'; } return; }
+    const nextJour = jourNumero + 1;
+    const nouveauStatut = nextJour > dureeJours ? 'termine' : 'en_cours';
+    await sb.from('defi_progression').update({ jour_actuel: nextJour, statut: nouveauStatut, derniere_action_le: new Date().toISOString().slice(0, 10) }).eq('user_id', userId).eq('defi_id', defiId);
+    const jardinResult = await awardJardinPoints('defi_jour_valide');
+    if (jardinResult && jardinResult.awarded) { LAST_JARDIN_AWARD = jardinResult; renderJardinPreview(); }
+    if (btn) { btn.textContent = nouveauStatut === 'termine' ? 'Défi terminé !' : 'Fait aujourd\'hui'; btn.classList.add('done'); }
+    renderDefiDuJour();
+  }
+
+  function goToDefis() {
+    document.getElementById('journee-view').classList.add('hidden');
+    document.getElementById('defis-view').classList.remove('hidden');
+    renderDefisView();
+  }
+
+  function showJourneeFromDefis() {
+    document.getElementById('defis-view').classList.add('hidden');
+    document.getElementById('journee-view').classList.remove('hidden');
+  }
+
+  function defiCardHtml(defi) {
+    return '<div class="defi-card-item" onclick="ouvrirDefiDetail(\'' + defi.id + '\')">' +
+      '<div class="defi-card-titre">' + defi.titre + '</div>' +
+      '<div class="jardin-next">' + defi.duree_jours + ' jours' + (defi.objectif ? ' — ' + defi.objectif : '') + '</div>' +
+      (defi.materiel ? '<div class="jardin-next" style="font-style:italic;">Matériel : ' + defi.materiel + '</div>' : '') +
+      '</div>';
+  }
+
+  async function renderDefisView() {
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session || !session.user) return;
+    const userId = session.user.id;
+
+    const enCoursEl = document.getElementById('defi-en-cours-content');
+    const pourToiEl = document.getElementById('defis-pour-toi-content');
+    const tousEl = document.getElementById('defis-tous-content');
+
+    const progression = await getDefiEnCours(userId);
+    if (progression) {
+      const jourNumero = Math.min(progression.jour_actuel, progression.defis.duree_jours);
+      const pct = Math.round(((jourNumero - 1) / progression.defis.duree_jours) * 100);
+      enCoursEl.innerHTML = '<div class="card defi-jour-card">' +
+        '<div class="zone-label">Mon défi en cours</div>' +
+        '<div class="essentiel-titre">' + progression.defis.titre + '</div>' +
+        '<div class="jardin-next">Jour ' + jourNumero + ' sur ' + progression.defis.duree_jours + '</div>' +
+        '<div class="defi-progress-bar"><div class="defi-progress-fill" style="width:' + pct + '%;"></div></div>' +
+        '<a href="#" onclick="showJourneeFromDefis(); return false;" class="action-btn" style="text-decoration:none; text-align:center; display:block; margin-top:10px;">Continuer mon défi</a>' +
+        '</div>';
+    } else {
+      enCoursEl.innerHTML = '';
+    }
+
+    const { data: allDefis } = await sb.from('defis').select('*').eq('actif', true);
+    const defis = allDefis || [];
+    const todayData = await getTodayCheckin(userId);
+    const prioritesActuelles = todayData && todayData.score ? (todayData.score.priorites || []) : [];
+    const slugsActuels = prioriteSlugs(prioritesActuelles);
+    const pourToi = defis.filter(function(d) { return (d.tags || []).some(function(t) { return slugsActuels.indexOf(t) !== -1; }); });
+
+    pourToiEl.innerHTML = pourToi.length
+      ? '<div class="defi-grid">' + pourToi.map(defiCardHtml).join('') + '</div>'
+      : '<p class="rituel-texte">Fais ton check-in pour recevoir des suggestions personnalisées.</p>';
+
+    tousEl.innerHTML = defis.length
+      ? '<div class="defi-grid">' + defis.map(defiCardHtml).join('') + '</div>'
+      : '<p class="rituel-texte">Aucun défi disponible pour le moment.</p>';
+  }
+
+  async function ouvrirDefiDetail(defiId) {
+    const { data: defi } = await sb.from('defis').select('*').eq('id', defiId).maybeSingle();
+    const { data: jours } = await sb.from('defi_jours').select('*').eq('defi_id', defiId).order('jour_numero', { ascending: true });
+    if (!defi) return;
+    const apercu = (jours || []).map(function(j) { return '<div class="routine-item"><span class="routine-item-titre">Jour ' + j.jour_numero + ' — ' + j.titre + '</span></div>'; }).join('');
+    const detailHtml = '<div class="card">' +
+      '<div class="essentiel-titre" style="color:#16283d;">' + defi.titre + '</div>' +
+      (defi.description ? '<p class="essentiel-desc" style="color:#4a4438;">' + defi.description + '</p>' : '') +
+      '<div class="jardin-next">' + defi.duree_jours + ' jours' + (defi.objectif ? ' — ' + defi.objectif : '') + '</div>' +
+      (defi.materiel ? '<p class="jardin-next" style="font-style:italic;">Matériel : ' + defi.materiel + ' (une alternative est toujours proposée si tu ne l\'as pas)</p>' : '') +
+      '<div class="routine-list" style="margin-top:10px;">' + apercu + '</div>' +
+      '<button class="action-btn" onclick="demarrerDefi(\'' + defiId + '\')">Commencer ce défi</button>' +
+      '</div>';
+    document.getElementById('defi-en-cours-content').innerHTML = detailHtml;
+    document.getElementById('defi-en-cours-content').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  async function demarrerDefi(defiId) {
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session || !session.user) return;
+    const userId = session.user.id;
+    const existing = await getDefiEnCours(userId);
+    if (existing) {
+      document.getElementById('defi-en-cours-content').insertAdjacentHTML('beforeend', '<p class="rituel-texte" style="color:#b23b3b;">Tu suis déjà le défi "' + existing.defis.titre + '". Termine-le avant d\'en commencer un autre.</p>');
+      return;
+    }
+    const { error } = await sb.from('defi_progression').insert({ user_id: userId, defi_id: defiId, jour_actuel: 1, statut: 'en_cours' });
+    if (error) return;
+    renderDefisView();
+    renderDefiDuJour();
+  }
+  
   
   
   
