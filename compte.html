@@ -180,7 +180,7 @@
   <div id="dash-view" class="hidden">
     <div class="card">
       <div class="dash-header">
-        <h2 id="dash-greeting">Bonjour 👋</h2>
+        <h2 id="dash-greeting">Bonjour</h2>
         <button class="logout-link" onclick="handleLogout()">Se déconnecter</button>
       </div>
       <div id="prenom-setup" class="hidden">
@@ -195,7 +195,7 @@
     </div>
 
     <div class="card" id="mantra-card">
-      <div class="mantra-label">🌸 Ton mantra du jour</div>
+      <div class="mantra-label">Ton mantra du jour</div>
       <div class="mantra-text" id="mantra-text">…</div>
     </div>
 
@@ -211,7 +211,7 @@
   </div>
 <div id="journee-view" class="hidden">
     <div class="card journee-hero">
-      <div style="font-size:12px; letter-spacing:1px; color:#8a968f; text-transform:uppercase; text-align:center; margin-bottom:6px;">Ma Journee LYMIA</div>
+      <div style="font-size:12px; letter-spacing:1px; color:#8a968f; text-transform:uppercase; text-align:center; margin-bottom:6px;">Ma Journée LYMIA</div>
       <div id="journee-score"></div>
     </div>
     <div class="card" id="journee-temps-card" style="text-align:center;">
@@ -409,10 +409,10 @@
     }
 
     if (profile && profile.prenom) {
-      document.getElementById('dash-greeting').textContent = 'Bonjour ' + profile.prenom + ' 👋';
+      document.getElementById('dash-greeting').textContent = 'Bonjour ' + profile.prenom;
       document.getElementById('prenom-setup').classList.add('hidden');
     } else {
-      document.getElementById('dash-greeting').textContent = 'Bienvenue 👋';
+      document.getElementById('dash-greeting').textContent = 'Bienvenue';
       document.getElementById('prenom-setup').classList.remove('hidden');
     }
 
@@ -436,7 +436,7 @@
     const prenom = document.getElementById('dash-prenom').value.trim();
     if (!prenom) return;
     await sb.from('profiles').update({ prenom }).eq('id', user.id);
-    document.getElementById('dash-greeting').textContent = 'Bonjour ' + prenom + ' 👋';
+    document.getElementById('dash-greeting').textContent = 'Bonjour ' + prenom;
     document.getElementById('prenom-setup').classList.add('hidden');
   }
 
@@ -471,14 +471,14 @@
     return 'Besoin de douceur aujourd\'hui';
   }
 
-  const AXIS_OPTIONS = ['Tres faible','Faible','Moyen','Bon','Excellent'];
+  const AXIS_OPTIONS = ['Très faible','Faible','Moyen','Bon','Excellent'];
   const CHECKIN_AXES = [
-    ['energie', 'Energie'],
+    ['energie', 'Énergie'],
     ['sommeil', 'Sommeil'],
     ['stress', 'Calme (absence de stress)'],
     ['digestion', 'Digestion'],
     ['gonflement', 'Confort (peu de gonflement)'],
-    ['jambes_lourdes', 'Legerete des jambes'],
+    ['jambes_lourdes', 'Légèreté des jambes'],
     ['hydratation', 'Hydratation'],
     ['mouvement', 'Mouvement']
   ];
@@ -557,7 +557,7 @@
     if (!abonnement) { el.innerHTML = ''; return; }
     el.innerHTML =
       '<div class="mantra-label">Ton check-in du jour</div>' +
-      '<p style="font-size:11.5px; color:#8a968f; margin:-4px 0 10px;">Pour chaque axe, choisis ce qui te correspond le mieux aujourd\'hui (1 = tres faible, 5 = excellent).</p>' +
+      '<p style="font-size:11.5px; color:#8a968f; margin:-4px 0 10px;">Pour chaque axe, choisis ce qui te correspond le mieux aujourd\'hui (1 = très faible, 5 = excellent).</p>' +
       '<div class="checkin-grid">' +
       CHECKIN_AXES.map(a => '<label class="checkin-item">' + a[1] +
           '<select id="ci-' + a[0] + '">' + AXIS_OPTIONS.map((label,idx) => '<option value="' + (idx+1) + '">' + (idx+1) + ' - ' + label + '</option>').join('') + '</select></label>')
