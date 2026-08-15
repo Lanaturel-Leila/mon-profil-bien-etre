@@ -102,6 +102,7 @@
   .bientot-item { font-size:11.5px; color:#8a968f; border:1px dashed #d8ddd2; border-radius:10px; padding:6px 10px; }
 
   .jardin-card { text-align:center; cursor:pointer; }
+  .profil-quick-card { text-align:center; cursor:pointer; }
   .jardin-svg { width:100%; height:auto; display:block; margin:4px 0; }
   .jardin-niveau-nom { font-size:15px; font-weight:600; color:#16283d; margin-top:2px; }
   .jardin-niveau-desc { font-size:12px; color:#8a968f; margin-top:2px; }
@@ -242,6 +243,11 @@
       <div id="jardin-preview-content"><p class="rituel-texte">Chargement de ton jardin...</p></div>
       <div class="jardin-next">Touche pour ouvrir ton jardin</div>
     </div>
+    <div class="card profil-quick-card" onclick="goToProfilFromJournee()">
+      <div class="mantra-label">Ton profil LYMIA</div>
+      <p class="rituel-texte" style="margin-top:2px;">Objectifs, alimentation, contexte de vie.</p>
+      <div class="jardin-next">Touche pour modifier ton profil</div>
+    </div>
     <div class="essentiel-card" id="essentiel-card">
       <div class="zone-label">Ton essentiel du jour</div>
       <div id="journee-essentiel-content"><p class="rituel-texte" style="color:#eef1ea;">Préparation de ton essentiel...</p></div>
@@ -365,7 +371,7 @@
     <button class="btn" onclick="saveProfilLymia()" id="pf-save-btn">Enregistrer mon profil</button>
     <div id="pf-save-msg" class="objectif-feedback" style="text-align:center;"></div>
 
-    <a class="back-link" href="#" onclick="showDashFromProfil(); return false;">Retour à mon compte</a>
+    <a class="back-link" id="profil-back-link" href="#" onclick="showDashFromProfil(); return false;">Retour à mon compte</a>
   </div>
 
 </div>
@@ -629,15 +635,27 @@
   }
 
   function goToProfil() {
+    PROFIL_RETURN_VIEW = 'dash-view';
     document.getElementById('dash-view').classList.add('hidden');
     document.getElementById('profil-view').classList.remove('hidden');
+    const link = document.getElementById('profil-back-link');
+    if (link) link.textContent = 'Retour à mon compte';
+    renderProfilForm();
+  }
+
+  function goToProfilFromJournee() {
+    PROFIL_RETURN_VIEW = 'journee-view';
+    document.getElementById('journee-view').classList.add('hidden');
+    document.getElementById('profil-view').classList.remove('hidden');
+    const link = document.getElementById('profil-back-link');
+    if (link) link.textContent = 'Retour à ma journée';
     renderProfilForm();
   }
 
   function showDashFromProfil() {
     document.getElementById('profil-view').classList.add('hidden');
-    document.getElementById('dash-view').classList.remove('hidden');
-    renderProfilSummary();
+    document.getElementById(PROFIL_RETURN_VIEW).classList.remove('hidden');
+    if (PROFIL_RETURN_VIEW === 'dash-view') renderProfilSummary();
   }
 
   function renderAbonnement(abonnement) {
@@ -708,6 +726,7 @@
   let LAST_NIVEAU = null;
   let LAST_PRIORITES = [];
   let PROFIL_CACHE = null;
+  let PROFIL_RETURN_VIEW = 'dash-view';
 
   function renderResultatCheckin(scoreGlobal, niveau, priorites) {
     const el = document.getElementById('carte-du-jour');
