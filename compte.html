@@ -84,6 +84,13 @@
   .score-jour { text-align:center; margin-bottom:14px; padding-bottom:14px; border-bottom:1px solid #e4e8df; }
   .score-jour-chiffre { font-size:34px; font-weight:700; color:#16283d; }
   .score-jour-label { font-size:13px; color:#5c6b64; margin-top:2px; }
+  .objectif-ring-wrap { display:flex; flex-direction:column; align-items:center; padding:6px 0 2px; }
+  .objectif-ring { width:96px; height:96px; border-radius:50%; display:flex; align-items:center; justify-content:center; transition:background 0.4s ease; }
+  .objectif-ring-inner { width:74px; height:74px; border-radius:50%; background:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .objectif-ring-value { font-size:19px; font-weight:700; color:#16283d; line-height:1.1; }
+  .objectif-ring-total { font-size:10.5px; color:#8a968f; font-weight:600; }
+  .objectif-label { font-size:12.5px; color:#5c6b64; margin-top:10px; font-weight:600; }
+  .objectif-feedback { font-size:12.5px; color:#3d5a4a; margin-top:6px; min-height:16px; font-weight:600; }
 
   .priorite-tags { display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-top:8px; }
   .priorite-tag { background:#eef1ea; color:#16283d; padding:6px 14px; border-radius:20px; font-size:12.5px; font-weight:600; }
@@ -213,6 +220,9 @@
     <div class="card journee-hero">
       <div style="font-size:12px; letter-spacing:1px; color:#8a968f; text-transform:uppercase; text-align:center; margin-bottom:6px;">Ma Journée LYMIA</div>
       <div id="journee-score"></div>
+    </div>
+    <div class="card" id="objectif-jour-card" style="text-align:center;">
+      <div id="objectif-jour"></div>
     </div>
     <div class="card" id="journee-temps-card" style="text-align:center;">
       <div id="journee-temps-content"></div>
@@ -743,6 +753,36 @@
     renderRecette(priorites);
     renderCarteEtCouleur();
     renderJardinPreview();
+    renderObjectifDuJour();
+  }
+
+  async function renderObjectifDuJour() {
+    const el = document.getElementById('objectif-jour');
+    if (!el) return;
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session || !session.user) return;
+    const userId = session.user.id;
+    const config = await getJardinConfig();
+    const defiEnCours = await getDefiEnCours(userId);
+    const cles = ['essentiel_realise', 'routine_terminee'];
+    if (defiEnCours && defiEnCours.statut === 'en_cours') cles.push('defi_jour_valide');
+    const objectif = cles.reduce(function(sum, k){ return sum + ((config[k] && config[k].actif) ? config[k].points : 0); }, 0);
+    const today = new Date().toISOString().slice(0, 10);
+    const { data: logs } = await sb.from('jardin_actions_log').select('action_key, points').eq('user_id', userId).eq('date', today);
+    const progression = (logs || []).filter(function(r){ return cles.indexOf(r.action_key) !== -1; }).reduce(function(sum, r){ return sum + r.points; }, 0);
+    const pct = objectif > 0 ? Math.min(100, Math.round(progression / objectif * 100)) : 0;
+    const deg = Math.round(pct * 3.6);
+    el.innerHTML =
+      '<div class="objectif-ring-wrap">' +
+        '<div class="objectif-ring" style="background: conic-gradient(#5c7a52 0deg ' + deg + 'deg, #e4e8df ' + deg + 'deg 360deg);">' +
+          '<div class="objectif-ring-inner">' +
+            '<div class="objectif-ring-value">' + progression + '</div>' +
+            '<div class="objectif-ring-total">/ ' + objectif + ' pts</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="objectif-label">Ta progression du jour</div>' +
+        '<div id="jardin-feedback-msg" class="objectif-feedback"></div>' +
+      '</div>';
   }
 
   
@@ -1245,6 +1285,12 @@
     if (result && result.awarded) {
       LAST_JARDIN_AWARD = result;
       renderJardinPreview();
+      await renderObjectifDuJour();
+      const msgEl = document.getElementById('jardin-feedback-msg');
+      if (msgEl) {
+        const labels = { essentiel_realise: 'ton essentiel du jour', routine_terminee: 'ta routine', defi_jour_valide: 'ton défi du jour' };
+        msgEl.textContent = 'Tu viens de valider ' + (labels[actionKey] || 'cette action') + '. +' + result.pointsGained + ' points ajoutés à ta progression du jour.';
+      }
     }
   }
   async function getDefiEnCours(userId) {
@@ -1302,7 +1348,13 @@
     const nouveauStatut = nextJour > dureeJours ? 'termine' : 'en_cours';
     await sb.from('defi_progression').update({ jour_actuel: nextJour, statut: nouveauStatut, derniere_action_le: new Date().toISOString().slice(0, 10) }).eq('user_id', userId).eq('defi_id', defiId);
     const jardinResult = await awardJardinPoints('defi_jour_valide');
-    if (jardinResult && jardinResult.awarded) { LAST_JARDIN_AWARD = jardinResult; renderJardinPreview(); }
+    if (jardinResult && jardinResult.awarded) {
+      LAST_JARDIN_AWARD = jardinResult;
+      renderJardinPreview();
+      await renderObjectifDuJour();
+      const msgEl = document.getElementById('jardin-feedback-msg');
+      if (msgEl) { msgEl.textContent = 'Tu viens de valider ton défi du jour. +' + jardinResult.pointsGained + ' points ajoutés à ta progression du jour.'; }
+    }
     if (btn) { btn.textContent = nouveauStatut === 'termine' ? 'Défi terminé !' : 'Fait aujourd\'hui'; btn.classList.add('done'); }
     renderDefiDuJour();
   }
