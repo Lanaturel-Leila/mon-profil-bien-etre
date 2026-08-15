@@ -136,6 +136,10 @@
       </div>
     </div>
 
+    <div class="card" id="score-global-card">
+      <div id="score-global-content"></div>
+    </div>
+
     <div class="card" id="mantra-card">
       <div class="mantra-label">🌸 Ton mantra du jour</div>
       <div class="mantra-text" id="mantra-text">…</div>
@@ -304,6 +308,7 @@
     const { data: abonnement } = await sb.from('abonnements').select('*').eq('user_id', user.id).eq('statut', 'actif').maybeSingle();
     renderAbonnement(abonnement);
     renderCheckin(abonnement);
+    renderScoreGlobal(abonnement);
   }
 
   async function saveProfile() {
@@ -479,6 +484,24 @@
     html += '</div>';
     el.innerHTML = html;
     el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  async function renderScoreGlobal(abonnement) {
+    const el = document.getElementById('score-global-content');
+    if (!el) return;
+    if (!abonnement) { el.innerHTML = ''; return; }
+    const { data: { session } } = await sb.auth.getSession();
+    const { data: dernier } = await sb.from('scores_lymia').select('*').eq('user_id', session.user.id).order('created_at', { ascending: false }).limit(1).maybeSingle();
+    if (!dernier) {
+      el.innerHTML = '<div class="mantra-label">Ton score global</div>' +
+        '<p style="font-size:12.5px; color:#8a968f;">Fais ton premier check-in ci-dessous pour debloquer ton score.</p>';
+      return;
+    }
+    el.innerHTML =
+      '<div class="score-jour" style="border-bottom:none; margin-bottom:0; padding-bottom:0;">' +
+        '<div class="score-jour-chiffre">' + Math.round(dernier.score_global) + '<span style="font-size:13px;">/100</span></div>' +
+        '<div class="score-jour-label">' + scoreLabel(dernier.score_global) + '</div>' +
+      '</div>';
   }
 
   (async function init() {
