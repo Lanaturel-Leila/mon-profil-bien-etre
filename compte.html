@@ -84,6 +84,22 @@
   .score-jour { text-align:center; margin-bottom:14px; padding-bottom:14px; border-bottom:1px solid #e4e8df; }
   .score-jour-chiffre { font-size:34px; font-weight:700; color:#16283d; }
   .score-jour-label { font-size:13px; color:#5c6b64; margin-top:2px; }
+
+  .priorite-tags { display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-top:8px; }
+  .priorite-tag { background:#eef1ea; color:#16283d; padding:6px 14px; border-radius:20px; font-size:12.5px; font-weight:600; }
+  .temps-badge { display:inline-block; background:#16283d; color:#fff; padding:10px 18px; border-radius:14px; font-size:13.5px; font-weight:600; }
+  .bientot-list { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+  .bientot-item { font-size:11.5px; color:#8a968f; border:1px dashed #d8ddd2; border-radius:10px; padding:6px 10px; }
+
+  .jardin-card { text-align:center; cursor:pointer; }
+  .jardin-svg { width:100%; height:auto; display:block; margin:4px 0; }
+  .jardin-niveau-nom { font-size:15px; font-weight:600; color:#16283d; margin-top:2px; }
+  .jardin-niveau-desc { font-size:12px; color:#8a968f; margin-top:2px; }
+  .jardin-next { font-size:11px; color:#8a968f; margin-top:10px; font-style:italic; }
+  .jardin-toast { font-size:12px; color:#5c7a52; background:#eef1ea; border-radius:10px; padding:6px 10px; margin-bottom:6px; animation: jardinToastFade 3.2s ease forwards; }
+  @keyframes jardinToastFade { 0%{opacity:0; transform:translateY(4px);} 15%{opacity:1; transform:translateY(0);} 85%{opacity:1;} 100%{opacity:0;} }
+  .jardin-plant { animation: jardinGrow 0.6s ease-out both; transform-origin: center bottom; }
+  @keyframes jardinGrow { from { opacity:0; transform: scale(0.5) translateY(6px); } to { opacity:1; transform: scale(1) translateY(0); } }
 </style>
 </head>
 <body>
@@ -156,35 +172,39 @@
     <a class="back-link" href="index.html">← Refaire le bilan bien-être</a>
   </div>
 <div id="journee-view" class="hidden">
-    <div class="card">
-      <h2 style="margin:0 0 10px; font-size:18px; color:#16283d; text-align:center;">Ma Journee LYMIA</h2>
+    <div class="card journee-hero">
+      <div style="font-size:12px; letter-spacing:1px; color:#8a968f; text-transform:uppercase; text-align:center; margin-bottom:6px;">Ma Journee LYMIA</div>
       <div id="journee-score"></div>
     </div>
-    <div class="card" id="journee-temps-card">
+    <div class="card" id="journee-temps-card" style="text-align:center;">
       <div id="journee-temps-content"></div>
     </div>
-    <div class="card">
-      <div class="mantra-label">Ton essentiel du jour</div>
-      <p class="rituel-texte">A venir tres bientot.</p>
+    <div class="card jardin-card" onclick="goToJardin()">
+      <div class="mantra-label">Mon Jardin</div>
+      <div id="jardin-preview-content"><p class="rituel-texte">Chargement de ton jardin...</p></div>
+      <div class="jardin-next">Touche pour ouvrir ton jardin</div>
     </div>
+
     <div class="card">
-      <div class="mantra-label">Ta routine du jour</div>
-      <p class="rituel-texte">A venir tres bientot.</p>
-    </div>
-    <div class="card">
-      <div class="mantra-label">Ton idee repas</div>
-      <p class="rituel-texte">A venir tres bientot.</p>
-    </div>
-    <div class="card">
-      <div class="mantra-label">Ta carte du jour</div>
-      <p class="rituel-texte">A venir tres bientot.</p>
-    </div>
-    <div class="card">
-      <div class="mantra-label">Ta couleur du jour</div>
-      <p class="rituel-texte">A venir tres bientot.</p>
+      <div class="mantra-label">Bientot dans ta journee</div>
+      <div class="bientot-list">
+        <span class="bientot-item">Ton essentiel</span>
+        <span class="bientot-item">Ta routine</span>
+        <span class="bientot-item">Ton idee repas</span>
+        <span class="bientot-item">Ta carte du jour</span>
+        <span class="bientot-item">Ta couleur du jour</span>
+      </div>
     </div>
     <a class="back-link" href="#" onclick="showDashFromJournee(); return false;">Refaire mon check-in</a>
     <a class="back-link" href="#" onclick="showDashFromJournee(); return false;">Voir mon profil et mon abonnement</a>
+  </div>
+
+  <div id="jardin-view" class="hidden">
+    <div class="card jardin-hero">
+      <div style="font-size:12px; letter-spacing:1px; color:#8a968f; text-transform:uppercase; text-align:center; margin-bottom:10px;">Mon Jardin LYMIA</div>
+      <div id="jardin-page-content"><p class="rituel-texte" style="text-align:center;">Chargement...</p></div>
+    </div>
+    <a class="back-link" href="#" onclick="showJourneeFromJardin(); return false;">Retour a ma journee</a>
   </div>
 
   </div>
@@ -344,7 +364,8 @@
     if (abonnement) {
       const todayData = await getTodayCheckin(user.id);
       if (todayData) {
-        goToJournee(todayData.score.score_global, { nom: todayData.score.niveau }, todayData.score.priorites || [], todayData.checkin);
+        const niveauObj = await getNiveauForScore(todayData.score.score_global);
+        goToJournee(todayData.score.score_global, niveauObj, todayData.score.priorites || [], todayData.checkin);
       }
     }
   }
@@ -498,6 +519,10 @@
     btn.textContent = 'Calcul en cours...';
     resultEl.innerHTML = '';
     try {
+      const { data: { session } } = await sb.auth.getSession();
+      if (!session || !session.user) throw new Error("Ta session a expire. Recharge la page et reconnecte-toi.");
+      const user = session.user;
+
       const val = id => document.getElementById(id).value;
       const axes = ['energie','sommeil','stress','digestion','gonflement','jambes_lourdes','hydratation','mouvement'];
       const vals = {};
@@ -506,14 +531,20 @@
       const humeur = val('ci-humeur');
       const envie = val('ci-envie');
 
-      const { data: { session } } = await sb.auth.getSession();
-      const user = session.user;
+      const existing = await getTodayCheckin(user.id);
 
-      const { data: checkin, error: cErr } = await sb.from('checkins').insert({
+      const checkinPayload = {
         user_id: user.id, energie: vals.energie, sommeil: vals.sommeil, stress: vals.stress,
         digestion: vals.digestion, gonflement: vals.gonflement, jambes_lourdes: vals.jambes_lourdes,
         hydratation: vals.hydratation, mouvement: vals.mouvement, humeur: humeur, temps_disponible: temps, envie: envie
-      }).select().single();
+      };
+
+      let checkin, cErr;
+      if (existing && existing.checkin) {
+        ({ data: checkin, error: cErr } = await sb.from('checkins').update(checkinPayload).eq('id', existing.checkin.id).select().single());
+      } else {
+        ({ data: checkin, error: cErr } = await sb.from('checkins').insert(checkinPayload).select().single());
+      }
       if (cErr) throw cErr;
 
       const scores = {
@@ -535,7 +566,7 @@
         .sort((a,b) => a.score - b.score)
         .slice(0, 3);
 
-      const { error: sErr } = await sb.from('scores_lymia').insert({
+      const scorePayload = {
         user_id: user.id, checkin_id: checkin.id, date: checkin.date,
         score_global: scoreGlobal, score_energie: scores.energie, score_sommeil: scores.sommeil,
         score_stress: scores.stress, score_digestion: scores.digestion,
@@ -543,14 +574,24 @@
         score_hydratation: scores.hydratation, score_regularite: 0,
         levier_du_jour: priorites[0].key, niveau: niveau.nom,
         priorites: priorites.map(p => ({ axe: p.key, label: p.label, score: p.score }))
-      });
+      };
+
+      let sErr;
+      if (existing && existing.score) {
+        ({ error: sErr } = await sb.from('scores_lymia').update(scorePayload).eq('id', existing.score.id));
+      } else {
+        ({ error: sErr } = await sb.from('scores_lymia').insert(scorePayload));
+      }
       if (sErr) throw sErr;
 
       LAST_NIVEAU = niveau.nom;
       LAST_PRIORITES = priorites;
+      const jardinAward = await awardJardinPoints('checkin_complete');
+      LAST_JARDIN_AWARD = jardinAward;
       goToJournee(scoreGlobal, niveau, priorites, checkin);
     } catch (e) {
-      resultEl.innerHTML = '<p style="color:#b23b3b;font-size:12.5px;">Oups, une erreur est survenue. Reessaie dans un instant.</p>';
+      const msg = (e && e.message) ? e.message : 'Erreur inconnue';
+      resultEl.innerHTML = '<p style="color:#b23b3b;font-size:12.5px;">Oups : ' + msg + '</p>';
     } finally {
       btn.disabled = false;
       btn.textContent = 'Valider mon check-in';
@@ -618,17 +659,23 @@
   }
 
   function renderJourneeLymia(scoreGlobal, niveau, priorites, checkinRow) {
+    const niveauNom = (niveau && niveau.nom) ? niveau.nom : 'Niveau en cours de calcul';
+    const message = (niveau && niveau.message) ? niveau.message : '';
     document.getElementById('journee-score').innerHTML =
-      '<div class="score-jour">' +
+      '<div class="score-jour" style="border-bottom:none; padding-bottom:0; margin-bottom:0;">' +
         '<div class="score-jour-chiffre">' + scoreGlobal + '<span style="font-size:13px;">/100</span></div>' +
-        '<div class="score-jour-label">' + niveau.nom + '</div>' +
+        '<div class="score-jour-label">' + niveauNom + '</div>' +
       '</div>' +
-      '<div class="mantra-label" style="margin-top:14px;">Aujourd\'hui, tes priorites sont :</div>' +
-      '<ul class="rituel-reco">' + priorites.map(p => '<li>' + p.label + '</li>').join('') + '</ul>';
+      (message ? '<p class="rituel-texte" style="text-align:center; margin-top:8px;">' + message + '</p>' : '') +
+      (priorites && priorites.length
+        ? '<div class="mantra-label" style="margin-top:14px; text-align:center;">Aujourd\'hui, tes priorites</div>' +
+          '<div class="priorite-tags">' + priorites.map(p => '<span class="priorite-tag">' + p.label + '</span>').join('') + '</div>'
+        : '<p class="rituel-texte" style="text-align:center; margin-top:10px;">Priorites en cours de calcul.</p>');
     const temps = checkinRow && checkinRow.temps_disponible;
     document.getElementById('journee-temps-content').innerHTML = temps
-      ? '<div class="mantra-label">Ton temps pour toi aujourd\'hui</div><p class="rituel-texte">' + temps + ' minutes</p>'
+      ? '<span class="temps-badge">Tu as choisi ' + temps + ' minutes pour toi aujourd\'hui</span>'
       : '<p class="rituel-texte">Temps non renseigne.</p>';
+  renderJardinPreview();
   }
 
   async function getTodayCheckin(userId) {
@@ -637,7 +684,188 @@
     if (!score) return null;
     const { data: checkin } = await sb.from('checkins').select('*').eq('id', score.checkin_id).maybeSingle();
     return { score, checkin };
+  }let JARDIN_NIVEAUX_CACHE = null;
+  let JARDIN_CONFIG_CACHE = null;
+  let LAST_JARDIN_AWARD = null;
+
+  async function getJardinNiveaux() {
+    if (JARDIN_NIVEAUX_CACHE) return JARDIN_NIVEAUX_CACHE;
+    const { data } = await sb.from('jardin_niveaux').select('*').order('niveau', { ascending: true });
+    JARDIN_NIVEAUX_CACHE = data || [];
+    return JARDIN_NIVEAUX_CACHE;
   }
+
+  async function getJardinConfig() {
+    if (JARDIN_CONFIG_CACHE) return JARDIN_CONFIG_CACHE;
+    const { data } = await sb.from('jardin_config').select('*');
+    JARDIN_CONFIG_CACHE = {};
+    (data || []).forEach(row => { JARDIN_CONFIG_CACHE[row.action_key] = row; });
+    return JARDIN_CONFIG_CACHE;
+  }
+
+  function niveauForPoints(points, niveaux) {
+    let best = niveaux[0] || { niveau: 1, nom: 'La graine', seuil_min: 0 };
+    for (const n of niveaux) { if (points >= n.seuil_min) best = n; }
+    return best;
+  }
+
+  async function getJardinState(userId) {
+    const { data } = await sb.from('jardin_progression').select('*').eq('user_id', userId).maybeSingle();
+    return data || { user_id: userId, points_total: 0, niveau_actuel: 1 };
+  }
+
+  async function awardJardinPoints(actionKey) {
+    try {
+      const { data: { session } } = await sb.auth.getSession();
+      if (!session || !session.user) return { awarded: false };
+      const user = session.user;
+      const config = await getJardinConfig();
+      const actionConfig = config[actionKey];
+      if (!actionConfig || !actionConfig.actif) return { awarded: false };
+
+      const today = new Date().toISOString().slice(0, 10);
+      const { error: logError } = await sb.from('jardin_actions_log').insert({
+        user_id: user.id, action_key: actionKey, points: actionConfig.points, date: today
+      });
+      if (logError) {
+        if (logError.code === '23505') return { awarded: false, alreadyDone: true };
+        return { awarded: false };
+      }
+
+      const state = await getJardinState(user.id);
+      const newTotal = (state.points_total || 0) + actionConfig.points;
+      const niveaux = await getJardinNiveaux();
+      const newNiveauObj = niveauForPoints(newTotal, niveaux);
+      const leveledUp = newNiveauObj.niveau > (state.niveau_actuel || 1);
+      const hadRow = state.points_total !== undefined && state.updated_at !== undefined;
+
+      if (!hadRow && state.points_total === 0 && !state.niveau_actuel) {
+      }
+      const { data: existingRow } = await sb.from('jardin_progression').select('user_id').eq('user_id', user.id).maybeSingle();
+      if (existingRow) {
+        await sb.from('jardin_progression').update({
+          points_total: newTotal, niveau_actuel: newNiveauObj.niveau, updated_at: new Date().toISOString()
+        }).eq('user_id', user.id);
+      } else {
+        await sb.from('jardin_progression').insert({
+          user_id: user.id, points_total: newTotal, niveau_actuel: newNiveauObj.niveau
+        });
+      }
+
+      return { awarded: true, pointsGained: actionConfig.points, newTotal, newNiveau: newNiveauObj, leveledUp };
+    } catch (e) {
+      return { awarded: false };
+    }
+  }
+
+  function jardinPlantSVG(x, groundY, stage, seed) {
+    if (stage <= 0) return '';
+    const stemH = 12 + stage * 9;
+    const topY = groundY - stemH;
+    const bend = (seed % 2 === 0) ? 6 : -6;
+    let g = '<g class="jardin-plant" style="animation-delay:' + (seed * 0.06).toFixed(2) + 's">';
+    g += '<path d="M' + x + ' ' + groundY + ' Q' + (x + bend) + ' ' + (groundY - stemH * 0.6) + ' ' + x + ' ' + topY + '" stroke="#5c7a52" stroke-width="2.2" fill="none" stroke-linecap="round"/>';
+    if (stage >= 2) {
+      g += '<path d="M' + x + ' ' + (topY + stemH * 0.38) + ' Q' + (x - 11) + ' ' + (topY + stemH * 0.28) + ' ' + (x - 2) + ' ' + (topY + stemH * 0.5) + ' Z" fill="#8fb178" opacity="0.9"/>';
+      g += '<path d="M' + x + ' ' + (topY + stemH * 0.55) + ' Q' + (x + 11) + ' ' + (topY + stemH * 0.45) + ' ' + (x + 2) + ' ' + (topY + stemH * 0.65) + ' Z" fill="#9cba86" opacity="0.9"/>';
+    }
+    if (stage === 3) { g += '<circle cx="' + x + '" cy="' + topY + '" r="3.2" fill="#cdd98a"/>'; }
+    if (stage >= 4) {
+      const palette = ['#e3a6a1', '#e7c77a', '#c9b6da'];
+      const petalColor = palette[seed % 3];
+      for (let i = 0; i < 5; i++) {
+        const angle = (i / 5) * 2 * Math.PI;
+        const px = (x + Math.cos(angle) * 5.5).toFixed(1);
+        const py = (topY + Math.sin(angle) * 5.5).toFixed(1);
+        g += '<circle cx="' + px + '" cy="' + py + '" r="3.4" fill="' + petalColor + '" opacity="0.92"/>';
+      }
+      g += '<circle cx="' + x + '" cy="' + topY + '" r="2.6" fill="#d9a441"/>';
+    }
+    g += '</g>';
+    return g;
+  }
+
+  function svgJardin(pointsTotal, maxPoints, compact) {
+    const W = compact ? 300 : 320;
+    const H = compact ? 110 : 190;
+    const groundY = compact ? 84 : 142;
+    const slots = 7;
+    const maxUnits = slots * 4;
+    const safeMax = maxPoints > 0 ? maxPoints : 1;
+    const progress = Math.max(0, Math.min(1, pointsTotal / safeMax));
+    const units = Math.round(progress * maxUnits);
+    const full = Math.floor(units / 4);
+    const partial = units % 4;
+    let plants = '';
+    const spacing = (W - 56) / (slots - 1);
+    for (let i = 0; i < slots; i++) {
+      const x = Math.round(28 + i * spacing);
+      let stage = 0;
+      if (i < full) stage = 4;
+      else if (i === full) stage = partial;
+      plants += jardinPlantSVG(x, groundY, stage, i);
+    }
+    let extras = '';
+    if (progress >= 1) {
+      extras += '<circle cx="' + (W - 44) + '" cy="' + (groundY - 62) + '" r="24" fill="#f5e9c8" opacity="0.35"/>';
+      extras += '<path d="M' + (W - 62) + ' ' + (groundY - 34) + ' q6 -7 12 0 q6 -7 12 0 q-6 9 -12 3 q-6 6 -12 -3 Z" fill="#e3a6a1" opacity="0.85"/>';
+      extras += '<ellipse cx="68" cy="' + (groundY + 3) + '" rx="8" ry="4" fill="#c7c2b4" opacity="0.7"/>';
+    }
+    const gradId = 'jardinGround' + (compact ? 'C' : 'F');
+    return '<svg viewBox="0 0 ' + W + ' ' + H + '" class="jardin-svg" xmlns="http://www.w3.org/2000/svg">' +
+      '<defs><linearGradient id="' + gradId + '" x1="0" y1="0" x2="0" y2="1">' +
+      '<stop offset="0%" stop-color="#eef1ea"/><stop offset="100%" stop-color="#dbe3d2"/>' +
+      '</linearGradient></defs>' +
+      '<path d="M0 ' + groundY + ' Q' + (W / 2) + ' ' + (groundY - 12) + ' ' + W + ' ' + groundY + ' L' + W + ' ' + H + ' L0 ' + H + ' Z" fill="url(#' + gradId + ')"/>' +
+      extras + plants + '</svg>';
+  }
+
+  async function renderJardinPreview() {
+    const el = document.getElementById('jardin-preview-content');
+    if (!el) return;
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session || !session.user) return;
+    const [state, niveaux] = await Promise.all([getJardinState(session.user.id), getJardinNiveaux()]);
+    const niveauObj = niveauForPoints(state.points_total || 0, niveaux);
+    const maxPoints = niveaux.length ? niveaux[niveaux.length - 1].seuil_min : 30;
+    let toast = '';
+    if (LAST_JARDIN_AWARD && LAST_JARDIN_AWARD.awarded) {
+      toast = '<div class="jardin-toast">Ton jardin grandit avec toi.</div>';
+      LAST_JARDIN_AWARD = null;
+    }
+    el.innerHTML = toast + svgJardin(state.points_total || 0, maxPoints, true) +
+      '<div class="jardin-niveau-nom">' + niveauObj.nom + '</div>';
+  }
+
+  async function renderJardinPage() {
+    const el = document.getElementById('jardin-page-content');
+    if (!el) return;
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session || !session.user) return;
+    const [state, niveaux] = await Promise.all([getJardinState(session.user.id), getJardinNiveaux()]);
+    const niveauObj = niveauForPoints(state.points_total || 0, niveaux);
+    const maxPoints = niveaux.length ? niveaux[niveaux.length - 1].seuil_min : 30;
+    const idx = niveaux.findIndex(n => n.niveau === niveauObj.niveau);
+    const next = idx >= 0 && idx < niveaux.length - 1 ? niveaux[idx + 1] : null;
+    el.innerHTML = svgJardin(state.points_total || 0, maxPoints, false) +
+      '<div class="jardin-niveau-nom" style="text-align:center; font-size:18px;">' + niveauObj.nom + '</div>' +
+      '<p class="jardin-niveau-desc" style="text-align:center;">' + (niveauObj.description || '') + '</p>' +
+      '<p class="rituel-texte" style="text-align:center; margin-top:10px;">' + (niveauObj.message || '') + '</p>' +
+      (next ? '<p class="jardin-next" style="text-align:center;">Prochain palier : ' + next.nom + '</p>' : '<p class="jardin-next" style="text-align:center;">Ton jardin a atteint son plein epanouissement.</p>');
+  }
+
+  function goToJardin() {
+    document.getElementById('journee-view').classList.add('hidden');
+    document.getElementById('jardin-view').classList.remove('hidden');
+    renderJardinPage();
+  }
+
+  function showJourneeFromJardin() {
+    document.getElementById('jardin-view').classList.add('hidden');
+    document.getElementById('journee-view').classList.remove('hidden');
+  }
+
+  
 
   (async function init() {
     const { data: { session } } = await sb.auth.getSession();
