@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Découvre ton Profil Bien-être</title>
  <meta name="description" content="Quelques petites questions et découvre ton profil bien-être personnalisé : circulation, digestion, hydratation, détente. Moins de 2 minutes.">
- <meta name="theme-color" content="#fdf6f3">
+ <meta name="theme-color" content="#f8f9f6">
  <meta property="og:title" content="Découvre ton Profil Bien-être">
  <meta property="og:description" content="Réponds à quelques questions et reçois ta routine bien-être personnalisée.">
  <meta property="og:image" content="glouglou.png">
@@ -17,7 +17,7 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-         background: #fdf6f3; color: #4a3b34; min-height: 100vh;
+         background: #f8f9f6; color: #26333d; min-height: 100vh;
          display: flex; align-items: center; justify-content: center; padding: 24px;
     }
     .app { max-width: 440px; width: 100%; text-align: center; }
@@ -31,7 +31,7 @@
 
     .glouglou-bulle {
          background: white; border: 1.5px solid #cdeafd; border-radius: 16px;
-         padding: 11px 16px; font-size: 14px; color: #4a3b34; margin: 10px auto 18px;
+         padding: 11px 16px; font-size: 14px; color: #26333d; margin: 10px auto 18px;
          max-width: 320px; box-shadow: 0 2px 8px rgba(0,153,204,0.08); line-height: 1.5;
     }
 
@@ -41,19 +41,19 @@
     @keyframes couleurFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
     @keyframes couleurWiggle { 0%,100% { transform: rotate(0deg) scale(1); } 25% { transform: rotate(-6deg) scale(1.05); } 75% { transform: rotate(6deg) scale(1.05); } }
 
-    h1 { font-size: 21px; font-weight: 700; margin-bottom: 10px; color: #7a2e3b; }
-    h2 { font-size: 17px; font-weight: 700; margin-bottom: 14px; color: #7a2e3b; line-height: 1.4; }
-    p.subtitle { font-size: 14px; line-height: 1.6; color: #6b5a52; margin-bottom: 22px; }
+    h1 { font-size: 21px; font-weight: 700; margin-bottom: 10px; color: #16283d; }
+    h2 { font-size: 17px; font-weight: 700; margin-bottom: 14px; color: #16283d; line-height: 1.4; }
+    p.subtitle { font-size: 14px; line-height: 1.6; color: #5c6b64; margin-bottom: 22px; }
 
     .btn {
-         display: inline-block; background: #7a2e3b; color: white; border: none;
+         display: inline-block; background: #16283d; color: white; border: none;
          padding: 14px 28px; border-radius: 999px; font-size: 15px; font-weight: 600;
          cursor: pointer; text-decoration: none; width: 100%; margin-top: 8px;
     }
     .btn:active { opacity: 0.85; }
     .btn:hover { filter: brightness(1.08); }
     .btn:focus-visible, .option-btn:focus-visible { outline: 3px solid #0099CC; outline-offset: 2px; }
-    .btn-secondary { background: white; color: #7a2e3b; border: 1.5px solid #e8c9cf; }
+    .btn-secondary { background: white; color: #16283d; border: 1.5px solid #d8ddd2; }
     .btn-video {
          background: #0099CC; margin-top: 14px; display: flex; align-items: center;
          justify-content: center; gap: 8px;
@@ -67,30 +67,30 @@
     .btn-music.playing { background: #0099CC; color: white; border-color: #0099CC; }
 
     .progress { display: flex; justify-content: center; gap: 6px; margin-bottom: 18px; }
-    .dot { width: 8px; height: 8px; border-radius: 50%; background: #f0d9d4; }
-    .dot.active { background: #7a2e3b; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: #e9c3c6; }
+    .dot.active { background: #16283d; }
 
     .option-btn {
-         background: white; border: 1.5px solid #e8c9cf; border-radius: 12px;
-         padding: 13px 16px; font-size: 14.5px; color: #4a3b34; text-align: left;
+         background: white; border: 1.5px solid #d8ddd2; border-radius: 12px;
+         padding: 13px 16px; font-size: 14.5px; color: #26333d; text-align: left;
          cursor: pointer; width: 100%; margin-bottom: 10px; display: block;
     }
-    .option-btn:active { background: #fbeaec; }
-    .option-btn:hover { border-color: #7a2e3b; background: #fdf3f4; }
+    .option-btn:active { background: #f2f4ef; }
+    .option-btn:hover { border-color: #16283d; background: #f2f4ef; }
 
     .card {
          background: white; border-radius: 16px; padding: 20px; text-align: left;
-         margin-bottom: 14px; border: 1px solid #f0e0dd;
+         margin-bottom: 14px; border: 1px solid #e4e8df;
     }
-    .card p.card-title { font-weight: 700; margin-bottom: 4px; font-size: 16px; color: #7a2e3b; }
-    .card p.card-duration { font-size: 12.5px; color: #a08d84; margin-bottom: 12px; }
-    .steps-list { padding-left: 18px; font-size: 14px; line-height: 1.9; color: #5a4a42; }
+    .card p.card-title { font-weight: 700; margin-bottom: 4px; font-size: 16px; color: #16283d; }
+    .card p.card-duration { font-size: 12.5px; color: #8a968f; margin-bottom: 12px; }
+    .steps-list { padding-left: 18px; font-size: 14px; line-height: 1.9; color: #5c6b64; }
 
     .dim-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 13px; }
-    .dim-label { width: 120px; text-align: left; color: #5a4a42; }
-    .dim-bar-bg { flex: 1; background: #f4e4e0; border-radius: 999px; height: 8px; overflow: hidden; }
-    .dim-bar-fill { height: 100%; background: #7a2e3b; border-radius: 999px; transition: width 0.8s ease; } .dim-score { width: 30px; text-align: right; font-weight: 700; color: #7a2e3b; font-size: 12.5px; }
-    .axes-list { padding-left: 18px; font-size: 14px; line-height: 1.9; color: #5a4a42; text-align: left; }
+    .dim-label { width: 120px; text-align: left; color: #5c6b64; }
+    .dim-bar-bg { flex: 1; background: #e8ebe3; border-radius: 999px; height: 8px; overflow: hidden; }
+    .dim-bar-fill { height: 100%; background: #16283d; border-radius: 999px; transition: width 0.8s ease; } .dim-score { width: 30px; text-align: right; font-weight: 700; color: #16283d; font-size: 12.5px; }
+    .axes-list { padding-left: 18px; font-size: 14px; line-height: 1.9; color: #5c6b64; text-align: left; }
 
     .garden { max-width: 330px; margin: 0 auto 14px; }
     .garden svg { width: 100%; height: auto; display: block; }
@@ -106,10 +106,10 @@
     @keyframes twinkle { 0%,100% { opacity: 0.15; } 50% { opacity: 1; } }
 
     input[type="email"] {
-         width: 100%; padding: 12px 14px; border-radius: 10px; border: 1.5px solid #e8c9cf;
+         width: 100%; padding: 12px 14px; border-radius: 10px; border: 1.5px solid #d8ddd2;
          font-size: 14px; margin-bottom: 10px;
     }
-    .consent { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; color: #6b5a52; margin-bottom: 12px; text-align: left; }
+    .consent { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; color: #5c6b64; margin-bottom: 12px; text-align: left; }
     .hidden { display: none; }
 
     .sound-toggle {
@@ -182,29 +182,29 @@
     
         <div class="card">
               <p class="card-title" id="profile-name"></p>
-              <p style="font-size:13px; color:#6b5a52; margin-bottom:14px;" id="profile-desc"></p>
+              <p style="font-size:13px; color:#5c6b64; margin-bottom:14px;" id="profile-desc"></p>
               <div id="dims"></div>
-              <p style="font-size:12px; color:#a08d84; margin-top:12px;">Pas un diagnostic froid, juste la météo de ton corps à l'instant présent 🌸</p>
+              <p style="font-size:12px; color:#8a968f; margin-top:12px;">Pas un diagnostic froid, juste la météo de ton corps à l'instant présent 🌸</p>
         </div>
     
         <div class="card">
               <p class="card-title">🌱 Mes petites idées douces pour toi</p>
               <ul class="axes-list" id="axes-list"></ul>
-              <p style="font-size:12.5px; color:#6b5a52; margin-top:10px; border-top:1px solid #f0e0dd; padding-top:10px;">🌿 Huile doTERRA associée : <strong id="profile-oil"></strong><br>Envie de te la procurer ? <a href="https://instagram.com/lanaturel.by.leila" target="_blank" style="color:#0099CC;">Écris-moi sur Instagram</a>.</p>
+              <p style="font-size:12.5px; color:#5c6b64; margin-top:10px; border-top:1px solid #e4e8df; padding-top:10px;">🌿 Huile doTERRA associée : <strong id="profile-oil"></strong><br>Envie de te la procurer ? <a href="https://instagram.com/lanaturel.by.leila" target="_blank" style="color:#0099CC;">Écris-moi sur Instagram</a>.</p>
         </div>
     
         <div class="card">
               <p style="font-size:12.5px; color:#0099CC; font-weight:600; margin-bottom:6px;">💝 Ta routine, choisie rien que pour toi</p>
               <p class="card-title" id="result-title"></p>
               <p class="card-duration" id="result-duration"></p>
-              <p style="font-size:13px; color:#6b5a52; margin-bottom:12px; line-height:1.5;" id="routine-why"></p>
+              <p style="font-size:13px; color:#5c6b64; margin-bottom:12px; line-height:1.5;" id="routine-why"></p>
               <ol class="steps-list" id="result-steps"></ol>
-              <p style="font-size:12.5px; color:#6b5a52; margin-top:14px;">🎧 Choisis ta musique pour t'accompagner :</p>
+              <p style="font-size:12.5px; color:#5c6b64; margin-top:14px;">🎧 Choisis ta musique pour t'accompagner :</p>
               <div class="music-row">
                       <button class="btn btn-music" id="music-entrainante" onclick="toggleMusic('entrainante')">✨ Entraînante</button>
                       <button class="btn btn-music" id="music-douce" onclick="toggleMusic('douce')">🌙 Douce</button>
               </div>
-              <p style="font-size:10px; color:#a08d84; margin-top:6px;">Musique : Kevin MacLeod (incompetech.com), licence CC BY 3.0</p>
+              <p style="font-size:10px; color:#8a968f; margin-top:6px;">Musique : Kevin MacLeod (incompetech.com), licence CC BY 3.0</p>
               <a class="btn btn-video" id="result-video" href="#" target="_blank">💙 Lymia t'accompagne en vidéo</a>
         </div>
     
@@ -275,12 +275,12 @@
         <div class="card">
               <p class="card-title">🌱 Pour prendre soin de toi aujourd'hui</p>
               <ul class="axes-list" id="couleur-reco"></ul>
-              <p style="font-size:12.5px; color:#6b5a52; margin-top:10px; border-top:1px solid #f0e0dd; padding-top:10px;">🌿 Huile doTERRA associée : <strong id="couleur-oil"></strong><br>Envie de te la procurer ? <a href="https://instagram.com/lanaturel.by.leila" target="_blank" style="color:#0099CC;">Écris-moi sur Instagram</a>.</p>
+              <p style="font-size:12.5px; color:#5c6b64; margin-top:10px; border-top:1px solid #e4e8df; padding-top:10px;">🌿 Huile doTERRA associée : <strong id="couleur-oil"></strong><br>Envie de te la procurer ? <a href="https://instagram.com/lanaturel.by.leila" target="_blank" style="color:#0099CC;">Écris-moi sur Instagram</a>.</p>
         </div>
-        <p style="font-size:11.5px; color:#a08d84; margin-top:8px;">Les couleurs Lymia représentent ton ressenti du jour, ce n'est pas un diagnostic médical.</p>
-        <div class="card" style="background:#fdf6f3; border:1.5px dashed #e8c9cf;">
+        <p style="font-size:11.5px; color:#8a968f; margin-top:8px;">Les couleurs Lymia représentent ton ressenti du jour, ce n'est pas un diagnostic médical.</p>
+        <div class="card" style="background:#f8f9f6; border:1.5px dashed #d8ddd2;">
               <p class="card-title">✨ Un avant-goût de Lymia</p>
-              <p style="font-size:13px; color:#6b5a52; margin-bottom:10px;">Dans l'abonnement, retrouve chaque semaine de nouvelles recettes et astuces bien-être, comme :</p>
+              <p style="font-size:13px; color:#5c6b64; margin-bottom:10px;">Dans l'abonnement, retrouve chaque semaine de nouvelles recettes et astuces bien-être, comme :</p>
               <ul class="axes-list">
                 <li>🍵 Rituel express anti-ballonnements (3 min)</li>
                 <li>🧴 Recette maison à l'huile essentielle</li>
@@ -297,7 +297,7 @@
               <svg viewBox="0 0 320 230" role="img" aria-label="Une belle fleur rose éclot dans ton Jardin Bien-être">
                       <defs>
                                  <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
-                                              <stop offset="0" stop-color="#fdeef4"/>
+                                              <stop offset="0" stop-color="#f6e6e8"/>
                                               <stop offset="1" stop-color="#fff9ee"/>
                                  </linearGradient>
                                  <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
@@ -311,7 +311,7 @@
                                   <circle cx="272" cy="42" r="26" fill="#ffe9a8" opacity="0.85"/>
                                   <circle cx="272" cy="42" r="38" fill="#ffe9a8" opacity="0.25"/>
                                   <ellipse cx="160" cy="238" rx="230" ry="78" fill="#FBEAEC"/>
-                                  <ellipse cx="160" cy="252" rx="205" ry="62" fill="#f0d9d4"/>
+                                  <ellipse cx="160" cy="252" rx="205" ry="62" fill="#e9c3c6"/>
 
                                   <g stroke="#7A2E3B" stroke-width="3" stroke-linecap="round">
                                                <path d="M56 196 C55 184 57 176 56 168" fill="none"/>
