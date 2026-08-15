@@ -100,6 +100,25 @@
   @keyframes jardinToastFade { 0%{opacity:0; transform:translateY(4px);} 15%{opacity:1; transform:translateY(0);} 85%{opacity:1;} 100%{opacity:0;} }
   .jardin-plant { animation: jardinGrow 0.6s ease-out both; transform-origin: center bottom; }
   @keyframes jardinGrow { from { opacity:0; transform: scale(0.5) translateY(6px); } to { opacity:1; transform: scale(1) translateY(0); } }
+
+  .zone-label { font-size:11px; letter-spacing:0.5px; text-transform:uppercase; color:#8a968f; font-weight:600; margin-bottom:8px; }
+  .essentiel-card { background:linear-gradient(135deg, #16283d, #3d5a4a); color:#eef1ea; border-radius:16px; padding:22px; margin-bottom:16px; box-shadow:0 4px 16px rgba(22,40,61,0.18); }
+  .essentiel-card .zone-label { color:#c9d6cc; }
+  .essentiel-titre { font-size:17px; font-weight:700; margin-bottom:4px; }
+  .essentiel-desc { font-size:13px; opacity:0.9; margin-bottom:6px; }
+  .essentiel-duree { display:inline-block; font-size:11px; background:rgba(255,255,255,0.15); border-radius:12px; padding:3px 10px; margin-bottom:10px; }
+  .essentiel-instructions { font-size:12.5px; line-height:1.5; opacity:0.92; margin-bottom:14px; }
+  .action-btn { display:block; width:100%; background:#eef1ea; color:#16283d; border:none; border-radius:12px; padding:11px; font-size:13.5px; font-weight:600; cursor:pointer; }
+  .action-btn.done { background:rgba(255,255,255,0.15); color:#eef1ea; cursor:default; }
+  .routine-list { margin-bottom:12px; }
+  .routine-item { display:flex; align-items:center; justify-content:space-between; padding:9px 0; border-bottom:1px solid #eef1ea; font-size:13px; color:#16283d; }
+  .routine-item:last-child { border-bottom:none; }
+  .routine-item-titre { flex:1; margin-right:8px; }
+  .routine-item-duree { font-size:11px; color:#8a968f; white-space:nowrap; }
+  .recette-card { background:#fbf3ea; }
+  .recette-ingredients { font-size:12.5px; color:#4a4438; margin:8px 0; padding-left:18px; }
+  .inspiration-card { transition:background 0.4s ease; }
+  .couleur-swatch { width:34px; height:34px; border-radius:50%; margin-bottom:8px; box-shadow:0 2px 6px rgba(0,0,0,0.12); }
 </style>
 </head>
 <body>
@@ -184,16 +203,21 @@
       <div id="jardin-preview-content"><p class="rituel-texte">Chargement de ton jardin...</p></div>
       <div class="jardin-next">Touche pour ouvrir ton jardin</div>
     </div>
-
+    <div class="essentiel-card" id="essentiel-card">
+      <div class="zone-label">Ton essentiel du jour</div>
+      <div id="journee-essentiel-content"><p class="rituel-texte" style="color:#eef1ea;">Preparation de ton essentiel...</p></div>
+    </div>
     <div class="card">
-      <div class="mantra-label">Bientot dans ta journee</div>
-      <div class="bientot-list">
-        <span class="bientot-item">Ton essentiel</span>
-        <span class="bientot-item">Ta routine</span>
-        <span class="bientot-item">Ton idee repas</span>
-        <span class="bientot-item">Ta carte du jour</span>
-        <span class="bientot-item">Ta couleur du jour</span>
-      </div>
+      <div class="zone-label">Ta routine du jour</div>
+      <div id="journee-routine-content"><p class="rituel-texte">Preparation de ta routine...</p></div>
+    </div>
+    <div class="card recette-card">
+      <div class="zone-label">Ton idee repas</div>
+      <div id="journee-recette-content"><p class="rituel-texte">Chargement...</p></div>
+    </div>
+    <div class="card inspiration-card" id="inspiration-card">
+      <div class="zone-label">Ta carte et ta couleur du jour</div>
+      <div id="journee-inspiration-content"><p class="rituel-texte">Chargement...</p></div>
     </div>
     <a class="back-link" href="#" onclick="showDashFromJournee(); return false;">Refaire mon check-in</a>
     <a class="back-link" href="#" onclick="showDashFromJournee(); return false;">Voir mon profil et mon abonnement</a>
@@ -669,14 +693,21 @@
       (message ? '<p class="rituel-texte" style="text-align:center; margin-top:8px;">' + message + '</p>' : '') +
       (priorites && priorites.length
         ? '<div class="mantra-label" style="margin-top:14px; text-align:center;">Aujourd\'hui, tes priorites</div>' +
-          '<div class="priorite-tags">' + priorites.map(p => '<span class="priorite-tag">' + p.label + '</span>').join('') + '</div>'
+          '<div class="priorite-tags">' + priorites.map(function(p){ return '<span class="priorite-tag">' + p.label + '</span>'; }).join('') + '</div>'
         : '<p class="rituel-texte" style="text-align:center; margin-top:10px;">Priorites en cours de calcul.</p>');
     const temps = checkinRow && checkinRow.temps_disponible;
     document.getElementById('journee-temps-content').innerHTML = temps
       ? '<span class="temps-badge">Tu as choisi ' + temps + ' minutes pour toi aujourd\'hui</span>'
       : '<p class="rituel-texte">Temps non renseigne.</p>';
-  renderJardinPreview();
+
+    const tempsEffectif = temps || 10;
+    renderEssentielEtRoutine(niveauNom, priorites, tempsEffectif);
+    renderRecette(tempsEffectif);
+    renderInspiration();
+    renderJardinPreview();
   }
+
+  
 
   async function getTodayCheckin(userId) {
     const today = new Date().toISOString().slice(0,10);
@@ -864,6 +895,153 @@
     document.getElementById('jardin-view').classList.add('hidden');
     document.getElementById('journee-view').classList.remove('hidden');
   }
+
+  let CONTENUS_CACHE = null;
+  async function getContenusActifs() {
+    if (CONTENUS_CACHE) return CONTENUS_CACHE;
+    const { data } = await sb.from('contenus').select('*, contenu_categories(categories(slug))').eq('actif', true);
+    CONTENUS_CACHE = data || [];
+    return CONTENUS_CACHE;
+  }
+
+  function contenuSlugs(contenu) {
+    return (contenu.contenu_categories || []).map(function(cc){ return cc.categories && cc.categories.slug; }).filter(Boolean);
+  }
+
+  function prioriteSlugs(priorites) {
+    const slugs = [];
+    (priorites || []).forEach(function(p) {
+      const mapEntry = AXIS_CATEGORY_MAP[p.axe];
+      if (mapEntry) mapEntry.slugs.forEach(function(s){ if (slugs.indexOf(s) === -1) slugs.push(s); });
+    });
+    return slugs;
+  }
+
+  async function choisirEssentielEtRoutine(niveauNom, priorites, tempsDisponible) {
+    const all = await getContenusActifs();
+    const eligibles = all.filter(function(c){ return Array.isArray(c.niveaux) && c.niveaux.indexOf(niveauNom) !== -1; });
+    const slugsPriorite = prioriteSlugs(priorites);
+    const scored = eligibles.map(function(c) {
+      const cs = contenuSlugs(c);
+      let rang = 99;
+      cs.forEach(function(s) { const i = slugsPriorite.indexOf(s); if (i !== -1 && i < rang) rang = i; });
+      return { contenu: c, rang: rang };
+    }).filter(function(x){ return x.rang < 99; }).sort(function(a, b){ return (a.rang - b.rang) || (a.contenu.duree_minutes - b.contenu.duree_minutes); });
+
+    const essentielMatch = scored.find(function(x){ return x.contenu.duree_minutes <= tempsDisponible; }) || scored[0] || null;
+    const reste = scored.filter(function(x){ return !essentielMatch || x.contenu.id !== essentielMatch.contenu.id; });
+
+    const routine = [];
+    let cumul = 0;
+    for (let i = 0; i < reste.length && routine.length < 3; i++) {
+      const item = reste[i];
+      if (cumul + item.contenu.duree_minutes <= tempsDisponible) {
+        routine.push(item);
+        cumul += item.contenu.duree_minutes;
+      }
+    }
+
+    return { essentiel: essentielMatch ? essentielMatch.contenu : null, routine: routine.map(function(r){ return r.contenu; }) };
+  }
+
+  async function choisirRecette(tempsDisponible) {
+    const { data } = await sb.from('recettes').select('*').eq('actif', true).order('temps_minutes', { ascending: false });
+    if (!data || !data.length) return null;
+    const dansLeTemps = data.filter(function(r){ return r.temps_minutes <= tempsDisponible; });
+    if (dansLeTemps.length) return dansLeTemps[0];
+    return data.reduce(function(min, r){ return r.temps_minutes < min.temps_minutes ? r : min; }, data[0]);
+  }
+
+  let INSPIRATION_CACHE = null;
+  async function choisirInspiration() {
+    if (!INSPIRATION_CACHE) {
+      const { data } = await sb.from('inspiration_du_jour').select('*').eq('actif', true).order('ordre', { ascending: true });
+      INSPIRATION_CACHE = data || [];
+    }
+    if (!INSPIRATION_CACHE.length) return null;
+    const start = new Date(new Date().getFullYear(), 0, 0);
+    const dayOfYear = Math.floor((Date.now() - start.getTime()) / 86400000);
+    return INSPIRATION_CACHE[dayOfYear % INSPIRATION_CACHE.length];
+  }
+
+  function contenuIcon() {
+    return '<svg width="14" height="14" viewBox="0 0 14 14" style="vertical-align:-2px; margin-right:5px;"><circle cx="7" cy="7" r="6" fill="none" stroke="#5c7a52" stroke-width="1.3"/><circle cx="7" cy="7" r="2.4" fill="#8fb178"/></svg>';
+  }
+
+  async function renderEssentielEtRoutine(niveauNom, priorites, tempsDisponible) {
+    const essEl = document.getElementById('journee-essentiel-content');
+    const routEl = document.getElementById('journee-routine-content');
+    if (!essEl || !routEl) return;
+    const result = await choisirEssentielEtRoutine(niveauNom, priorites, tempsDisponible);
+    const essentiel = result.essentiel;
+    const routine = result.routine;
+    const today = new Date().toISOString().slice(0, 10);
+    const { data: doneLog } = await sb.from('jardin_actions_log').select('action_key').eq('date', today);
+    const doneKeys = (doneLog || []).map(function(d){ return d.action_key; });
+
+    if (essentiel) {
+      const essDone = doneKeys.indexOf('essentiel_realise') !== -1;
+      essEl.innerHTML =
+        '<div class="essentiel-titre">' + essentiel.titre + '</div>' +
+        '<p class="essentiel-desc">' + (essentiel.description || '') + '</p>' +
+        '<div class="essentiel-duree">' + essentiel.duree_minutes + ' minutes</div>' +
+        (essentiel.instructions ? '<p class="essentiel-instructions">' + essentiel.instructions + '</p>' : '') +
+        '<button class="action-btn' + (essDone ? ' done' : '') + '" id="essentiel-btn" onclick="marquerFait(\'essentiel_realise\',\'essentiel-btn\')"' + (essDone ? ' disabled' : '') + '>' + (essDone ? 'Fait aujourd\'hui' : 'J\'ai fait mon essentiel') + '</button>';
+    } else {
+      essEl.innerHTML = '<p class="rituel-texte" style="color:#eef1ea;">Pas encore assez de contenus pour ton profil aujourd\'hui.</p>';
+    }
+
+    if (routine && routine.length) {
+      const routDone = doneKeys.indexOf('routine_terminee') !== -1;
+      routEl.innerHTML =
+        '<div class="routine-list">' + routine.map(function(c) {
+          return '<div class="routine-item">' + contenuIcon() + '<span class="routine-item-titre">' + c.titre + '</span><span class="routine-item-duree">' + c.duree_minutes + ' min</span></div>';
+        }).join('') + '</div>' +
+        '<button class="action-btn' + (routDone ? ' done' : '') + '" id="routine-btn" onclick="marquerFait(\'routine_terminee\',\'routine-btn\')"' + (routDone ? ' disabled' : '') + '>' + (routDone ? 'Fait aujourd\'hui' : 'J\'ai termine ma routine') + '</button>';
+    } else {
+      routEl.innerHTML = '<p class="rituel-texte">Ton essentiel du jour suffit pour aujourd\'hui.</p>';
+    }
+  }
+
+  async function renderRecette(tempsDisponible) {
+    const el = document.getElementById('journee-recette-content');
+    if (!el) return;
+    const recette = await choisirRecette(tempsDisponible);
+    if (!recette) { el.innerHTML = '<p class="rituel-texte">Pas de recette disponible pour le moment.</p>'; return; }
+    const ingredients = Array.isArray(recette.ingredients) ? recette.ingredients : [];
+    el.innerHTML =
+      '<div class="essentiel-titre" style="color:#16283d;">' + recette.titre + '</div>' +
+      '<div class="jardin-next" style="margin-top:2px;">' + recette.temps_minutes + ' minutes</div>' +
+      (ingredients.length ? '<ul class="recette-ingredients">' + ingredients.map(function(i){ return '<li>' + i + '</li>'; }).join('') + '</ul>' : '') +
+      (recette.etapes ? '<p class="rituel-texte" style="margin-top:6px;">' + recette.etapes + '</p>' : '');
+  }
+
+  async function renderInspiration() {
+    const el = document.getElementById('journee-inspiration-content');
+    const card = document.getElementById('inspiration-card');
+    if (!el) return;
+    const insp = await choisirInspiration();
+    if (!insp) { el.innerHTML = '<p class="rituel-texte">Chargement...</p>'; return; }
+    if (card) card.style.background = 'linear-gradient(135deg, ' + insp.couleur_hex + '22, #ffffff)';
+    el.innerHTML =
+      '<div class="couleur-swatch" style="background:' + insp.couleur_hex + ';"></div>' +
+      '<div class="essentiel-titre" style="color:#16283d;">' + insp.couleur_nom + '</div>' +
+      '<p class="jardin-next" style="margin-top:0;">' + (insp.couleur_symbolique || '') + '</p>' +
+      '<p class="rituel-texte" style="font-style:italic; margin-top:8px;">' + insp.mantra + '</p>' +
+      (insp.couleur_usage ? '<p class="rituel-texte" style="margin-top:6px;">' + insp.couleur_usage + '</p>' : '');
+  }
+
+  async function marquerFait(actionKey, btnId) {
+    const btn = document.getElementById(btnId);
+    if (btn) { btn.disabled = true; btn.textContent = 'Enregistrement...'; }
+    const result = await awardJardinPoints(actionKey);
+    if (btn) { btn.textContent = 'Fait aujourd\'hui'; btn.classList.add('done'); }
+    if (result && result.awarded) {
+      LAST_JARDIN_AWARD = result;
+      renderJardinPreview();
+    }
+  }
+  
 
   
 
