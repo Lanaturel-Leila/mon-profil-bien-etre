@@ -119,6 +119,15 @@
   .recette-ingredients { font-size:12.5px; color:#4a4438; margin:8px 0; padding-left:18px; }
   .inspiration-card { transition:background 0.4s ease; }
   .couleur-swatch { width:34px; height:34px; border-radius:50%; margin-bottom:8px; box-shadow:0 2px 6px rgba(0,0,0,0.12); }
+
+  .recette-explication { font-size:12px; color:#5c7a52; background:#f2f5ee; border-radius:10px; padding:8px 10px; margin:8px 0; font-style:italic; }
+  .voir-autre-btn { display:block; width:100%; background:none; border:1px solid #d8ddd2; color:#5c7a52; border-radius:12px; padding:9px; font-size:12.5px; font-weight:600; cursor:pointer; margin-top:8px; }
+  .rituel-duo { display:flex; flex-direction:column; gap:14px; }
+  .carte-bloc { border-left:3px solid #16283d; padding-left:12px; }
+  .carte-theme { font-size:10.5px; letter-spacing:0.5px; text-transform:uppercase; color:#8a968f; margin-bottom:2px; }
+  .carte-titre { font-size:16px; font-weight:700; color:#16283d; font-style:italic; margin-bottom:4px; }
+  .couleur-bloc { display:flex; gap:12px; align-items:flex-start; }
+  .couleur-texte { flex:1; }
 </style>
 </head>
 <body>
@@ -460,7 +469,7 @@
   }
 
   const AXIS_CATEGORY_MAP = {
-    energie: { label: 'Energie', slugs: ['energie'] },
+    energie: { label: 'Énergie', slugs: ['energie'] },
     sommeil: { label: 'Sommeil', slugs: ['sommeil'] },
     stress: { label: 'Stress', slugs: ['stress'] },
     digestion: { label: 'Digestion', slugs: ['digestion','ventre'] },
@@ -692,20 +701,22 @@
       '</div>' +
       (message ? '<p class="rituel-texte" style="text-align:center; margin-top:8px;">' + message + '</p>' : '') +
       (priorites && priorites.length
-        ? '<div class="mantra-label" style="margin-top:14px; text-align:center;">Aujourd\'hui, tes priorites</div>' +
+        ? '<div class="mantra-label" style="margin-top:14px; text-align:center;">Aujourd\'hui, tes priorités</div>' +
           '<div class="priorite-tags">' + priorites.map(function(p){ return '<span class="priorite-tag">' + p.label + '</span>'; }).join('') + '</div>'
-        : '<p class="rituel-texte" style="text-align:center; margin-top:10px;">Priorites en cours de calcul.</p>');
+        : '<p class="rituel-texte" style="text-align:center; margin-top:10px;">Priorités en cours de calcul.</p>');
     const temps = checkinRow && checkinRow.temps_disponible;
     document.getElementById('journee-temps-content').innerHTML = temps
       ? '<span class="temps-badge">Tu as choisi ' + temps + ' minutes pour toi aujourd\'hui</span>'
-      : '<p class="rituel-texte">Temps non renseigne.</p>';
+      : '<p class="rituel-texte">Temps non renseigné.</p>';
 
     const tempsEffectif = temps || 10;
     renderEssentielEtRoutine(niveauNom, priorites, tempsEffectif);
-    renderRecette(tempsEffectif);
-    renderInspiration();
+    renderRecette(priorites);
+    renderCarteEtCouleur();
     renderJardinPreview();
   }
+
+  
 
   
 
@@ -917,51 +928,68 @@
     return slugs;
   }
 
-  async function choisirEssentielEtRoutine(niveauNom, priorites, tempsDisponible) {
+  async function getRecentHistorique(userId, contenuType, jours) {
+    const since = new Date(Date.now() - jours * 86400000).toISOString().slice(0, 10);
+    const { data } = await sb.from('contenu_historique').select('contenu_id').eq('user_id', userId).eq('contenu_type', contenuType).gte('date', since);
+    return (data || []).map(function(d){ return d.contenu_id; });
+  }
+
+  async function logHistorique(userId, contenuType, contenuId) {
+    if (!contenuId) return;
+    try { await sb.from('contenu_historique').insert({ user_id: userId, contenu_type: contenuType, contenu_id: contenuId }); } catch (e) {}
+  }
+
+  function energiePreferee(niveauNom) {
+    if (niveauNom === 'Journee dynamique') return ['modere', 'eleve'];
+    if (niveauNom === 'Journee equilibre') return ['bas', 'modere'];
+    return ['bas'];
+  }
+
+  async function choisirEssentiel(niveauNom, priorites, tempsDisponible, userId) {
     const all = await getContenusActifs();
-    const eligibles = all.filter(function(c){ return Array.isArray(c.niveaux) && c.niveaux.indexOf(niveauNom) !== -1; });
     const slugsPriorite = prioriteSlugs(priorites);
+    const recents = userId ? await getRecentHistorique(userId, 'essentiel', 3) : [];
+    const eligibles = all.filter(function(c){ return c.type === 'essentiel' && Array.isArray(c.niveaux) && c.niveaux.indexOf(niveauNom) !== -1; });
     const scored = eligibles.map(function(c) {
       const cs = contenuSlugs(c);
       let rang = 99;
       cs.forEach(function(s) { const i = slugsPriorite.indexOf(s); if (i !== -1 && i < rang) rang = i; });
-      return { contenu: c, rang: rang };
-    }).filter(function(x){ return x.rang < 99; }).sort(function(a, b){ return (a.rang - b.rang) || (a.contenu.duree_minutes - b.contenu.duree_minutes); });
+      const recent = recents.indexOf(c.id) !== -1 ? 1 : 0;
+      return { contenu: c, rang: rang, recent: recent };
+    }).filter(function(x){ return x.rang < 99; })
+      .sort(function(a, b){ return a.recent - b.recent || a.rang - b.rang || a.contenu.duree_minutes - b.contenu.duree_minutes; });
+    const pick = scored.find(function(x){ return x.contenu.duree_minutes <= tempsDisponible; }) || scored[0] || null;
+    if (pick && userId) logHistorique(userId, 'essentiel', pick.contenu.id);
+    return pick ? pick.contenu : null;
+  }
 
-    const essentielMatch = scored.find(function(x){ return x.contenu.duree_minutes <= tempsDisponible; }) || scored[0] || null;
-    const reste = scored.filter(function(x){ return !essentielMatch || x.contenu.id !== essentielMatch.contenu.id; });
+  async function choisirRoutine(niveauNom, priorites, tempsDisponible, userId, excludeId) {
+    const all = await getContenusActifs();
+    const slugsPriorite = prioriteSlugs(priorites);
+    const energiePref = energiePreferee(niveauNom);
+    const recents = userId ? await getRecentHistorique(userId, 'routine', 2) : [];
+    const eligibles = all.filter(function(c){ return c.type !== 'essentiel' && c.type !== 'recette' && c.id !== excludeId && Array.isArray(c.niveaux) && c.niveaux.indexOf(niveauNom) !== -1; });
+    const scored = eligibles.map(function(c) {
+      const cs = contenuSlugs(c);
+      let rang = 99;
+      cs.forEach(function(s) { const i = slugsPriorite.indexOf(s); if (i !== -1 && i < rang) rang = i; });
+      const energieOk = energiePref.indexOf(c.niveau_energie) !== -1 ? 0 : 1;
+      const recent = recents.indexOf(c.id) !== -1 ? 1 : 0;
+      return { contenu: c, rang: rang, energieOk: energieOk, recent: recent };
+    }).filter(function(x){ return x.rang < 99; })
+      .sort(function(a, b){ return a.recent - b.recent || a.rang - b.rang || a.energieOk - b.energieOk || a.contenu.duree_minutes - b.contenu.duree_minutes; });
 
     const routine = [];
     let cumul = 0;
-    for (let i = 0; i < reste.length && routine.length < 3; i++) {
-      const item = reste[i];
+    for (let i = 0; i < scored.length && routine.length < 4; i++) {
+      const item = scored[i];
       if (cumul + item.contenu.duree_minutes <= tempsDisponible) {
         routine.push(item);
         cumul += item.contenu.duree_minutes;
       }
     }
-
-    return { essentiel: essentielMatch ? essentielMatch.contenu : null, routine: routine.map(function(r){ return r.contenu; }) };
-  }
-
-  async function choisirRecette(tempsDisponible) {
-    const { data } = await sb.from('recettes').select('*').eq('actif', true).order('temps_minutes', { ascending: false });
-    if (!data || !data.length) return null;
-    const dansLeTemps = data.filter(function(r){ return r.temps_minutes <= tempsDisponible; });
-    if (dansLeTemps.length) return dansLeTemps[0];
-    return data.reduce(function(min, r){ return r.temps_minutes < min.temps_minutes ? r : min; }, data[0]);
-  }
-
-  let INSPIRATION_CACHE = null;
-  async function choisirInspiration() {
-    if (!INSPIRATION_CACHE) {
-      const { data } = await sb.from('inspiration_du_jour').select('*').eq('actif', true).order('ordre', { ascending: true });
-      INSPIRATION_CACHE = data || [];
-    }
-    if (!INSPIRATION_CACHE.length) return null;
-    const start = new Date(new Date().getFullYear(), 0, 0);
-    const dayOfYear = Math.floor((Date.now() - start.getTime()) / 86400000);
-    return INSPIRATION_CACHE[dayOfYear % INSPIRATION_CACHE.length];
+    if (userId) routine.forEach(function(r){ logHistorique(userId, 'routine', r.contenu.id); });
+    return routine.map(function(r){ return r.contenu; });
   }
 
   function contenuIcon() {
@@ -972,9 +1000,12 @@
     const essEl = document.getElementById('journee-essentiel-content');
     const routEl = document.getElementById('journee-routine-content');
     if (!essEl || !routEl) return;
-    const result = await choisirEssentielEtRoutine(niveauNom, priorites, tempsDisponible);
-    const essentiel = result.essentiel;
-    const routine = result.routine;
+    const { data: { session } } = await sb.auth.getSession();
+    const userId = session && session.user ? session.user.id : null;
+
+    const essentiel = await choisirEssentiel(niveauNom, priorites, tempsDisponible, userId);
+    const routine = await choisirRoutine(niveauNom, priorites, tempsDisponible, userId, essentiel ? essentiel.id : null);
+
     const today = new Date().toISOString().slice(0, 10);
     const { data: doneLog } = await sb.from('jardin_actions_log').select('action_key').eq('date', today);
     const doneKeys = (doneLog || []).map(function(d){ return d.action_key; });
@@ -982,53 +1013,197 @@
     if (essentiel) {
       const essDone = doneKeys.indexOf('essentiel_realise') !== -1;
       essEl.innerHTML =
-        '<div class="essentiel-titre">' + essentiel.titre + '</div>' +
-        '<p class="essentiel-desc">' + (essentiel.description || '') + '</p>' +
+        '<div class="essentiel-titre">' + (essentiel.instructions || essentiel.titre) + '</div>' +
+        (essentiel.description ? '<p class="essentiel-desc">' + essentiel.description + '</p>' : '') +
         '<div class="essentiel-duree">' + essentiel.duree_minutes + ' minutes</div>' +
-        (essentiel.instructions ? '<p class="essentiel-instructions">' + essentiel.instructions + '</p>' : '') +
-        '<button class="action-btn' + (essDone ? ' done' : '') + '" id="essentiel-btn" onclick="marquerFait(\'essentiel_realise\',\'essentiel-btn\')"' + (essDone ? ' disabled' : '') + '>' + (essDone ? 'Fait aujourd\'hui' : 'J\'ai fait mon essentiel') + '</button>';
+        '<button class="action-btn' + (essDone ? ' done' : '') + '" id="essentiel-btn" onclick="marquerFait(\'essentiel_realise\',\'essentiel-btn\')"' + (essDone ? ' disabled' : '') + '>' + (essDone ? 'Fait aujourd\'hui' : 'Je l\'ai fait') + '</button>';
     } else {
       essEl.innerHTML = '<p class="rituel-texte" style="color:#eef1ea;">Pas encore assez de contenus pour ton profil aujourd\'hui.</p>';
     }
 
     if (routine && routine.length) {
       const routDone = doneKeys.indexOf('routine_terminee') !== -1;
+      const totalMin = routine.reduce(function(s, c){ return s + c.duree_minutes; }, 0);
       routEl.innerHTML =
+        '<div class="jardin-next" style="margin-bottom:8px;">Total : ' + totalMin + ' minutes</div>' +
         '<div class="routine-list">' + routine.map(function(c) {
-          return '<div class="routine-item">' + contenuIcon() + '<span class="routine-item-titre">' + c.titre + '</span><span class="routine-item-duree">' + c.duree_minutes + ' min</span></div>';
+          return '<div class="routine-item">' + contenuIcon() + '<span class="routine-item-titre">' + c.titre + (c.instructions ? ' — ' + c.instructions : '') + '</span><span class="routine-item-duree">' + c.duree_minutes + ' min</span></div>';
         }).join('') + '</div>' +
-        '<button class="action-btn' + (routDone ? ' done' : '') + '" id="routine-btn" onclick="marquerFait(\'routine_terminee\',\'routine-btn\')"' + (routDone ? ' disabled' : '') + '>' + (routDone ? 'Fait aujourd\'hui' : 'J\'ai termine ma routine') + '</button>';
+        '<button class="action-btn' + (routDone ? ' done' : '') + '" id="routine-btn" onclick="marquerFait(\'routine_terminee\',\'routine-btn\')"' + (routDone ? ' disabled' : '') + '>' + (routDone ? 'Fait aujourd\'hui' : 'J\'ai terminé ma routine') + '</button>';
     } else {
       routEl.innerHTML = '<p class="rituel-texte">Ton essentiel du jour suffit pour aujourd\'hui.</p>';
     }
   }
 
-  async function renderRecette(tempsDisponible) {
+  let RECETTE_CANDIDATES = [];
+  let RECETTE_INDEX = 0;
+
+  function tempsCuisineDepuisPreference(pref) {
+    if (pref === 'express') return 10;
+    if (pref === 'simple') return 20;
+    if (pref === 'jaime_cuisiner') return 60;
+    return 20;
+  }
+
+  const OBJECTIF_SLUG_MAP = {
+    digestion: ['digestion', 'confort_digestif'],
+    energie: ['energie'],
+    sommeil: ['apaisement', 'recuperation'],
+    stress: ['apaisement'],
+    confort_corporel: ['recuperation'],
+    mouvement: ['recuperation', 'energie'],
+    hydratation: ['hydratation']
+  };
+
+  async function choisirRecetteIntelligente(priorites, userId) {
+    const { data: recettesData } = await sb.from('recettes').select('*').eq('actif', true);
+    const recettes = recettesData || [];
+    let profile = null;
+    if (userId) {
+      const { data } = await sb.from('profiles').select('*').eq('id', userId).maybeSingle();
+      profile = data;
+    }
+    const tempsCuisine = tempsCuisineDepuisPreference(profile && profile.preference_cuisine);
+    const allergies = (profile && profile.allergies) || [];
+    const exclus = (profile && profile.aliments_exclus) || [];
+    const objectifsProfil = (profile && profile.objectifs_nutrition) || [];
+    const recents = userId ? await getRecentHistorique(userId, 'recette', 4) : [];
+
+    const objectifsPriorite = [];
+    (priorites || []).forEach(function(p) {
+      const slugs = OBJECTIF_SLUG_MAP[p.axe] || [];
+      slugs.forEach(function(s){ if (objectifsPriorite.indexOf(s) === -1) objectifsPriorite.push(s); });
+    });
+
+    const compatibles = recettes.filter(function(r) {
+      if (r.temps_minutes > tempsCuisine) return false;
+      const allergenes = r.allergenes || [];
+      const exclusions = r.exclusions || [];
+      if (allergies.some(function(a){ return allergenes.indexOf(a) !== -1; })) return false;
+      if (exclus.some(function(e){ return exclusions.indexOf(e) !== -1; })) return false;
+      return true;
+    });
+
+    const scored = compatibles.map(function(r) {
+      const tags = r.tags_objectifs || [];
+      let score = 0;
+      const raisons = [];
+      objectifsPriorite.forEach(function(o) { if (tags.indexOf(o) !== -1) { score += 3; raisons.push('priorite:' + o); } });
+      objectifsProfil.forEach(function(o) { if (tags.indexOf(o) !== -1) { score += 2; raisons.push('objectif:' + o); } });
+      const recent = recents.indexOf(r.id) !== -1;
+      if (recent) score -= 5;
+      return { recette: r, score: score, raisons: raisons, recent: recent };
+    }).sort(function(a, b){ return b.score - a.score; });
+
+    return { candidats: scored, tempsCuisine: tempsCuisine };
+  }
+
+  function explicationRecette(item, tempsCuisine) {
+    if (!item) return '';
+    const parts = [];
+    const raisonsUniques = [];
+    item.raisons.forEach(function(r){ if (raisonsUniques.indexOf(r) === -1) raisonsUniques.push(r); });
+    if (raisonsUniques.some(function(r){ return r.indexOf('priorite:') === 0; })) {
+      parts.push('elle correspond a l\'un de tes besoins du jour');
+    }
+    if (raisonsUniques.some(function(r){ return r.indexOf('objectif:') === 0; })) {
+      parts.push('elle correspond a l\'un de tes objectifs nutrition');
+    }
+    parts.push('elle tient dans le temps que tu t\'accordes pour cuisiner (' + tempsCuisine + ' min)');
+    return 'Pourquoi cette idee aujourd\'hui : ' + parts.join(', ') + '.';
+  }
+
+  function renderUneRecette(item, tempsCuisine) {
     const el = document.getElementById('journee-recette-content');
-    if (!el) return;
-    const recette = await choisirRecette(tempsDisponible);
-    if (!recette) { el.innerHTML = '<p class="rituel-texte">Pas de recette disponible pour le moment.</p>'; return; }
+    if (!el || !item) { if (el) el.innerHTML = '<p class="rituel-texte">Pas de recette disponible pour le moment.</p>'; return; }
+    const recette = item.recette;
     const ingredients = Array.isArray(recette.ingredients) ? recette.ingredients : [];
     el.innerHTML =
       '<div class="essentiel-titre" style="color:#16283d;">' + recette.titre + '</div>' +
-      '<div class="jardin-next" style="margin-top:2px;">' + recette.temps_minutes + ' minutes</div>' +
+      '<div class="jardin-next" style="margin-top:2px;">' + recette.temps_minutes + ' min' + (recette.difficulte ? ' — ' + recette.difficulte.replace('_', ' ') : '') + '</div>' +
+      (recette.description ? '<p class="rituel-texte" style="margin-top:6px;">' + recette.description + '</p>' : '') +
       (ingredients.length ? '<ul class="recette-ingredients">' + ingredients.map(function(i){ return '<li>' + i + '</li>'; }).join('') + '</ul>' : '') +
-      (recette.etapes ? '<p class="rituel-texte" style="margin-top:6px;">' + recette.etapes + '</p>' : '');
+      (recette.etapes ? '<p class="rituel-texte" style="margin-top:6px;">' + recette.etapes + '</p>' : '') +
+      '<div class="recette-explication">' + explicationRecette(item, tempsCuisine) + '</div>' +
+      '<button class="voir-autre-btn" onclick="voirAutreRecette()">Voir une autre idée</button>';
   }
 
-  async function renderInspiration() {
+  function voirAutreRecette() {
+    if (!RECETTE_CANDIDATES.length) return;
+    RECETTE_INDEX = (RECETTE_INDEX + 1) % RECETTE_CANDIDATES.length;
+    const item = RECETTE_CANDIDATES[RECETTE_INDEX];
+    renderUneRecette(item, RECETTE_TEMPS_CUISINE);
+    logHistorique(CURRENT_USER_ID, 'recette', item.recette.id);
+  }
+
+  let RECETTE_TEMPS_CUISINE = 20;
+  let CURRENT_USER_ID = null;
+
+  async function renderRecette(priorites) {
+    const el = document.getElementById('journee-recette-content');
+    if (!el) return;
+    const { data: { session } } = await sb.auth.getSession();
+    const userId = session && session.user ? session.user.id : null;
+    CURRENT_USER_ID = userId;
+    const result = await choisirRecetteIntelligente(priorites, userId);
+    RECETTE_CANDIDATES = result.candidats;
+    RECETTE_TEMPS_CUISINE = result.tempsCuisine;
+    RECETTE_INDEX = 0;
+    if (!result.candidats.length) { el.innerHTML = '<p class="rituel-texte">Pas de recette disponible dans ce temps de cuisine.</p>'; return; }
+    renderUneRecette(result.candidats[0], result.tempsCuisine);
+    if (userId) logHistorique(userId, 'recette', result.candidats[0].recette.id);
+  }
+
+  async function choisirUn(table, userId, offsetJours) {
+    const { data } = await sb.from(table).select('*').eq('actif', true).order('id', { ascending: true });
+    if (!data || !data.length) return null;
+    const start = new Date(new Date().getFullYear(), 0, 0);
+    const dayOfYear = Math.floor((Date.now() - start.getTime()) / 86400000) + offsetJours;
+    let idx = ((dayOfYear % data.length) + data.length) % data.length;
+    if (userId) {
+      const type = table === 'cartes_lymia' ? 'carte' : 'couleur';
+      const recents = await getRecentHistorique(userId, type, 3);
+      let tries = 0;
+      while (recents.indexOf(data[idx].id) !== -1 && tries < data.length) {
+        idx = (idx + 1) % data.length;
+        tries++;
+      }
+      logHistorique(userId, type, data[idx].id);
+    }
+    return data[idx];
+  }
+
+  async function renderCarteEtCouleur() {
     const el = document.getElementById('journee-inspiration-content');
     const card = document.getElementById('inspiration-card');
     if (!el) return;
-    const insp = await choisirInspiration();
-    if (!insp) { el.innerHTML = '<p class="rituel-texte">Chargement...</p>'; return; }
-    if (card) card.style.background = 'linear-gradient(135deg, ' + insp.couleur_hex + '22, #ffffff)';
-    el.innerHTML =
-      '<div class="couleur-swatch" style="background:' + insp.couleur_hex + ';"></div>' +
-      '<div class="essentiel-titre" style="color:#16283d;">' + insp.couleur_nom + '</div>' +
-      '<p class="jardin-next" style="margin-top:0;">' + (insp.couleur_symbolique || '') + '</p>' +
-      '<p class="rituel-texte" style="font-style:italic; margin-top:8px;">' + insp.mantra + '</p>' +
-      (insp.couleur_usage ? '<p class="rituel-texte" style="margin-top:6px;">' + insp.couleur_usage + '</p>' : '');
+    const { data: { session } } = await sb.auth.getSession();
+    const userId = session && session.user ? session.user.id : null;
+    const carte = await choisirUn('cartes_lymia', userId, 0);
+    const couleur = await choisirUn('couleurs_lymia', userId, 7);
+    if (card && couleur) card.style.background = 'linear-gradient(135deg, ' + couleur.hex + '22, #ffffff)';
+    let html = '<div class="rituel-duo">';
+    if (carte) {
+      html += '<div class="carte-bloc">' +
+        '<div class="carte-theme">' + carte.theme + '</div>' +
+        '<div class="carte-titre">' + carte.titre + '</div>' +
+        '<p class="rituel-texte" style="font-style:italic;">' + carte.mantra + '</p>' +
+        (carte.message ? '<p class="rituel-texte" style="margin-top:6px;">' + carte.message + '</p>' : '') +
+        (carte.invitation ? '<p class="jardin-next" style="margin-top:6px;">' + carte.invitation + '</p>' : '') +
+        '</div>';
+    }
+    if (couleur) {
+      html += '<div class="couleur-bloc">' +
+        '<div class="couleur-swatch" style="background:' + couleur.hex + '; flex-shrink:0;"></div>' +
+        '<div class="couleur-texte">' +
+        '<div class="essentiel-titre" style="color:#16283d; font-size:15px;">' + couleur.nom + '</div>' +
+        '<p class="jardin-next" style="margin-top:0;">' + (couleur.symbolique || '') + '</p>' +
+        '<p class="rituel-texte" style="margin-top:6px;">' + (couleur.message || '') + '</p>' +
+        (couleur.usage ? '<p class="rituel-texte" style="margin-top:4px;">' + couleur.usage + '</p>' : '') +
+        '</div></div>';
+    }
+    html += '</div>';
+    el.innerHTML = html;
   }
 
   async function marquerFait(actionKey, btnId) {
@@ -1041,6 +1216,8 @@
       renderJardinPreview();
     }
   }
+  
+  
   
 
   
