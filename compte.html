@@ -155,7 +155,38 @@
 
     <a class="back-link" href="index.html">← Refaire le bilan bien-être</a>
   </div>
-</div>
+<div id="journee-view" class="hidden">
+    <div class="card">
+      <h2 style="margin:0 0 10px; font-size:18px; color:#16283d; text-align:center;">Ma Journee LYMIA</h2>
+      <div id="journee-score"></div>
+    </div>
+    <div class="card" id="journee-temps-card">
+      <div id="journee-temps-content"></div>
+    </div>
+    <div class="card">
+      <div class="mantra-label">Ton essentiel du jour</div>
+      <p class="rituel-texte">A venir tres bientot.</p>
+    </div>
+    <div class="card">
+      <div class="mantra-label">Ta routine du jour</div>
+      <p class="rituel-texte">A venir tres bientot.</p>
+    </div>
+    <div class="card">
+      <div class="mantra-label">Ton idee repas</div>
+      <p class="rituel-texte">A venir tres bientot.</p>
+    </div>
+    <div class="card">
+      <div class="mantra-label">Ta carte du jour</div>
+      <p class="rituel-texte">A venir tres bientot.</p>
+    </div>
+    <div class="card">
+      <div class="mantra-label">Ta couleur du jour</div>
+      <p class="rituel-texte">A venir tres bientot.</p>
+    </div>
+    <a class="back-link" href="#" onclick="showDashFromJournee(); return false;">Voir mon profil et mon abonnement</a>
+  </div>
+
+  </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
@@ -309,6 +340,12 @@
     renderAbonnement(abonnement);
     renderCheckin(abonnement);
     renderScoreGlobal(abonnement);
+    if (abonnement) {
+      const todayData = await getTodayCheckin(user.id);
+      if (todayData) {
+        goToJournee(todayData.score.score_global, { nom: todayData.score.niveau }, todayData.score.priorites || [], todayData.checkin);
+      }
+    }
   }
 
   async function saveProfile() {
@@ -510,7 +547,7 @@
 
       LAST_NIVEAU = niveau.nom;
       LAST_PRIORITES = priorites;
-      renderResultatCheckin(scoreGlobal, niveau, priorites);
+      goToJournee(scoreGlobal, niveau, priorites, checkin);
     } catch (e) {
       resultEl.innerHTML = '<p style="color:#b23b3b;font-size:12.5px;">Oups, une erreur est survenue. Reessaie dans un instant.</p>';
     } finally {
@@ -566,6 +603,39 @@
         '<div class="score-jour-chiffre">' + Math.round(dernier.score_global) + '<span style="font-size:13px;">/100</span></div>' +
         '<div class="score-jour-label">' + (await getNiveauForScore(dernier.score_global)).nom + '</div>' +
       '</div>';
+  }
+
+  function goToJournee(scoreGlobal, niveau, priorites, checkinRow) {
+    document.getElementById('dash-view').classList.add('hidden');
+    document.getElementById('journee-view').classList.remove('hidden');
+    renderJourneeLymia(scoreGlobal, niveau, priorites, checkinRow);
+  }
+
+  function showDashFromJournee() {
+    document.getElementById('journee-view').classList.add('hidden');
+    document.getElementById('dash-view').classList.remove('hidden');
+  }
+
+  function renderJourneeLymia(scoreGlobal, niveau, priorites, checkinRow) {
+    document.getElementById('journee-score').innerHTML =
+      '<div class="score-jour">' +
+        '<div class="score-jour-chiffre">' + scoreGlobal + '<span style="font-size:13px;">/100</span></div>' +
+        '<div class="score-jour-label">' + niveau.nom + '</div>' +
+      '</div>' +
+      '<div class="mantra-label" style="margin-top:14px;">Aujourd\'hui, tes priorites sont :</div>' +
+      '<ul class="rituel-reco">' + priorites.map(p => '<li>' + p.label + '</li>').join('') + '</ul>';
+    const temps = checkinRow && checkinRow.temps_disponible;
+    document.getElementById('journee-temps-content').innerHTML = temps
+      ? '<div class="mantra-label">Ton temps pour toi aujourd\'hui</div><p class="rituel-texte">' + temps + ' minutes</p>'
+      : '<p class="rituel-texte">Temps non renseigne.</p>';
+  }
+
+  async function getTodayCheckin(userId) {
+    const today = new Date().toISOString().slice(0,10);
+    const { data: score } = await sb.from('scores_lymia').select('*').eq('user_id', userId).eq('date', today).order('created_at', { ascending:false }).limit(1).maybeSingle();
+    if (!score) return null;
+    const { data: checkin } = await sb.from('checkins').select('*').eq('id', score.checkin_id).maybeSingle();
+    return { score, checkin };
   }
 
   (async function init() {
