@@ -75,6 +75,11 @@
   .rituel-reco { margin:0 0 8px 18px; padding:0; font-size:12px; color:#26333d; }
   .rituel-reco li { margin-bottom:2px; }
   .rituel-oil { font-size:12px; font-weight:600; color:#16283d; }
+
+  .checkin-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(110px,1fr)); gap:8px; margin-bottom:10px; }
+  .checkin-item { display:flex; flex-direction:column; gap:4px; font-size:11.5px; color:#5c6b64; margin-bottom:8px; }
+  .checkin-item select, .checkin-item input { padding:6px; border-radius:8px; border:1px solid #e4e8df; font-size:13px; }
+  .carte-jour { margin-top:14px; padding-top:14px; border-top:1px dashed #e4e8df; }
 </style>
 </head>
 <body>
@@ -130,6 +135,10 @@
     <div class="card" id="mantra-card">
       <div class="mantra-label">🌸 Ton mantra du jour</div>
       <div class="mantra-text" id="mantra-text">…</div>
+    </div>
+
+    <div class="card" id="checkin-card">
+      <div id="checkin-content"></div>
     </div>
 
     <div class="card" id="abonnement-card">
@@ -291,6 +300,7 @@
     const { data: abonnement } = await sb.from('abonnements').select('*').eq('user_id', user.id).eq('statut', 'actif').maybeSingle();
     renderAbonnement(abonnement);
     renderRoutines(abonnement);
+    renderCheckin(abonnement);
   }
 
   async function saveProfile() {
@@ -351,6 +361,112 @@
           '</div>';
       }).join('') +
       '</div>';
+  }
+
+  const AXIS_TO_SITUATION = { energie:'peche', mouvement:'peche', sommeil:'lavande', stress:'lavande', digestion:'sauge', confort_corporel:'sauge', hydratation:'creme' };
+
+  function renderCheckin(abonnement) {
+    const el = document.getElementById('checkin-content');
+    if (!el) return;
+    if (!abonnement) { el.innerHTML = ''; return; }
+    el.innerHTML =
+      '<div class="mantra-label">🗓️ Ton check-in du jour</div>' +
+      '<div class="checkin-grid">' +
+      [['energie','🔋 Energie'],['sommeil','😴 Sommeil'],['stress','😣 Stress'],['digestion','🍽️ Digestion'],['gonflement','🎈 Gonflement'],['jambes_lourdes','🦵 Jambes lourdes'],['hydratation','💧 Hydratation'],['mouvement','🏃 Mouvement']]
+        .map(a => '<label class="checkin-item">' + a[1] +
+          '<select id="ci-' + a[0] + '">' + [1,2,3,4,5].map(n => '<option value="' + n + '">' + n + '</option>').join('') + '</select></label>')
+        .join('') +
+      '</div>' +
+      '<label class="checkin-item">⏱️ Temps disponible aujourd\'hui' +
+        '<select id="ci-temps"><option value="5">5 min</option><option value="10">10 min</option><option value="20">20 min</option><option value="30">30 min et plus</option></select></label>' +
+      '<label class="checkin-item">🙂 Humeur du jour' +
+        '<select id="ci-humeur"><option value="sereine">Sereine</option><option value="stressee">Stressee</option><option value="fatiguee">Fatiguee</option><option value="motivee">Motivee</option><option value="neutre">Neutre</option></select></label>' +
+      '<label class="checkin-item">✨ Une envie pour aujourd\'hui (optionnel)' +
+        '<input type="text" id="ci-envie" placeholder="Ex: bouger, me poser, cuisiner..."></label>' +
+      '<button class="btn" onclick="submitCheckin()" style="margin-top:10px;">Decouvrir ma carte du jour</button>' +
+      '<div id="carte-du-jour"></div>';
+  }
+
+  async function submitCheckin() {
+    const val = id => document.getElementById(id).value;
+    const axes = ['energie','sommeil','stress','digestion','gonflement','jambes_lourdes','hydratation','mouvement'];
+    const vals = {};
+    axes.forEach(a => vals[a] = parseInt(val('ci-' + a), 10));
+    const temps = parseInt(val('ci-temps'), 10);
+    const humeur = val('ci-humeur');
+    const envie = val('ci-envie');
+
+    const { data: { session } } = await sb.auth.getSession();
+    const user = session.user;
+
+    const { data: checkin, error: cErr } = await sb.from('checkins').insert({
+      user_id: user.id, energie: vals.energie, sommeil: vals.sommeil, stress: vals.stress,
+      digestion: vals.digestion, gonflement: vals.gonflement, jambes_lourdes: vals.jambes_lourdes,
+      hydratation: vals.hydratation, mouvement: vals.mouvement, humeur: humeur, temps_disponible: temps, envie: envie
+    }).select().single();
+    if (cErr) { document.getElementById('carte-du-jour').innerHTML = '<p style="color:#b23b3b;font-size:12.5px;">Oups, reessaie dans un instant.</p>'; return; }
+
+    const { data: poids } = await sb.from('score_ponderations').select('*').eq('id', 1).single();
+
+    const scores = {
+      energie: vals.energie * 20,
+      sommeil: vals.sommeil * 20,
+      stress: (6 - vals.stress) * 20,
+      digestion: vals.digestion * 20,
+      confort_corporel: (6 - ((vals.gonflement + vals.jambes_lourdes) / 2)) * 20,
+      mouvement: vals.mouvement * 20,
+      hydratation: vals.hydratation * 20,
+      regularite: 60
+    };
+
+    const scoreGlobal = poids ? (
+      poids.poids_energie * scores.energie + poids.poids_sommeil * scores.sommeil +
+      poids.poids_stress * scores.stress + poids.poids_digestion * scores.digestion +
+      poids.poids_confort_corporel * scores.confort_corporel + poids.poids_mouvement * scores.mouvement +
+      poids.poids_hydratation * scores.hydratation + poids.poids_regularite * scores.regularite
+    ) / 100 : Object.values(scores).reduce((a,b) => a+b, 0) / 8;
+
+    let levier = 'energie', min = Infinity;
+    ['energie','sommeil','stress','digestion','confort_corporel','mouvement','hydratation'].forEach(k => {
+      if (scores[k] < min) { min = scores[k]; levier = k; }
+    });
+
+    await sb.from('scores_lymia').insert({
+      user_id: user.id, checkin_id: checkin.id, date: checkin.date,
+      score_global: scoreGlobal, score_energie: scores.energie, score_sommeil: scores.sommeil,
+      score_stress: scores.stress, score_digestion: scores.digestion,
+      score_confort_corporel: scores.confort_corporel, score_mouvement: scores.mouvement,
+      score_hydratation: scores.hydratation, score_regularite: scores.regularite, levier_du_jour: levier
+    });
+
+    const slug = scoreGlobal >= 75 ? 'jaune' : (AXIS_TO_SITUATION[levier] || 'rose');
+    await renderCarteDuJour(slug, temps);
+  }
+
+  async function renderCarteDuJour(slug, temps) {
+    const el = document.getElementById('carte-du-jour');
+    const { data: situation } = await sb.from('situations').select('*').eq('slug', slug).maybeSingle();
+    const sid = situation ? situation.id : null;
+    const { data: routine } = await sb.from('routines').select('*').eq('situation_id', sid).maybeSingle();
+    const { data: recettes } = await sb.from('recettes').select('*').eq('situation_id', sid).order('temps_minutes');
+    const recette = recettes && recettes.length ? (recettes.find(r => r.temps_minutes <= temps) || recettes[0]) : null;
+
+    let html = '<div class="carte-jour">' +
+      '<div class="rituel-nom">' + (situation ? situation.emoji + ' ' + situation.libelle : 'Ta carte du jour') + '</div>';
+    if (routine) {
+      html += '<div class="rituel-texte" style="margin-top:6px;">' + (routine.conseil_du_jour || '') + '</div>';
+      const reco = (routine.criteres && routine.criteres.reco) || [];
+      if (reco.length) html += '<ul class="rituel-reco">' + reco.map(x => '<li>' + x + '</li>').join('') + '</ul>';
+      const oil = (routine.criteres && routine.criteres.oil) || '';
+      if (oil) html += '<div class="rituel-oil">Huile conseillee : ' + oil + '</div>';
+    }
+    if (recette) {
+      html += '<div class="rituel-nom" style="margin-top:10px;">' + recette.titre + ' (' + recette.temps_minutes + ' min)</div>' +
+        '<div class="rituel-texte">' + (recette.ingredients || []).join(', ') + '</div>' +
+        '<div class="rituel-texte">' + (recette.etapes || '') + '</div>';
+    }
+    html += '</div>';
+    el.innerHTML = html;
   }
 
   (async function init() {
