@@ -364,6 +364,73 @@
   ];
   const AXIS_TO_SITUATION = { energie:'peche', mouvement:'peche', sommeil:'lavande', stress:'lavande', digestion:'sauge', confort_corporel:'sauge', hydratation:'creme' };
 
+  let NIVEAUX_CACHE = null;
+  async function getNiveaux() {
+    if (NIVEAUX_CACHE) return NIVEAUX_CACHE;
+    const { data } = await sb.from('niveaux_lymia').select('*').order('ordre');
+    NIVEAUX_CACHE = data || [];
+    return NIVEAUX_CACHE;
+  }
+  async function getNiveauForScore(score) {
+    const niveaux = await getNiveaux();
+    return niveaux.find(n => score >= n.seuil_min && score <= n.seuil_max) || niveaux[0];
+  }
+
+  const AXIS_CATEGORY_MAP = {
+    energie: { label: 'Energie', slugs: ['energie'] },
+    sommeil: { label: 'Sommeil', slugs: ['sommeil'] },
+    stress: { label: 'Stress', slugs: ['stress'] },
+    digestion: { label: 'Digestion', slugs: ['digestion','ventre'] },
+    confort_corporel: { label: 'Confort corporel', slugs: ['ventre','jambes','circulation'] },
+    mouvement: { label: 'Mouvement', slugs: ['mouvement'] },
+    hydratation: { label: 'Hydratation', slugs: ['hydratation'] }
+  };
+  let LAST_NIVEAU = null;
+  let LAST_PRIORITES = [];
+
+  function renderResultatCheckin(scoreGlobal, niveau, priorites) {
+    const el = document.getElementById('carte-du-jour');
+    el.innerHTML =
+      '<div class="score-jour">' +
+        '<div class="score-jour-chiffre">' + scoreGlobal + '<span style="font-size:13px;">/100</span></div>' +
+        '<div class="score-jour-label">' + niveau.nom + '</div>' +
+      '</div>' +
+      '<p class="rituel-texte" style="text-align:center;">' + (niveau.message || niveau.description || '') + '</p>' +
+      '<div class="mantra-label" style="margin-top:14px;">Tes priorites aujourd\'hui</div>' +
+      '<ul class="rituel-reco">' + priorites.map(p => '<li>' + p.label + '</li>').join('') + '</ul>' +
+      '<button class="btn" onclick="afficherProgramme()" style="margin-top:10px;">Decouvrir mon programme du jour</button>' +
+      '<div id="programme-du-jour"></div>';
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  async function afficherProgramme() {
+    const el = document.getElementById('programme-du-jour');
+    if (!el) return;
+    el.innerHTML = '<p style="font-size:12.5px; color:#8a968f;">Preparation de ton programme...</p>';
+    const prioriteSlugs = [...new Set(LAST_PRIORITES.flatMap(p => p.slugs))];
+    let contenuIds = null;
+    if (prioriteSlugs.length) {
+      const { data: cats } = await sb.from('categories').select('id, slug').in('slug', prioriteSlugs);
+      const catIds = (cats || []).map(c => c.id);
+      if (catIds.length) {
+        const { data: liens } = await sb.from('contenu_categories').select('contenu_id').in('categorie_id', catIds);
+        contenuIds = [...new Set((liens || []).map(l => l.contenu_id))];
+      }
+    }
+    let query = sb.from('contenus').select('*').eq('actif', true).contains('niveaux', [LAST_NIVEAU]);
+    if (contenuIds && contenuIds.length) query = query.in('id', contenuIds);
+    const { data: contenus } = await query.order('duree_minutes');
+    if (!contenus || !contenus.length) {
+      el.innerHTML = '<p style="font-size:12.5px; color:#8a968f;">Ton programme personnalise arrive tres bientot ici.</p>';
+      return;
+    }
+    el.innerHTML = '<div class="mantra-label" style="margin-top:14px;">Ton programme du jour</div>' +
+      contenus.map(c => '<div class="rituel-item" style="margin-bottom:8px;">' +
+        '<div class="rituel-nom">' + c.titre + ' (' + c.duree_minutes + ' min)</div>' +
+        '<div class="rituel-texte">' + (c.instructions || c.description || '') + '</div>' +
+        '</div>').join('');
+  }
+
   function renderCheckin(abonnement) {
     const el = document.getElementById('checkin-content');
     if (!el) return;
@@ -382,7 +449,7 @@
         '<select id="ci-humeur"><option value="sereine">Sereine</option><option value="stressee">Stressee</option><option value="fatiguee">Fatiguee</option><option value="motivee">Motivee</option><option value="neutre">Neutre</option></select></label>' +
       '<label class="checkin-item">Une envie pour aujourd\'hui (optionnel)' +
         '<input type="text" id="ci-envie" placeholder="Ex: bouger, me poser, cuisiner..."></label>' +
-      '<button class="btn" id="ci-submit-btn" onclick="submitCheckin()" style="margin-top:10px;">Decouvrir ma carte du jour</button>' +
+      '<button class="btn" id="ci-submit-btn" onclick="submitCheckin()" style="margin-top:10px;">Valider mon check-in</button>' +
       '<div id="carte-du-jour"></div>';
   }
 
@@ -411,8 +478,6 @@
       }).select().single();
       if (cErr) throw cErr;
 
-      const { data: poids } = await sb.from('score_ponderations').select('*').eq('id', 1).single();
-
       const scores = {
         energie: vals.energie * 20,
         sommeil: vals.sommeil * 20,
@@ -420,38 +485,37 @@
         digestion: vals.digestion * 20,
         confort_corporel: ((vals.gonflement + vals.jambes_lourdes) / 2) * 20,
         mouvement: vals.mouvement * 20,
-        hydratation: vals.hydratation * 20,
-        regularite: 60
+        hydratation: vals.hydratation * 20
       };
+      const axisKeys = ['energie','sommeil','stress','digestion','confort_corporel','mouvement','hydratation'];
+      const scoreGlobal = Math.round(axisKeys.reduce((sum,k) => sum + scores[k], 0) / axisKeys.length);
 
-      const scoreGlobal = poids ? Math.round((
-        poids.poids_energie * scores.energie + poids.poids_sommeil * scores.sommeil +
-        poids.poids_stress * scores.stress + poids.poids_digestion * scores.digestion +
-        poids.poids_confort_corporel * scores.confort_corporel + poids.poids_mouvement * scores.mouvement +
-        poids.poids_hydratation * scores.hydratation + poids.poids_regularite * scores.regularite
-      ) / 100) : Math.round(Object.values(scores).reduce((a,b) => a+b, 0) / 8);
+      const niveau = await getNiveauForScore(scoreGlobal);
 
-      let levier = 'energie', min = Infinity;
-      ['energie','sommeil','stress','digestion','confort_corporel','mouvement','hydratation'].forEach(k => {
-        if (scores[k] < min) { min = scores[k]; levier = k; }
-      });
+      const priorites = axisKeys
+        .map(k => ({ key: k, score: scores[k], label: AXIS_CATEGORY_MAP[k].label, slugs: AXIS_CATEGORY_MAP[k].slugs }))
+        .sort((a,b) => a.score - b.score)
+        .slice(0, 3);
 
       const { error: sErr } = await sb.from('scores_lymia').insert({
         user_id: user.id, checkin_id: checkin.id, date: checkin.date,
         score_global: scoreGlobal, score_energie: scores.energie, score_sommeil: scores.sommeil,
         score_stress: scores.stress, score_digestion: scores.digestion,
         score_confort_corporel: scores.confort_corporel, score_mouvement: scores.mouvement,
-        score_hydratation: scores.hydratation, score_regularite: scores.regularite, levier_du_jour: levier
+        score_hydratation: scores.hydratation, score_regularite: 0,
+        levier_du_jour: priorites[0].key, niveau: niveau.nom,
+        priorites: priorites.map(p => ({ axe: p.key, label: p.label, score: p.score }))
       });
       if (sErr) throw sErr;
 
-      const slug = scoreGlobal >= 75 ? 'jaune' : (AXIS_TO_SITUATION[levier] || 'rose');
-      await renderCarteDuJour(slug, temps, scoreGlobal);
+      LAST_NIVEAU = niveau.nom;
+      LAST_PRIORITES = priorites;
+      renderResultatCheckin(scoreGlobal, niveau, priorites);
     } catch (e) {
       resultEl.innerHTML = '<p style="color:#b23b3b;font-size:12.5px;">Oups, une erreur est survenue. Reessaie dans un instant.</p>';
     } finally {
       btn.disabled = false;
-      btn.textContent = 'Decouvrir ma carte du jour';
+      btn.textContent = 'Valider mon check-in';
     }
   }
 
@@ -500,7 +564,7 @@
     el.innerHTML =
       '<div class="score-jour" style="border-bottom:none; margin-bottom:0; padding-bottom:0;">' +
         '<div class="score-jour-chiffre">' + Math.round(dernier.score_global) + '<span style="font-size:13px;">/100</span></div>' +
-        '<div class="score-jour-label">' + scoreLabel(dernier.score_global) + '</div>' +
+        '<div class="score-jour-label">' + (await getNiveauForScore(dernier.score_global)).nom + '</div>' +
       '</div>';
   }
 
