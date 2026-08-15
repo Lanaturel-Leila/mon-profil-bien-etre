@@ -65,6 +65,16 @@
   .mantra-text { font-size: 16px; font-style: italic; font-weight: 600; color: #16283d; line-height: 1.5; }
   .mascotte-espace { display:block; width:130px; height:130px; margin:0 auto 12px; border-radius:50%; border:3px solid #d8ddd2; box-shadow:0 4px 14px rgba(22,40,61,0.14); object-fit:cover; animation: mascotteFloat 3.2s ease-in-out infinite; }
   @keyframes mascotteFloat { 0%,100% { transform: translateY(0) rotate(0deg); } 25% { transform: translateY(-3px) rotate(-6deg); } 50% { transform: translateY(-6px) rotate(0deg); } 75% { transform: translateY(-3px) rotate(6deg); } }
+
+  .routine-label { font-size: 12.5px; color: #16283d; font-weight: 600; margin-bottom: 8px; }
+  .rituels-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; }
+  .rituel-item { background:#f8f9f6; border:1px solid #e4e8df; border-radius:12px; padding:14px; }
+  .rituel-emoji { font-size:22px; margin-bottom:4px; }
+  .rituel-nom { font-weight:700; font-size:13.5px; color:#16283d; margin-bottom:6px; }
+  .rituel-texte { font-size:12.5px; color:#5c6b64; line-height:1.4; margin-bottom:8px; }
+  .rituel-reco { margin:0 0 8px 18px; padding:0; font-size:12px; color:#26333d; }
+  .rituel-reco li { margin-bottom:2px; }
+  .rituel-oil { font-size:12px; font-weight:600; color:#16283d; }
 </style>
 </head>
 <body>
@@ -280,6 +290,7 @@
 
     const { data: abonnement } = await sb.from('abonnements').select('*').eq('user_id', user.id).eq('statut', 'actif').maybeSingle();
     renderAbonnement(abonnement);
+    renderRoutines(abonnement);
   }
 
   async function saveProfile() {
@@ -300,7 +311,7 @@
         '<div class="offer-title">' + offer.label + '</div>' +
         '<div class="offer-price">' + offer.price + '</div>' +
         '<ul class="offer-list">' + offer.items.map(i => '<li>' + i + '</li>').join('') + '</ul>' +
-        '<p style="font-size:12.5px; color:#8a968f; margin-top:12px;">Le contenu personnalisé (routines, coaching, jardin) arrive très bientôt dans cet espace.</p>';
+        '<div id="routine-content" style="margin-top:12px;"></div>';
     } else {
       el.innerHTML =
         '<p style="font-size:14px; margin-bottom:10px;">Tu n\'as pas encore d\'abonnement actif.</p>' +
@@ -313,6 +324,33 @@
         ).join('') +
         '<p style="font-size:12.5px; color:#8a968f; margin-top:14px;">Le paiement en ligne arrive bientôt. En attendant, écris à Leïla sur <a href="https://instagram.com/lanaturel.by.leila" target="_blank">Instagram</a> pour réserver ta place.</p>';
     }
+  }
+
+  async function renderRoutines(abonnement) {
+    const el = document.getElementById('routine-content');
+    if (!el) return;
+    if (!abonnement) { el.innerHTML = ''; return; }
+    const { data: routines } = await sb.from('routines').select('*, situations(*)').eq('actif', true).order('created_at');
+    if (!routines || !routines.length) {
+      el.innerHTML = '<p style="font-size:12.5px; color:#8a968f;">Tes rituels personnalisés arrivent bientôt ici.</p>';
+      return;
+    }
+    el.innerHTML =
+      '<div class="routine-label">🌿 Tes rituels bien-être</div>' +
+      '<div class="rituels-grid">' +
+      routines.map(r => {
+        const s = r.situations || {};
+        const reco = (r.criteres && r.criteres.reco) || [];
+        const oil = (r.criteres && r.criteres.oil) || '';
+        return '<div class="rituel-item">' +
+          '<div class="rituel-emoji">' + (s.emoji || '🌿') + '</div>' +
+          '<div class="rituel-nom">' + (s.libelle || r.titre) + '</div>' +
+          '<div class="rituel-texte">' + (r.conseil_du_jour || '') + '</div>' +
+          '<ul class="rituel-reco">' + reco.map(x => '<li>' + x + '</li>').join('') + '</ul>' +
+          (oil ? '<div class="rituel-oil">Huile conseillée : ' + oil + '</div>' : '') +
+          '</div>';
+      }).join('') +
+      '</div>';
   }
 
   (async function init() {
