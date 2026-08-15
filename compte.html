@@ -235,14 +235,14 @@
     </div>
     <div class="essentiel-card" id="essentiel-card">
       <div class="zone-label">Ton essentiel du jour</div>
-      <div id="journee-essentiel-content"><p class="rituel-texte" style="color:#eef1ea;">Preparation de ton essentiel...</p></div>
+      <div id="journee-essentiel-content"><p class="rituel-texte" style="color:#eef1ea;">Préparation de ton essentiel...</p></div>
     </div>
     <div class="card">
       <div class="zone-label">Ta routine du jour</div>
-      <div id="journee-routine-content"><p class="rituel-texte">Preparation de ta routine...</p></div>
+      <div id="journee-routine-content"><p class="rituel-texte">Préparation de ta routine...</p></div>
     </div>
     <div class="card recette-card">
-      <div class="zone-label">Ton idee repas</div>
+      <div class="zone-label">Ton idée repas</div>
       <div id="journee-recette-content"><p class="rituel-texte">Chargement...</p></div>
     </div>
     <div class="card inspiration-card" id="inspiration-card">
@@ -258,13 +258,13 @@
       <div style="font-size:12px; letter-spacing:1px; color:#8a968f; text-transform:uppercase; text-align:center; margin-bottom:10px;">Mon Jardin LYMIA</div>
       <div id="jardin-page-content"><p class="rituel-texte" style="text-align:center;">Chargement...</p></div>
     </div>
-    <a class="back-link" href="#" onclick="showJourneeFromJardin(); return false;">Retour a ma journee</a>
+    <a class="back-link" href="#" onclick="showJourneeFromJardin(); return false;">Retour à ma journée</a>
   </div>
 
   <div id="defis-view" class="hidden">
     <div class="card defi-hero">
       <div style="font-size:12px; letter-spacing:1px; color:#8a968f; text-transform:uppercase; text-align:center; margin-bottom:6px;">Defis LYMIA</div>
-      <p class="rituel-texte" style="text-align:center;">Avance un jour a la fois, vers un objectif precis.</p>
+      <p class="rituel-texte" style="text-align:center;">Avance un jour à la fois, vers un objectif précis.</p>
     </div>
     <div id="defi-en-cours-content"></div>
     <div class="card">
@@ -272,10 +272,10 @@
       <div id="defis-pour-toi-content"><p class="rituel-texte">Chargement...</p></div>
     </div>
     <div class="card">
-      <div class="zone-label">Tous les defis</div>
+      <div class="zone-label">Tous les défis</div>
       <div id="defis-tous-content"><p class="rituel-texte">Chargement...</p></div>
     </div>
-    <a class="back-link" href="#" onclick="showJourneeFromDefis(); return false;">Retour a ma journee</a>
+    <a class="back-link" href="#" onclick="showJourneeFromDefis(); return false;">Retour à ma journée</a>
   </div>
 
   </div>
@@ -526,9 +526,9 @@
         '<div class="score-jour-label">' + niveau.nom + '</div>' +
       '</div>' +
       '<p class="rituel-texte" style="text-align:center;">' + (niveau.message || niveau.description || '') + '</p>' +
-      '<div class="mantra-label" style="margin-top:14px;">Tes priorites aujourd\'hui</div>' +
+      '<div class="mantra-label" style="margin-top:14px;">Tes priorités aujourd\'hui</div>' +
       '<ul class="rituel-reco">' + priorites.map(p => '<li>' + p.label + '</li>').join('') + '</ul>' +
-      '<button class="btn" onclick="afficherProgramme()" style="margin-top:10px;">Decouvrir mon programme du jour</button>' +
+      '<button class="btn" onclick="afficherProgramme()" style="margin-top:10px;">Découvrir mon programme du jour</button>' +
       '<div id="programme-du-jour"></div>';
     el.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
@@ -536,7 +536,7 @@
   async function afficherProgramme() {
     const el = document.getElementById('programme-du-jour');
     if (!el) return;
-    el.innerHTML = '<p style="font-size:12.5px; color:#8a968f;">Preparation de ton programme...</p>';
+    el.innerHTML = '<p style="font-size:12.5px; color:#8a968f;">Préparation de ton programme...</p>';
     const prioriteSlugs = [...new Set(LAST_PRIORITES.flatMap(p => p.slugs))];
     let contenuIds = null;
     if (prioriteSlugs.length) {
@@ -551,7 +551,7 @@
     if (contenuIds && contenuIds.length) query = query.in('id', contenuIds);
     const { data: contenus } = await query.order('duree_minutes');
     if (!contenus || !contenus.length) {
-      el.innerHTML = '<p style="font-size:12.5px; color:#8a968f;">Ton programme personnalise arrive tres bientot ici.</p>';
+      el.innerHTML = '<p style="font-size:12.5px; color:#8a968f;">Ton programme personnalisé arrive très bientôt ici.</p>';
       return;
     }
     el.innerHTML = '<div class="mantra-label" style="margin-top:14px;">Ton programme du jour</div>' +
@@ -576,7 +576,7 @@
       '<label class="checkin-item">Temps disponible aujourd\'hui' +
         '<select id="ci-temps"><option value="5">5 min</option><option value="10">10 min</option><option value="20">20 min</option><option value="30">30 min</option><option value="45">45 min et plus</option></select></label>' +
       '<label class="checkin-item">Humeur du jour' +
-        '<select id="ci-humeur"><option value="sereine">Sereine</option><option value="stressee">Stressee</option><option value="fatiguee">Fatiguee</option><option value="motivee">Motivee</option><option value="neutre">Neutre</option></select></label>' +
+        '<select id="ci-humeur"><option value="sereine">Sereine</option><option value="stressee">Stressée</option><option value="fatiguee">Fatiguée</option><option value="motivee">Motivée</option><option value="neutre">Neutre</option></select></label>' +
       '<label class="checkin-item">Une envie pour aujourd\'hui (optionnel)' +
         '<input type="text" id="ci-envie" placeholder="Ex: bouger, me poser, cuisiner..."></label>' +
       '<button class="btn" id="ci-submit-btn" onclick="submitCheckin()" style="margin-top:10px;">Valider mon check-in</button>' +
@@ -708,7 +708,7 @@
     const { data: dernier } = await sb.from('scores_lymia').select('*').eq('user_id', session.user.id).order('created_at', { ascending: false }).limit(1).maybeSingle();
     if (!dernier) {
       el.innerHTML = '<div class="mantra-label">Ton score global</div>' +
-        '<p style="font-size:12.5px; color:#8a968f;">Fais ton premier check-in ci-dessous pour debloquer ton score.</p>';
+        '<p style="font-size:12.5px; color:#8a968f;">Fais ton premier check-in ci-dessous pour débloquer ton score.</p>';
       return;
     }
     el.innerHTML =
@@ -964,7 +964,7 @@
       '<div class="jardin-niveau-nom" style="text-align:center; font-size:18px;">' + niveauObj.nom + '</div>' +
       '<p class="jardin-niveau-desc" style="text-align:center;">' + (niveauObj.description || '') + '</p>' +
       '<p class="rituel-texte" style="text-align:center; margin-top:10px;">' + (niveauObj.message || '') + '</p>' +
-      (next ? '<p class="jardin-next" style="text-align:center;">Prochain palier : ' + next.nom + '</p>' : '<p class="jardin-next" style="text-align:center;">Ton jardin a atteint son plein epanouissement.</p>');
+      (next ? '<p class="jardin-next" style="text-align:center;">Prochain palier : ' + next.nom + '</p>' : '<p class="jardin-next" style="text-align:center;">Ton jardin a atteint son plein épanouissement.</p>');
   }
 
   function goToJardin() {
@@ -1181,7 +1181,7 @@
       parts.push('elle correspond a l\'un de tes objectifs nutrition');
     }
     parts.push('elle tient dans le temps que tu t\'accordes pour cuisiner (' + tempsCuisine + ' min)');
-    return 'Pourquoi cette idee aujourd\'hui : ' + parts.join(', ') + '.';
+    return 'Pourquoi cette idée aujourd\'hui : ' + parts.join(', ') + '.';
   }
 
   function renderUneRecette(item, tempsCuisine) {
