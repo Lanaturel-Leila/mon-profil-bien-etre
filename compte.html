@@ -65,15 +65,6 @@
   .mantra-text { font-size: 16px; font-style: italic; font-weight: 600; color: #16283d; line-height: 1.5; }
   .mascotte-espace { display:block; width:130px; height:130px; margin:0 auto 12px; border-radius:50%; border:3px solid #d8ddd2; box-shadow:0 4px 14px rgba(22,40,61,0.14); object-fit:cover; animation: mascotteFloat 3.2s ease-in-out infinite; }
   @keyframes mascotteFloat { 0%,100% { transform: translateY(0) rotate(0deg); } 25% { transform: translateY(-3px) rotate(-6deg); } 50% { transform: translateY(-6px) rotate(0deg); } 75% { transform: translateY(-3px) rotate(6deg); } }
-
-  .rituels-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-top:10px; }
-  .rituel-item { background:#f8f9f6; border:1px solid #e4e8df; border-radius:12px; padding:14px; }
-  .rituel-emoji { font-size:22px; margin-bottom:4px; }
-  .rituel-nom { font-weight:700; font-size:13.5px; color:#16283d; margin-bottom:6px; }
-  .rituel-texte { font-size:12.5px; color:#5c6b64; line-height:1.4; margin-bottom:8px; }
-  .rituel-reco { margin:0 0 8px 18px; padding:0; font-size:12px; color:#26333d; }
-  .rituel-reco li { margin-bottom:2px; }
-  .rituel-oil { font-size:12px; font-weight:600; color:#16283d; }
 </style>
 </head>
 <body>
@@ -133,54 +124,6 @@
 
     <div class="card" id="abonnement-card">
       <div id="abonnement-content">Chargement de ton abonnement…</div>
-    </div>
-
-    <div class="card" id="rituels-card">
-      <div class="mantra-label">🌿 Tes rituels bien-être par couleur</div>
-      <div class="rituels-grid">
-        <div class="rituel-item">
-          <div class="rituel-emoji">🌸</div>
-          <div class="rituel-nom">Rose poudré — Douceur</div>
-          <div class="rituel-texte">Tu sembles avoir besoin de ralentir et de prendre soin de toi.</div>
-          <ul class="rituel-reco"><li>Auto-massage</li><li>Bain ou sauna</li><li>Routine cocooning</li></ul>
-          <div class="rituel-oil">Huile conseillée : Géranium</div>
-        </div>
-        <div class="rituel-item">
-          <div class="rituel-emoji">💜</div>
-          <div class="rituel-nom">Lavande — Apaisement</div>
-          <div class="rituel-texte">Tu sembles avoir besoin de ralentir et de retrouver du calme.</div>
-          <ul class="rituel-reco"><li>Respiration</li><li>Méditation</li><li>Sommeil réparateur</li></ul>
-          <div class="rituel-oil">Huile conseillée : Lavande</div>
-        </div>
-        <div class="rituel-item">
-          <div class="rituel-emoji">🌿</div>
-          <div class="rituel-nom">Vert sauge — Équilibre</div>
-          <div class="rituel-texte">Ton corps te demande un peu plus de routine et de mouvement doux.</div>
-          <ul class="rituel-reco"><li>Auto-drainage</li><li>Alimentation légère</li><li>Mouvement doux</li></ul>
-          <div class="rituel-oil">Huile conseillée : Menthe poivrée</div>
-        </div>
-        <div class="rituel-item">
-          <div class="rituel-emoji">🍑</div>
-          <div class="rituel-nom">Pêche — Vitalité</div>
-          <div class="rituel-texte">Tu sembles avoir besoin de bouger et de retrouver de l'énergie.</div>
-          <ul class="rituel-reco"><li>Sport ou marche</li><li>Booster énergie</li><li>Objectif du jour</li></ul>
-          <div class="rituel-oil">Huile conseillée : Wild Orange</div>
-        </div>
-        <div class="rituel-item">
-          <div class="rituel-emoji">🌼</div>
-          <div class="rituel-nom">Jaune doux — Rayonnement</div>
-          <div class="rituel-texte">Tu es plutôt en forme aujourd'hui, profites-en pour avancer.</div>
-          <ul class="rituel-reco"><li>Gratitude</li><li>Affirmations positives</li><li>Projets & créativité</li></ul>
-          <div class="rituel-oil">Huile conseillée : Bergamote</div>
-        </div>
-        <div class="rituel-item">
-          <div class="rituel-emoji">🤍</div>
-          <div class="rituel-nom">Crème — Recentrage</div>
-          <div class="rituel-texte">Un jour plutôt neutre : revenons aux fondamentaux.</div>
-          <ul class="rituel-reco"><li>Écoute de soi</li><li>Hydratation</li><li>Rituel simple</li></ul>
-          <div class="rituel-oil">Huile conseillée : Encens</div>
-        </div>
-      </div>
     </div>
 
     <a class="back-link" href="index.html">← Refaire le bilan bien-être</a>
