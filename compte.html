@@ -205,11 +205,6 @@
       <div id="score-global-content"></div>
     </div>
 
-    <div class="card" id="mantra-card">
-      <div class="mantra-label">Ton mantra du jour</div>
-      <div class="mantra-text" id="mantra-text">…</div>
-    </div>
-
     <div class="card" id="checkin-card">
       <div id="checkin-content"></div>
     </div>
@@ -391,56 +386,7 @@
       items: ['Compléments alimentaires inclus', 'Huile essentielle doTERRA incluse', 'Accès au groupe WhatsApp privé', 'Accès complet à la plateforme', 'Coaching en ligne individuel une fois par semaine'] },
   ];
 
-  // Les 38 mantras du livre "Dégonfle (mais pas comme tu crois)" — un par jour, en rotation.
-  const MANTRAS = [
-    "Ce que je retiens, je choisis de le laisser circuler.",
-    "Je m'autorise à me montrer telle que je suis, ce matin.",
-    "Je ne me punis pas de ce que j'ai mangé, je prends soin de ce qui vient après.",
-    "Je dépose ce qui ne m'appartient pas.",
-    "Ce qui n'est pas réglé aujourd'hui, je le confie à demain.",
-    "Ces minutes m'appartiennent.",
-    "Je me remets en mouvement, doucement, sans me forcer.",
-    "Je m'autorise à bouger, même un tout petit peu.",
-    "J'écoute le rythme de mon corps, sans lutter contre lui.",
-    "Je prends soin de moi aujourd'hui, sans reproche pour hier.",
-    "Je laisse à mon corps le temps d'arriver.",
-    "Je traverse une transition, pas une panne.",
-    "Je me rends, à moi aussi, un peu de douceur.",
-    "Trois minutes en conscience valent plus qu'une heure promise.",
-    "Ce moment m'appartient, entre ce qui a été et ce qui sera.",
-    "Je donne à mon corps le temps de recevoir ce que je viens de lui offrir.",
-    "Je m'autorise à me demander ce que je porte, sans devoir tout comprendre.",
-    "Merci.",
-    "Je me rencontre moi-même avant de rencontrer le reste du monde.",
-    "Je retire, ce soir, ce que je porte pour être vue.",
-    "Je n'ai pas à tout digérer d'un coup.",
-    "Je m'autorise à me rafraîchir, dans tous les sens du terme.",
-    "Cette pause n'a pas besoin d'être méritée pour être prise.",
-    "Je suis prête, quoi qu'il arrive.",
-    "Ce soir, je n'ai plus à tenir pour personne.",
-    "Dix minutes, c'est déjà un vrai cadeau que je me fais.",
-    "Je dépose ce que je porte pour les autres.",
-    "J'écoute mon corps avant qu'il n'ait à insister.",
-    "Je me redonne l'énergie que j'ai donnée hier.",
-    "Comme la nature, j'ai le droit d'avoir mes saisons.",
-    "Rien à payer aujourd'hui pour hier.",
-    "Je laisse à mon corps, à lui aussi, une transition.",
-    "Je desserre, doucement, ce que je protège trop fort.",
-    "Je reviens habiter mon corps.",
-    "Je n'ai pas besoin d'une raison pour être douce avec moi-même.",
-    "Je peux relâcher sans tout comprendre d'abord.",
-    "Je commence cette semaine avec une intention, pas une appréhension.",
-    "Mon corps vient de faire son travail, avec moi, pas contre moi.",
-  ];
-
-  function renderMantraDuJour() {
-    const start = new Date(new Date().getFullYear(), 0, 0);
-    const diff = new Date() - start;
-    const dayOfYear = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const mantra = MANTRAS[dayOfYear % MANTRAS.length];
-    const el = document.getElementById('mantra-text');
-    if (el) el.textContent = '« ' + mantra + ' »';
-  }
+  
 
   function switchTab(tab) {
     document.getElementById('tab-login').classList.toggle('active', tab === 'login');
@@ -523,8 +469,6 @@
       document.getElementById('dash-greeting').textContent = 'Bienvenue';
       document.getElementById('prenom-setup').classList.remove('hidden');
     }
-
-    renderMantraDuJour();
 
     const { data: abonnement } = await sb.from('abonnements').select('*').eq('user_id', user.id).eq('statut', 'actif').maybeSingle();
     renderAbonnement(abonnement);
@@ -682,12 +626,7 @@
     }
   }
 
-  function scoreLabel(score) {
-    if (score >= 80) return 'En pleine forme';
-    if (score >= 60) return 'En bonne voie';
-    if (score >= 40) return "A l'ecoute de toi";
-    return 'Besoin de douceur aujourd\'hui';
-  }
+  
 
   const AXIS_OPTIONS = ['Très faible','Faible','Moyen','Bon','Excellent'];
   const CHECKIN_AXES = [
@@ -728,48 +667,9 @@
   let PROFIL_CACHE = null;
   let PROFIL_RETURN_VIEW = 'dash-view';
 
-  function renderResultatCheckin(scoreGlobal, niveau, priorites) {
-    const el = document.getElementById('carte-du-jour');
-    el.innerHTML =
-      '<div class="score-jour">' +
-        '<div class="score-jour-chiffre">' + scoreGlobal + '<span style="font-size:13px;">/100</span></div>' +
-        '<div class="score-jour-label">' + niveau.nom + '</div>' +
-      '</div>' +
-      '<p class="rituel-texte" style="text-align:center;">' + (niveau.message || niveau.description || '') + '</p>' +
-      '<div class="mantra-label" style="margin-top:14px;">Tes priorités aujourd\'hui</div>' +
-      '<ul class="rituel-reco">' + priorites.map(p => '<li>' + p.label + '</li>').join('') + '</ul>' +
-      '<button class="btn" onclick="afficherProgramme()" style="margin-top:10px;">Découvrir mon programme du jour</button>' +
-      '<div id="programme-du-jour"></div>';
-    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }
+  
 
-  async function afficherProgramme() {
-    const el = document.getElementById('programme-du-jour');
-    if (!el) return;
-    el.innerHTML = '<p style="font-size:12.5px; color:#8a968f;">Préparation de ton programme...</p>';
-    const prioriteSlugs = [...new Set(LAST_PRIORITES.flatMap(p => p.slugs))];
-    let contenuIds = null;
-    if (prioriteSlugs.length) {
-      const { data: cats } = await sb.from('categories').select('id, slug').in('slug', prioriteSlugs);
-      const catIds = (cats || []).map(c => c.id);
-      if (catIds.length) {
-        const { data: liens } = await sb.from('contenu_categories').select('contenu_id').in('categorie_id', catIds);
-        contenuIds = [...new Set((liens || []).map(l => l.contenu_id))];
-      }
-    }
-    let query = sb.from('contenus').select('*').eq('actif', true).contains('niveaux', [LAST_NIVEAU]);
-    if (contenuIds && contenuIds.length) query = query.in('id', contenuIds);
-    const { data: contenus } = await query.order('duree_minutes');
-    if (!contenus || !contenus.length) {
-      el.innerHTML = '<p style="font-size:12.5px; color:#8a968f;">Ton programme personnalisé arrive très bientôt ici.</p>';
-      return;
-    }
-    el.innerHTML = '<div class="mantra-label" style="margin-top:14px;">Ton programme du jour</div>' +
-      contenus.map(c => '<div class="rituel-item" style="margin-bottom:8px;">' +
-        '<div class="rituel-nom">' + c.titre + ' (' + c.duree_minutes + ' min)</div>' +
-        '<div class="rituel-texte">' + (c.instructions || c.description || '') + '</div>' +
-        '</div>').join('');
-  }
+  async 
 
   function renderCheckin(abonnement) {
     const el = document.getElementById('checkin-content');
@@ -879,36 +779,7 @@
     }
   }
 
-  async function renderCarteDuJour(slug, temps, scoreGlobal) {
-    const el = document.getElementById('carte-du-jour');
-    const { data: situation } = await sb.from('situations').select('*').eq('slug', slug).maybeSingle();
-    const sid = situation ? situation.id : null;
-    const { data: routine } = await sb.from('routines').select('*').eq('situation_id', sid).maybeSingle();
-    const { data: recettes } = await sb.from('recettes').select('*').eq('situation_id', sid).order('temps_minutes');
-    const recette = recettes && recettes.length ? (recettes.find(r => r.temps_minutes <= temps) || recettes[0]) : null;
-
-    let html = '<div class="carte-jour">' +
-      '<div class="score-jour">' +
-        '<div class="score-jour-chiffre">' + scoreGlobal + '<span style="font-size:13px;">/100</span></div>' +
-        '<div class="score-jour-label">' + scoreLabel(scoreGlobal) + '</div>' +
-      '</div>' +
-      '<div class="rituel-nom">' + (situation ? situation.emoji + ' ' + situation.libelle : 'Ta carte du jour') + '</div>';
-    if (routine) {
-      html += '<div class="rituel-texte" style="margin-top:6px;">' + (routine.conseil_du_jour || '') + '</div>';
-      const reco = (routine.criteres && routine.criteres.reco) || [];
-      if (reco.length) html += '<ul class="rituel-reco">' + reco.map(x => '<li>' + x + '</li>').join('') + '</ul>';
-      const oil = (routine.criteres && routine.criteres.oil) || '';
-      if (oil) html += '<div class="rituel-oil">Huile conseillee : ' + oil + '</div>';
-    }
-    if (recette) {
-      html += '<div class="rituel-nom" style="margin-top:10px;">' + recette.titre + ' (' + recette.temps_minutes + ' min)</div>' +
-        '<div class="rituel-texte">' + (recette.ingredients || []).join(', ') + '</div>' +
-        '<div class="rituel-texte">' + (recette.etapes || '') + '</div>';
-    }
-    html += '</div>';
-    el.innerHTML = html;
-    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }
+  async 
 
   async function renderScoreGlobal(abonnement) {
     const el = document.getElementById('score-global-content');
