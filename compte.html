@@ -149,6 +149,32 @@
   .defi-card-item { border:1px solid #eef1ea; border-radius:12px; padding:12px 14px; cursor:pointer; background:#fbfbf9; }
   .defi-card-titre { font-size:14px; font-weight:700; color:#16283d; margin-bottom:2px; }
   .defi-hero { text-align:center; }
+
+  .guidance-entry-card { cursor:pointer; text-align:center; background:linear-gradient(135deg, #f8f0e8, #ffffff); }
+  .guidance-syntese-line { font-size:13px; color:#4a4438; margin:3px 0; }
+  .guidance-tarot-card { border-radius:18px; padding:26px 20px; text-align:center; color:#ffffff; box-shadow:0 8px 24px rgba(22,40,61,0.18); position:relative; overflow:hidden; }
+  .guidance-tarot-card::before { content:''; position:absolute; inset:0; background:radial-gradient(circle at 30% 15%, rgba(255,255,255,0.22), transparent 60%); pointer-events:none; }
+  .guidance-tarot-symbol { font-size:30px; margin-bottom:8px; position:relative; }
+  .guidance-tarot-titre { font-size:21px; font-weight:700; font-style:italic; margin-bottom:6px; position:relative; }
+  .guidance-tarot-motcle { font-size:11px; letter-spacing:1.5px; text-transform:uppercase; opacity:0.88; margin-bottom:16px; position:relative; }
+  .guidance-tarot-message { font-size:14px; line-height:1.55; margin-bottom:14px; position:relative; }
+  .guidance-tarot-suggestion { font-size:12.5px; background:rgba(255,255,255,0.18); border-radius:12px; padding:10px 12px; font-style:italic; position:relative; }
+  .guidance-section-title { font-size:11px; letter-spacing:0.5px; text-transform:uppercase; color:#8a968f; font-weight:600; margin-bottom:10px; }
+  .guidance-num-chiffre { display:inline-flex; align-items:center; justify-content:center; width:44px; height:44px; border-radius:50%; background:#eef1ea; color:#16283d; font-size:18px; font-weight:700; margin-right:12px; flex-shrink:0; }
+  .guidance-num-row { display:flex; align-items:flex-start; margin-bottom:14px; }
+  .guidance-num-row:last-child { margin-bottom:0; }
+  .guidance-num-titre { font-size:14px; font-weight:700; color:#16283d; margin-bottom:2px; }
+  .guidance-num-label { font-size:10.5px; text-transform:uppercase; letter-spacing:0.5px; color:#8a968f; margin-bottom:2px; }
+  .guidance-astro-badge { display:inline-block; background:#eef1ea; border-radius:14px; padding:8px 14px; margin-bottom:12px; }
+  .guidance-astro-signe { font-size:15px; font-weight:700; color:#16283d; }
+  .guidance-astro-dates { font-size:11px; color:#8a968f; }
+  .guidance-couleur-row { display:flex; align-items:center; gap:14px; }
+  .guidance-couleur-swatch { width:56px; height:56px; border-radius:50%; box-shadow:0 3px 10px rgba(0,0,0,0.15); flex-shrink:0; }
+  .guidance-precautions { font-size:11px; color:#8a968f; margin-top:12px; padding-top:10px; border-top:1px solid #e4e8df; line-height:1.5; }
+  .guidance-naissance-form input[type="date"] { display:block; margin:12px auto; padding:9px 12px; border-radius:10px; border:1.5px solid #d8ddd2; font-size:14px; }
+  .guidance-toggle-link { text-align:center; font-size:12px; color:#0099CC; font-weight:600; margin-top:8px; cursor:pointer; }
+  .guidance-toggle-body { display:none; margin-top:12px; padding-top:12px; border-top:1px solid #e4e8df; }
+  .guidance-toggle-body.open { display:block; }
 </style>
 </head>
 <body>
@@ -226,7 +252,12 @@
       <div style="font-size:12px; letter-spacing:1px; color:#8a968f; text-transform:uppercase; text-align:center; margin-bottom:6px;">Ma Journée LYMIA</div>
       <div id="journee-score"></div>
     </div>
-    <div class="card" id="objectif-jour-card" style="text-align:center;">
+        <div class="card guidance-entry-card" id="guidance-entry-card" onclick="goToGuidance()">
+      <div class="zone-label">✦ Ta Guidance du jour</div>
+      <p class="rituel-texte">Ta carte, ta couleur, ton énergie numérologique et ton huile essentielle du moment t'attendent.</p>
+      <div class="jardin-next">Découvrir ma guidance →</div>
+    </div>
+<div class="card" id="objectif-jour-card" style="text-align:center;">
       <div id="objectif-jour"></div>
     </div>
     <div class="card" id="journee-temps-card" style="text-align:center;">
@@ -263,7 +294,34 @@
     <a class="back-link" href="#" onclick="showDashFromJournee(); return false;">Voir mon profil et mon abonnement</a>
   </div>
 
-  <div id="jardin-view" class="hidden">
+    <div id="guidance-view" class="hidden">
+    <div class="card" style="text-align:center;">
+      <div style="font-size:12px; letter-spacing:1px; color:#8a968f; text-transform:uppercase; margin-bottom:10px;">Ta Guidance du jour</div>
+      <div id="guidance-synthese"><p class="rituel-texte">Chargement de ta guidance...</p></div>
+    </div>
+    <div class="card" id="guidance-carte-card">
+      <div id="guidance-carte-content"><p class="rituel-texte">Chargement...</p></div>
+    </div>
+    <div class="card">
+      <div class="guidance-section-title">Ta couleur du jour</div>
+      <div id="guidance-couleur-content"><p class="rituel-texte">Chargement...</p></div>
+    </div>
+    <div class="card">
+      <div class="guidance-section-title">Ma numérologie</div>
+      <div id="guidance-numero-content"><p class="rituel-texte">Chargement...</p></div>
+    </div>
+    <div class="card">
+      <div class="guidance-section-title">Astro du moment</div>
+      <div id="guidance-astro-content"><p class="rituel-texte">Chargement...</p></div>
+    </div>
+    <div class="card">
+      <div class="guidance-section-title">Ton huile essentielle du moment</div>
+      <div id="guidance-huile-content"><p class="rituel-texte">Chargement...</p></div>
+    </div>
+    <a class="back-link" href="#" onclick="showJourneeFromGuidance(); return false;">← Retour à ma journée</a>
+  </div>
+
+<div id="jardin-view" class="hidden">
     <div class="card jardin-hero">
       <div style="font-size:12px; letter-spacing:1px; color:#8a968f; text-transform:uppercase; text-align:center; margin-bottom:10px;">Mon Jardin LYMIA</div>
       <div id="jardin-page-content"><p class="rituel-texte" style="text-align:center;">Chargement...</p></div>
@@ -1532,6 +1590,354 @@
   
 
   
+
+    // ===== GUIDANCE : numerologie, astrologie, huile du moment =====
+
+  const GUIDANCE_CARTE_NOMS = {
+    'ACCEPTATION': 'Acceptation', 'CHANGEMENT': 'Changement', 'COURAGE': 'Courage',
+    'GRATITUDE': 'Gratitude', 'INTUITION': 'Intuition', 'JOIE': 'Joie',
+    'LACHER-PRISE': 'Lâcher-prise', 'LIMITES': 'Limites', 'OSER': 'Oser',
+    'PATIENCE': 'Patience', 'PRESENCE': 'Présence', 'REPOS': 'Repos'
+  };
+  function guidanceNomCarte(carte) {
+    if (!carte) return '';
+    return GUIDANCE_CARTE_NOMS[carte.titre] || (carte.titre.charAt(0) + carte.titre.slice(1).toLowerCase());
+  }
+
+  function guidanceSommeChiffres(valeur) {
+    return String(valeur).split('').reduce(function(acc, c) {
+      var d = parseInt(c, 10);
+      return acc + (isNaN(d) ? 0 : d);
+    }, 0);
+  }
+  function guidanceReduire(n, garderMaitre) {
+    while (n > 9) {
+      if (garderMaitre && (n === 11 || n === 22 || n === 33)) return n;
+      n = guidanceSommeChiffres(n);
+    }
+    return n;
+  }
+  function guidanceCheminVie(dateNaissance) {
+    var chiffres = dateNaissance.split('-').join('');
+    return guidanceReduire(guidanceSommeChiffres(chiffres), true);
+  }
+  function guidanceAnneePersonnelle(dateNaissance, refDate) {
+    var p = dateNaissance.split('-');
+    var jour = p[2], mois = p[1];
+    var anneeRef = String(refDate.getFullYear());
+    var somme = guidanceSommeChiffres(jour) + guidanceSommeChiffres(mois) + guidanceSommeChiffres(anneeRef);
+    return guidanceReduire(somme, false);
+  }
+  function guidanceMoisPersonnel(anneePersonnelle, refDate) {
+    var mois = refDate.getMonth() + 1;
+    return guidanceReduire(anneePersonnelle + guidanceSommeChiffres(mois), false);
+  }
+  function guidanceJourPersonnel(moisPersonnel, refDate) {
+    var jour = refDate.getDate();
+    return guidanceReduire(moisPersonnel + guidanceSommeChiffres(jour), false);
+  }
+  function guidanceCalculNumerologie(dateNaissance) {
+    var ref = new Date();
+    var cheminVie = guidanceCheminVie(dateNaissance);
+    var anneePersonnelle = guidanceAnneePersonnelle(dateNaissance, ref);
+    var moisPersonnel = guidanceMoisPersonnel(anneePersonnelle, ref);
+    var jourPersonnel = guidanceJourPersonnel(moisPersonnel, ref);
+    return { cheminVie: cheminVie, anneePersonnelle: anneePersonnelle, moisPersonnel: moisPersonnel, jourPersonnel: jourPersonnel };
+  }
+
+  const GUIDANCE_ZODIAC = [
+    ['Bélier', 3, 21, 4, 19], ['Taureau', 4, 20, 5, 20], ['Gémeaux', 5, 21, 6, 20],
+    ['Cancer', 6, 21, 7, 22], ['Lion', 7, 23, 8, 22], ['Vierge', 8, 23, 9, 22],
+    ['Balance', 9, 23, 10, 22], ['Scorpion', 10, 23, 11, 21], ['Sagittaire', 11, 22, 12, 21],
+    ['Capricorne', 12, 22, 1, 19], ['Verseau', 1, 20, 2, 18], ['Poissons', 2, 19, 3, 20]
+  ];
+  function guidanceCalculSigne(dateNaissance) {
+    var p = dateNaissance.split('-');
+    var mois = parseInt(p[1], 10), jour = parseInt(p[2], 10);
+    for (var i = 0; i < GUIDANCE_ZODIAC.length; i++) {
+      var z = GUIDANCE_ZODIAC[i];
+      var nom = z[0], m1 = z[1], j1 = z[2], m2 = z[3], j2 = z[4];
+      if (m1 <= m2) {
+        if ((mois === m1 && jour >= j1) || (mois === m2 && jour <= j2) || (mois > m1 && mois < m2)) return nom;
+      } else {
+        if ((mois === m1 && jour >= j1) || (mois === m2 && jour <= j2) || mois > m1 || mois < m2) return nom;
+      }
+    }
+    return null;
+  }
+
+  let GUIDANCE_NOMBRES_CACHE = null;
+  async function guidanceGetNombre(numero) {
+    if (!GUIDANCE_NOMBRES_CACHE) {
+      var res = await sb.from('nombres_lymia').select('*').eq('actif', true);
+      GUIDANCE_NOMBRES_CACHE = res.data || [];
+    }
+    return GUIDANCE_NOMBRES_CACHE.find(function(n) { return n.numero === numero; });
+  }
+
+  const GUIDANCE_AXE_TO_TAG = { stress: 'stress', sommeil: 'sommeil', energie: 'energie', digestion: 'digestion' };
+  const GUIDANCE_OBJECTIF_TO_TAG = {
+    apaisement: 'stress', equilibre: 'stress', sommeil: 'sommeil', recuperation: 'sommeil',
+    energie: 'energie', digestion: 'digestion', confort_digestif: 'digestion', satiete: 'digestion'
+  };
+  async function guidanceTagCible(userId) {
+    if (userId) {
+      var checkinData = await getTodayCheckin(userId);
+      if (checkinData && checkinData.checkin) {
+        var c = checkinData.checkin;
+        var axes = ['stress', 'sommeil', 'energie', 'digestion'];
+        var pire = null;
+        axes.forEach(function(a) {
+          var v = c[a];
+          if (typeof v === 'number' && (pire === null || v < pire.v)) pire = { a: a, v: v };
+        });
+        if (pire && pire.v <= 3) return GUIDANCE_AXE_TO_TAG[pire.a];
+      }
+    }
+    if (PROFIL_CACHE && PROFIL_CACHE.objectifs_nutrition && PROFIL_CACHE.objectifs_nutrition.length) {
+      for (var i = 0; i < PROFIL_CACHE.objectifs_nutrition.length; i++) {
+        var tag = GUIDANCE_OBJECTIF_TO_TAG[PROFIL_CACHE.objectifs_nutrition[i]];
+        if (tag) return tag;
+      }
+    }
+    return null;
+  }
+  async function choisirHuile(userId) {
+    var tag = await guidanceTagCible(userId);
+    var res = await sb.from('huiles_lymia').select('*').eq('actif', true).order('id', { ascending: true });
+    var data = res.data;
+    if (!data || !data.length) return null;
+    var pool = data;
+    if (tag) {
+      var filtres = data.filter(function(h) { return h.contextes && h.contextes.indexOf(tag) !== -1; });
+      if (filtres.length) pool = filtres;
+    }
+    var start = new Date(new Date().getFullYear(), 0, 0);
+    var dayOfYear = Math.floor((Date.now() - start.getTime()) / 86400000);
+    var idx = ((dayOfYear % pool.length) + pool.length) % pool.length;
+    if (userId) {
+      var recents = await getRecentHistorique(userId, 'huile', 3);
+      var tries = 0;
+      while (recents.indexOf(pool[idx].id) !== -1 && tries < pool.length) {
+        idx = (idx + 1) % pool.length;
+        tries++;
+      }
+      logHistorique(userId, 'huile', pool[idx].id);
+    }
+    return pool[idx];
+  }
+
+  async function choisirMessageAstro(userId, element) {
+    var res = await sb.from('astro_guidance_messages').select('*').eq('actif', true);
+    var data = res.data;
+    if (!data || !data.length) return null;
+    var pool = data.filter(function(m) { return !m.element || m.element === element; });
+    if (!pool.length) pool = data;
+    var start = new Date(new Date().getFullYear(), 0, 0);
+    var dayOfYear = Math.floor((Date.now() - start.getTime()) / 86400000) + 3;
+    var idx = ((dayOfYear % pool.length) + pool.length) % pool.length;
+    if (userId) {
+      var recents = await getRecentHistorique(userId, 'astro_message', 3);
+      var tries = 0;
+      while (recents.indexOf(pool[idx].id) !== -1 && tries < pool.length) {
+        idx = (idx + 1) % pool.length;
+        tries++;
+      }
+      logHistorique(userId, 'astro_message', pool[idx].id);
+    }
+    return pool[idx];
+  }
+
+  const GUIDANCE_PALETTES = [
+    ['#16283d', '#3b5570'], ['#5c7a52', '#8aa77c'], ['#b5836b', '#d9b08c'],
+    ['#8a5a6b', '#c98a9c'], ['#4a4438', '#7a7060'], ['#3b6e6e', '#6ea6a6'],
+    ['#7a5c8a', '#a888b8'], ['#9c6b3f', '#c99a5f'], ['#5a6b8a', '#8aa0c9'],
+    ['#8a4a4a', '#c07a7a'], ['#4a6b5a', '#7aa088'], ['#8a7a4a', '#c0af7a']
+  ];
+  function guidancePaletteFor(titre) {
+    var s = String(titre || '');
+    var h = 0;
+    for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+    return GUIDANCE_PALETTES[h % GUIDANCE_PALETTES.length];
+  }
+
+  function goToGuidance() {
+    document.getElementById('journee-view').classList.add('hidden');
+    document.getElementById('guidance-view').classList.remove('hidden');
+    renderGuidanceView();
+  }
+  function showJourneeFromGuidance() {
+    document.getElementById('guidance-view').classList.add('hidden');
+    document.getElementById('journee-view').classList.remove('hidden');
+  }
+  function toggleGuidanceDetail(key) {
+    var body = document.getElementById('guidance-' + key + '-detail');
+    var arrow = document.getElementById('guidance-' + key + '-arrow');
+    if (!body) return;
+    var open = body.classList.toggle('open');
+    if (arrow) arrow.textContent = open ? 'Voir moins' : 'Voir le détail';
+  }
+
+  async function renderGuidanceView() {
+    var res = await sb.auth.getSession();
+    var session = res.data.session;
+    var userId = session && session.user ? session.user.id : null;
+    var prenom = (PROFIL_CACHE && PROFIL_CACHE.prenom) ? PROFIL_CACHE.prenom : '';
+    var dateNaissance = PROFIL_CACHE ? PROFIL_CACHE.date_naissance : null;
+
+    var carte = await choisirUn('cartes_lymia', userId, 0);
+    var couleur = await choisirUn('couleurs_lymia', userId, 7);
+    var huile = await choisirHuile(userId);
+
+    var numero = null, signeRow = null, messageAstro = null;
+    if (dateNaissance) {
+      numero = guidanceCalculNumerologie(dateNaissance);
+      var signeNom = guidanceCalculSigne(dateNaissance);
+      if (signeNom) {
+        var resSignes = await sb.from('signes_astro').select('*').eq('actif', true);
+        var signes = resSignes.data || [];
+        signeRow = signes.find(function(s) { return s.nom === signeNom; });
+        messageAstro = await choisirMessageAstro(userId, signeRow ? signeRow.element : null);
+      }
+    }
+
+    renderGuidanceSynthese(prenom, carte, couleur, numero, huile);
+    renderGuidanceCarte(carte);
+    renderGuidanceCouleur(couleur);
+    renderGuidanceNumerologie(dateNaissance, numero);
+    renderGuidanceAstro(dateNaissance, signeRow, messageAstro);
+    renderGuidanceHuile(huile);
+  }
+
+  function renderGuidanceSynthese(prenom, carte, couleur, numero, huile) {
+    var el = document.getElementById('guidance-synthese');
+    if (!el) return;
+    var lignes = [];
+    lignes.push('<p style="font-size:15px; font-weight:600; color:#16283d; margin-bottom:10px;">' + (prenom ? 'Bonjour ' + prenom + ', voici ta guidance du jour.' : 'Voici ta guidance du jour.') + '</p>');
+    if (carte) lignes.push('<p class="guidance-syntese-line"><strong>Carte</strong> · ' + guidanceNomCarte(carte) + (carte.mot_cle ? ' (' + carte.mot_cle + ')' : '') + '</p>');
+    if (couleur) lignes.push('<p class="guidance-syntese-line"><strong>Couleur</strong> · ' + couleur.nom + '</p>');
+    if (numero) lignes.push('<p class="guidance-syntese-line"><strong>Énergie numérologique</strong> · ' + numero.jourPersonnel + '</p>');
+    if (huile) lignes.push('<p class="guidance-syntese-line"><strong>Huile du moment</strong> · ' + huile.nom + '</p>');
+    lignes.push('<p style="font-size:12.5px; color:#5c7a52; font-style:italic; margin-top:10px;">Lymia t\'accompagne, un petit pas à la fois.</p>');
+    el.innerHTML = lignes.join('');
+  }
+
+  function renderGuidanceCarte(carte) {
+    var wrap = document.getElementById('guidance-carte-card');
+    var el = document.getElementById('guidance-carte-content');
+    if (!el) return;
+    if (!carte) { el.innerHTML = '<p class="rituel-texte">Ta carte du jour arrive...</p>'; return; }
+    var pal = guidancePaletteFor(carte.titre);
+    if (wrap) {
+      wrap.style.background = 'linear-gradient(160deg, ' + pal[0] + ', ' + pal[1] + ')';
+      wrap.classList.add('guidance-tarot-card');
+    }
+    var motCle = carte.mot_cle || carte.theme;
+    el.innerHTML =
+      '<div class="guidance-tarot-symbol">✦</div>' +
+      '<div class="guidance-tarot-titre">' + guidanceNomCarte(carte) + '</div>' +
+      (motCle ? '<div class="guidance-tarot-motcle">Mot-clé : ' + motCle + '</div>' : '') +
+      '<p class="guidance-tarot-message">' + (carte.message || carte.mantra || '') + '</p>' +
+      (carte.invitation ? '<div class="guidance-tarot-suggestion">' + carte.invitation + '</div>' : '');
+  }
+
+  function renderGuidanceCouleur(couleur) {
+    var el = document.getElementById('guidance-couleur-content');
+    if (!el) return;
+    if (!couleur) { el.innerHTML = '<p class="rituel-texte">Ta couleur du jour arrive...</p>'; return; }
+    el.innerHTML =
+      '<div class="guidance-couleur-row">' +
+        '<div class="guidance-couleur-swatch" style="background:' + couleur.hex + ';"></div>' +
+        '<div>' +
+          '<div style="font-size:15px; font-weight:700; color:#16283d;">' + couleur.nom + '</div>' +
+          (couleur.symbolique ? '<div style="font-size:12px; color:#8a968f; margin-top:2px;">' + couleur.symbolique + '</div>' : '') +
+        '</div>' +
+      '</div>' +
+      (couleur.message ? '<p class="rituel-texte" style="margin-top:12px;">' + couleur.message + '</p>' : '');
+  }
+
+  async function renderGuidanceNumerologie(dateNaissance, numero) {
+    var el = document.getElementById('guidance-numero-content');
+    if (!el) return;
+    if (!dateNaissance) {
+      el.innerHTML =
+        '<p class="rituel-texte">Indique ta date de naissance pour découvrir ton énergie numérologique du moment.</p>' +
+        '<div class="guidance-naissance-form">' +
+          '<input type="date" id="guidance-date-naissance-input">' +
+          '<button class="btn" onclick="guidanceSaveDateNaissance()">Découvrir ma numérologie</button>' +
+        '</div>' +
+        '<div id="guidance-naissance-msg"></div>';
+      return;
+    }
+    var jourN = await guidanceGetNombre(numero.jourPersonnel);
+    var cheminN = await guidanceGetNombre(numero.cheminVie);
+    var html = '';
+    html += '<div class="guidance-num-row">' +
+      '<div class="guidance-num-chiffre">' + numero.jourPersonnel + '</div>' +
+      '<div><div class="guidance-num-label">Énergie du jour</div>' +
+      '<div class="guidance-num-titre">' + (jourN ? jourN.titre : '') + '</div>' +
+      '<p class="rituel-texte">' + (jourN ? jourN.message : '') + '</p>' +
+      (jourN && jourN.conseil ? '<p class="jardin-next">' + jourN.conseil + '</p>' : '') +
+      '</div></div>';
+    html += '<div id="guidance-numero-detail" class="guidance-toggle-body">' +
+      '<div class="guidance-num-row"><div class="guidance-num-chiffre">' + numero.cheminVie + '</div>' +
+      '<div><div class="guidance-num-label">Chemin de vie</div><div class="guidance-num-titre">' + (cheminN ? cheminN.titre : '') + '</div>' +
+      '<p class="rituel-texte">' + (cheminN ? cheminN.message : '') + '</p></div></div>' +
+      '<div class="guidance-num-row"><div class="guidance-num-chiffre">' + numero.anneePersonnelle + '</div>' +
+      '<div><div class="guidance-num-label">Année personnelle</div><p class="rituel-texte">Ton énergie de fond pour cette année.</p></div></div>' +
+      '<div class="guidance-num-row"><div class="guidance-num-chiffre">' + numero.moisPersonnel + '</div>' +
+      '<div><div class="guidance-num-label">Mois personnel</div><p class="rituel-texte">Ton énergie de fond pour ce mois-ci.</p></div></div>' +
+      '</div>' +
+      '<div class="guidance-toggle-link" id="guidance-numero-arrow" onclick="toggleGuidanceDetail(\'numero\')">Voir le détail</div>';
+    el.innerHTML = html;
+  }
+
+  async function guidanceSaveDateNaissance() {
+    var input = document.getElementById('guidance-date-naissance-input');
+    var msgEl = document.getElementById('guidance-naissance-msg');
+    var val = input ? input.value : '';
+    if (!val) { if (msgEl) msgEl.innerHTML = '<p class="rituel-texte" style="color:#b23b3b;">Merci d\'indiquer une date.</p>'; return; }
+    var res = await sb.auth.getSession();
+    var session = res.data.session;
+    if (!session || !session.user) return;
+    var upd = await sb.from('profiles').update({ date_naissance: val }).eq('id', session.user.id);
+    if (upd.error) { if (msgEl) msgEl.innerHTML = '<p class="rituel-texte" style="color:#b23b3b;">Une erreur est survenue, réessaie.</p>'; return; }
+    if (PROFIL_CACHE) PROFIL_CACHE.date_naissance = val;
+    renderGuidanceView();
+  }
+
+  async function renderGuidanceAstro(dateNaissance, signeRow, messageAstro) {
+    var el = document.getElementById('guidance-astro-content');
+    if (!el) return;
+    if (!dateNaissance) {
+      el.innerHTML = '<p class="rituel-texte">Indique ta date de naissance dans la section numérologie ci-dessus pour découvrir ton signe.</p>';
+      return;
+    }
+    if (!signeRow) {
+      el.innerHTML = '<p class="rituel-texte">Ton signe astrologique arrive...</p>';
+      return;
+    }
+    var html = '<div class="guidance-astro-badge">' +
+      '<div class="guidance-astro-signe">' + signeRow.nom + '</div>' +
+      '<div class="guidance-astro-dates">' + signeRow.dates_texte + '</div>' +
+    '</div>';
+    if (signeRow.qualite_cle) html += '<p class="rituel-texte" style="margin-bottom:8px;"><strong>' + signeRow.qualite_cle + '</strong></p>';
+    html += '<p class="rituel-texte">' + (messageAstro ? messageAstro.message : 'Voici une énergie que tu peux explorer aujourd\'hui.') + '</p>';
+    el.innerHTML = html;
+  }
+
+  function renderGuidanceHuile(huile) {
+    var el = document.getElementById('guidance-huile-content');
+    if (!el) return;
+    if (!huile) { el.innerHTML = '<p class="rituel-texte">Ta proposition d\'huile essentielle arrive...</p>'; return; }
+    el.innerHTML =
+      '<p style="font-size:15px; font-weight:700; color:#16283d; margin-bottom:6px;">' + huile.nom + '</p>' +
+      '<p class="rituel-texte">' + huile.message + '</p>' +
+      (huile.usage_suggere ? '<p class="jardin-next" style="margin-top:8px;">' + huile.usage_suggere + '</p>' : '') +
+      '<p class="guidance-precautions">' + huile.precautions + '</p>';
+  }
+
+  // ===== FIN GUIDANCE =====
 
   (async function init() {
     const { data: { session } } = await sb.auth.getSession();
