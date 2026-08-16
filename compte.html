@@ -175,6 +175,115 @@
   .guidance-toggle-link { text-align:center; font-size:12px; color:#0099CC; font-weight:600; margin-top:8px; cursor:pointer; }
   .guidance-toggle-body { display:none; margin-top:12px; padding-top:12px; border-top:1px solid #e4e8df; }
   .guidance-toggle-body.open { display:block; }
+
+  /* ===== REFONTE DESIGN SYSTEM LYMIA (identite premium organique) ===== */
+  :root {
+    --lc-cream: #fbf4ec;
+    --lc-cream-deep: #f3e6d8;
+    --lc-white: #ffffff;
+    --lc-bordeaux: #7c3341;
+    --lc-bordeaux-deep: #5e2530;
+    --lc-bordeaux-soft: #a65b67;
+    --lc-rose: #eac9c9;
+    --lc-rose-soft: #f5e3e1;
+    --lc-text: #3b2b28;
+    --lc-text-soft: #7c6b62;
+    --lc-text-mute: #a79489;
+    --lc-border: #ecdfd2;
+    --lc-shadow: rgba(124,51,65,0.10);
+    --lc-shadow-soft: rgba(124,51,65,0.06);
+    --lc-radius-xl: 28px;
+    --lc-radius-lg: 22px;
+    --lc-radius-md: 16px;
+    --lc-radius-sm: 12px;
+  }
+
+  body {
+    background: radial-gradient(circle at 18% 0%, var(--lc-rose-soft) 0%, var(--lc-cream) 45%), var(--lc-cream);
+    background-attachment: fixed;
+    color: var(--lc-text);
+  }
+  h1 { color: var(--lc-bordeaux-deep); letter-spacing: -0.2px; }
+  p.subtitle { color: var(--lc-text-mute); }
+
+  .card {
+    background: var(--lc-white);
+    border-radius: var(--lc-radius-lg);
+    padding: 24px 22px;
+    box-shadow: 0 14px 32px -16px var(--lc-shadow), 0 2px 8px var(--lc-shadow-soft);
+    border: 1px solid rgba(124,51,65,0.05);
+    margin-bottom: 18px;
+  }
+
+  label { color: var(--lc-text-soft); }
+  input {
+    border-radius: var(--lc-radius-sm);
+    border: 1.5px solid var(--lc-border);
+    background: var(--lc-cream);
+    color: var(--lc-text);
+  }
+  input:focus { border-color: var(--lc-bordeaux-soft); }
+
+  .btn {
+    background: linear-gradient(135deg, var(--lc-bordeaux), var(--lc-bordeaux-deep));
+    border-radius: var(--lc-radius-sm);
+    box-shadow: 0 10px 22px -10px rgba(124,51,65,0.5);
+    letter-spacing: 0.2px;
+  }
+  .btn-secondary { background: var(--lc-white); color: var(--lc-bordeaux); border: 1.5px solid var(--lc-bordeaux-soft); box-shadow: none; }
+
+  .tab-btn { border-color: var(--lc-border); color: var(--lc-text-mute); background: var(--lc-cream); border-radius: var(--lc-radius-sm); }
+  .tab-btn.active { background: var(--lc-bordeaux); border-color: var(--lc-bordeaux); color: var(--lc-white); }
+
+  .zone-label, .mantra-label { color: var(--lc-bordeaux-soft); }
+  .back-link, a { color: var(--lc-bordeaux-soft); }
+
+  .dash-header h2 { color: var(--lc-bordeaux-deep); font-size: 21px; font-weight: 700; }
+  .logout-link { color: var(--lc-text-mute); }
+
+  .pill, .priorite-tag { background: var(--lc-rose-soft); color: var(--lc-bordeaux-deep); }
+  .temps-badge { background: var(--lc-bordeaux); color: #fff; }
+
+  .rituel-item, .essentiel-card, .offer-card { border-color: var(--lc-border); background: var(--lc-cream); border-radius: var(--lc-radius-md); }
+  .action-btn { background: var(--lc-rose-soft); color: var(--lc-bordeaux-deep); border-radius: var(--lc-radius-sm); transition: all 0.25s ease; }
+  .action-btn.done { background: var(--lc-bordeaux); color: #fff; animation: lcActionDone 0.6s ease; }
+  @keyframes lcActionDone {
+    0% { transform: scale(1); box-shadow: none; }
+    45% { transform: scale(1.045); box-shadow: 0 0 0 9px rgba(124,51,65,0.10); }
+    100% { transform: scale(1); box-shadow: none; }
+  }
+
+  .jardin-card, .profil-quick-card, .guidance-entry-card { border-radius: var(--lc-radius-lg); }
+
+  /* ---- Score hero (accueil + journee) ---- */
+  .lc-score-wrap { text-align: center; }
+  .lc-score-ring { width: 150px; height: 150px; border-radius: 50%; margin: 6px auto 0; display: flex; align-items: center; justify-content: center; transition: background 0.7s ease; box-shadow: 0 16px 30px -12px var(--lc-shadow); }
+  .lc-score-inner { width: 118px; height: 118px; border-radius: 50%; background: var(--lc-white); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .lc-score-chiffre { font-size: 42px; font-weight: 800; color: var(--lc-bordeaux-deep); line-height: 1; }
+  .lc-score-sur100 { font-size: 11px; color: var(--lc-text-mute); margin-top: 2px; }
+  .lc-score-label { font-size: 13.5px; color: var(--lc-text-soft); font-weight: 600; margin-top: 14px; }
+  .lc-score-chip { display: inline-block; margin-top: 10px; background: var(--lc-rose-soft); color: var(--lc-bordeaux-deep); font-size: 12px; font-weight: 700; padding: 7px 16px; border-radius: 20px; }
+  .lc-greeting-sub { font-size: 14.5px; color: var(--lc-text-soft); text-align: center; margin-top: 4px; line-height: 1.5; }
+
+  /* ---- Guidance rituel ---- */
+  .lc-guidance-veil { text-align: center; padding: 22px 8px; }
+  .lc-guidance-veil-icon { font-size: 30px; margin-bottom: 10px; color: var(--lc-bordeaux); }
+  .lc-guidance-veil-titre { font-size: 16px; font-weight: 700; color: var(--lc-bordeaux-deep); margin-bottom: 4px; }
+  .lc-guidance-veil-sub { font-size: 13px; color: var(--lc-text-mute); margin-bottom: 16px; }
+  .lc-guidance-content { display: none; opacity: 0; transform: translateY(10px) scale(0.99); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .lc-guidance-content.revealed { display: block; animation: lcGuidanceReveal 0.7s ease forwards; }
+  @keyframes lcGuidanceReveal { from { opacity: 0; transform: translateY(10px) scale(0.99); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+  /* ---- Plan du jour hierarchie ---- */
+  .lc-plan-titre { font-size: 12px; letter-spacing: 1px; color: var(--lc-bordeaux-soft); text-transform: uppercase; text-align: center; margin-bottom: 6px; }
+  .lc-secondaire-toggle { text-align: center; font-size: 12.5px; color: var(--lc-bordeaux-soft); font-weight: 600; cursor: pointer; margin: 6px 0 2px; }
+  .lc-secondaire-body { display: none; }
+  .lc-secondaire-body.open { display: block; }
+
+  /* ---- Jardin milestones ---- */
+  .lc-jardin-milestones { display: flex; justify-content: center; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  .lc-jardin-milestone { font-size: 10.5px; font-weight: 700; padding: 5px 10px; border-radius: 20px; background: var(--lc-cream-deep); color: var(--lc-text-mute); }
+  .lc-jardin-milestone.reached { background: var(--lc-bordeaux); color: #fff; }
 </style>
 </head>
 <body>
@@ -249,7 +358,7 @@
   </div>
 <div id="journee-view" class="hidden">
     <div class="card journee-hero">
-      <div style="font-size:12px; letter-spacing:1px; color:#8a968f; text-transform:uppercase; text-align:center; margin-bottom:6px;">Ma Journée LYMIA</div>
+      <div style="font-size:12px; letter-spacing:1px; color:#8a968f; text-transform:uppercase; text-align:center; margin-bottom:6px;">Ton plan du jour</div>
       <div id="journee-score"></div>
     </div>
         <div class="card guidance-entry-card" id="guidance-entry-card" onclick="goToGuidance()">
@@ -295,6 +404,13 @@
   </div>
 
     <div id="guidance-view" class="hidden">
+    <div class="card lc-guidance-veil" id="guidance-veil">
+      <div class="lc-guidance-veil-icon">✦</div>
+      <div class="lc-guidance-veil-titre">Ta guidance t'attend</div>
+      <div class="lc-guidance-veil-sub">Ta carte, ta couleur, ton énergie et ton huile du moment.</div>
+      <button class="btn" onclick="guidanceReveal()">Découvrir ma carte</button>
+    </div>
+    <div class="lc-guidance-content" id="guidance-content-wrap">
     <div class="card" style="text-align:center;">
       <div style="font-size:12px; letter-spacing:1px; color:#8a968f; text-transform:uppercase; margin-bottom:10px;">Ta Guidance du jour</div>
       <div id="guidance-synthese"><p class="rituel-texte">Chargement de ta guidance...</p></div>
@@ -317,6 +433,7 @@
     <div class="card">
       <div class="guidance-section-title">Ton huile essentielle du moment</div>
       <div id="guidance-huile-content"><p class="rituel-texte">Chargement...</p></div>
+    </div>
     </div>
     <a class="back-link" href="#" onclick="showJourneeFromGuidance(); return false;">← Retour à ma journée</a>
   </div>
@@ -842,15 +959,36 @@
     const { data: { session } } = await sb.auth.getSession();
     const { data: dernier } = await sb.from('scores_lymia').select('*').eq('user_id', session.user.id).order('created_at', { ascending: false }).limit(1).maybeSingle();
     if (!dernier) {
-      el.innerHTML = '<div class="mantra-label">Ton score global</div>' +
-        '<p style="font-size:12.5px; color:#8a968f;">Fais ton premier check-in ci-dessous pour débloquer ton score.</p>';
+      el.innerHTML =
+        '<div class="lc-greeting-sub">Comment ton corps se sent aujourd\'hui ?</div>' +
+        '<p style="font-size:12.5px; color:#8a968f; text-align:center; margin-top:10px;">Fais ton premier check-in ci-dessous pour découvrir ton équilibre du jour.</p>';
       return;
     }
+    const niveauObj = await getNiveauForScore(dernier.score_global);
+    const score = Math.round(dernier.score_global);
+    const pct = Math.max(0, Math.min(100, score));
+    const deg = Math.round(pct * 3.6);
+    let objectifPts = null;
+    try {
+      const userId = session.user.id;
+      const config = await getJardinConfig();
+      const defiEnCours = await getDefiEnCours(userId);
+      const cles = ['essentiel_realise', 'routine_terminee'];
+      if (defiEnCours && defiEnCours.statut === 'en_cours') cles.push('defi_jour_valide');
+      objectifPts = cles.reduce(function(sum, k){ return sum + ((config[k] && config[k].actif) ? config[k].points : 0); }, 0);
+    } catch (e) {}
     el.innerHTML =
-      '<div class="score-jour" style="border-bottom:none; margin-bottom:0; padding-bottom:0;">' +
-        '<div class="score-jour-chiffre">' + Math.round(dernier.score_global) + '<span style="font-size:13px;">/100</span></div>' +
-        '<div class="score-jour-label">' + (await getNiveauForScore(dernier.score_global)).nom + '</div>' +
-      '</div>';
+      '<div class="lc-score-wrap">' +
+        '<div class="lc-score-ring" style="background: conic-gradient(var(--lc-bordeaux) 0deg ' + deg + 'deg, var(--lc-cream-deep) ' + deg + 'deg 360deg);">' +
+          '<div class="lc-score-inner">' +
+            '<div class="lc-score-chiffre">' + score + '</div>' +
+            '<div class="lc-score-sur100">/100</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="lc-score-label">Ton équilibre aujourd\'hui</div>' +
+        (objectifPts ? '<div class="lc-score-chip">+' + objectifPts + ' points possibles aujourd\'hui</div>' : '') +
+      '</div>' +
+      (niveauObj && niveauObj.message ? '<p class="rituel-texte" style="text-align:center; margin-top:12px;">' + niveauObj.message + '</p>' : '');
   }
 
   function goToJournee(scoreGlobal, niveau, priorites, checkinRow) {
@@ -867,10 +1005,16 @@
   function renderJourneeLymia(scoreGlobal, niveau, priorites, checkinRow) {
     const niveauNom = (niveau && niveau.nom) ? niveau.nom : 'Niveau en cours de calcul';
     const message = (niveau && niveau.message) ? niveau.message : '';
+    const jDeg = Math.round(Math.max(0, Math.min(100, scoreGlobal)) * 3.6);
     document.getElementById('journee-score').innerHTML =
-      '<div class="score-jour" style="border-bottom:none; padding-bottom:0; margin-bottom:0;">' +
-        '<div class="score-jour-chiffre">' + scoreGlobal + '<span style="font-size:13px;">/100</span></div>' +
-        '<div class="score-jour-label">' + niveauNom + '</div>' +
+      '<div class="lc-score-wrap">' +
+        '<div class="lc-score-ring" style="background: conic-gradient(var(--lc-bordeaux) 0deg ' + jDeg + 'deg, var(--lc-cream-deep) ' + jDeg + 'deg 360deg);">' +
+          '<div class="lc-score-inner">' +
+            '<div class="lc-score-chiffre">' + scoreGlobal + '</div>' +
+            '<div class="lc-score-sur100">/100</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="lc-score-label">' + niveauNom + '</div>' +
       '</div>' +
       (message ? '<p class="rituel-texte" style="text-align:center; margin-top:8px;">' + message + '</p>' : '') +
       (priorites && priorites.length
@@ -1068,6 +1212,13 @@
       extras + plants + '</svg>';
   }
 
+  async function getJardinJoursActifs(userId) {
+    const { data } = await sb.from('jardin_actions_log').select('date').eq('user_id', userId);
+    const set = {};
+    (data || []).forEach(function(r) { set[r.date] = true; });
+    return Object.keys(set).length;
+  }
+
   async function renderJardinPreview() {
     const el = document.getElementById('jardin-preview-content');
     if (!el) return;
@@ -1095,11 +1246,16 @@
     const maxPoints = niveaux.length ? niveaux[niveaux.length - 1].seuil_min : 30;
     const idx = niveaux.findIndex(n => n.niveau === niveauObj.niveau);
     const next = idx >= 0 && idx < niveaux.length - 1 ? niveaux[idx + 1] : null;
+    const joursActifs = await getJardinJoursActifs(session.user.id);
+    const paliers = [3, 7, 14, 30];
+    const milestonesHtml = '<div class="lc-jardin-milestones">' + paliers.map(function(p) {
+      return '<span class="lc-jardin-milestone' + (joursActifs >= p ? ' reached' : '') + '">' + p + ' j' + (joursActifs >= p ? ' ✓' : '') + '</span>';
+    }).join('') + '</div>';
     el.innerHTML = svgJardin(state.points_total || 0, maxPoints, false) +
       '<div class="jardin-niveau-nom" style="text-align:center; font-size:18px;">' + niveauObj.nom + '</div>' +
       '<p class="jardin-niveau-desc" style="text-align:center;">' + (niveauObj.description || '') + '</p>' +
       '<p class="rituel-texte" style="text-align:center; margin-top:10px;">' + (niveauObj.message || '') + '</p>' +
-      (next ? '<p class="jardin-next" style="text-align:center;">Prochain palier : ' + next.nom + '</p>' : '<p class="jardin-next" style="text-align:center;">Ton jardin a atteint son plein épanouissement.</p>');
+      (next ? '<p class="jardin-next" style="text-align:center;">Prochain palier : ' + next.nom + '</p>' : '<p class="jardin-next" style="text-align:center;">Ton jardin a atteint son plein épanouissement.</p>' + milestonesHtml);
   }
 
   function goToJardin() {
@@ -1764,7 +1920,17 @@
   function goToGuidance() {
     document.getElementById('journee-view').classList.add('hidden');
     document.getElementById('guidance-view').classList.remove('hidden');
+    const veil = document.getElementById('guidance-veil');
+    const wrap = document.getElementById('guidance-content-wrap');
+    if (veil) veil.classList.remove('hidden');
+    if (wrap) wrap.classList.remove('revealed');
     renderGuidanceView();
+  }
+  function guidanceReveal() {
+    const veil = document.getElementById('guidance-veil');
+    const wrap = document.getElementById('guidance-content-wrap');
+    if (veil) veil.classList.add('hidden');
+    if (wrap) wrap.classList.add('revealed');
   }
   function showJourneeFromGuidance() {
     document.getElementById('guidance-view').classList.add('hidden');
