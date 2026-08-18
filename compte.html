@@ -405,6 +405,11 @@
       <p class="rituel-texte">Ta carte, ta couleur, ton énergie numérologique et ton huile essentielle du moment t'attendent.</p>
       <div class="jardin-next">Découvrir ma guidance →</div>
     </div>
+<div class="card" id="anti-abandon-card">
+<div id="anti-abandon-content">
+<div style="text-align:center; cursor:pointer; font-size:13px; color:#a65b67; font-weight:600;" onclick="activerAntiAbandon()">Aujourd'hui, je n'ai pas la motivation</div>
+</div>
+</div>
 <div class="card" id="objectif-jour-card" style="text-align:center;">
       <div id="objectif-jour"></div>
     </div>
@@ -508,7 +513,21 @@
       <p class="rituel-texte" style="text-align:center; margin-top:6px;">Ces informations aident LYMIA à personnaliser ce qu'elle te propose chaque jour. Rien n'est obligatoire.</p>
     </div>
 
-    <div class="card">
+    <div class="card" id="mode-emploi-card">
+<div class="mantra-label">Mon mode d’emploi</div>
+<p class="rituel-texte" style="margin-top:2px;">Ce que LYMIA apprend sur ta façon d’avancer, au fil du temps.</p>
+<label class="checkin-item" style="margin-top:10px;">Comment préfères-tu être accompagnée ?
+<select id="pf-style" onchange="saveStyleAccompagnement()">
+<option value="">Je ne sais pas encore</option>
+<option value="doux">Avec douceur</option>
+<option value="motivant">Avec encouragement</option>
+<option value="direct">Avec franchise</option>
+</select>
+</label>
+<div id="mode-emploi-observations" style="margin-top:12px;"><p class="rituel-texte">Chargement...</p></div>
+</div>
+
+<div class="card">
       <div class="mantra-label">À propos de toi</div>
       <label class="checkin-item">Tranche d'âge
         <select id="pf-tranche-age">
@@ -708,7 +727,58 @@
     document.getElementById('prenom-setup').classList.add('hidden');
   }
 
-  const PF_OBJECTIFS = [
+  async function activerAntiAbandon() {
+  var el = document.getElementById('anti-abandon-content');
+  if (!el) return;
+  el.innerHTML = '<p class="rituel-texte" style="text-align:center; font-weight:600; color:#16283d;">Aujourd\'hui, une seule chose suffit.</p>' +
+    '<p class="rituel-texte" style="text-align:center;">Respire trois fois, lentement. C\'est déjà assez pour aujourd\'hui.</p>' +
+    '<button class="btn btn-secondary" onclick="validerAntiAbandon()">C\'est fait</button>';
+  await awardJardinPoints('anti_abandon');
+}
+async function validerAntiAbandon() {
+  var el = document.getElementById('anti-abandon-content');
+  if (el) el.innerHTML = '<p class="rituel-texte" style="text-align:center; color:#3d5a4a; font-weight:600;">Contente que tu sois passée aujourd\'hui. On repart d\'ici.</p>';
+  renderJardinPreview();
+}
+async function saveStyleAccompagnement() {
+  var res = await sb.auth.getUser();
+  var user = res.data.user;
+  if (!user) return;
+  var val = document.getElementById('pf-style').value || null;
+  await sb.from('profiles').update({ style_accompagnement: val }).eq('id', user.id);
+  PROFIL_CACHE = Object.assign({}, PROFIL_CACHE, { style_accompagnement: val });
+}
+async function renderModeEmploi() {
+  var el = document.getElementById('mode-emploi-observations');
+  if (!el) return;
+  var res = await sb.auth.getUser();
+  var user = res.data.user;
+  if (!user) return;
+  var logsRes = await sb.from('jardin_actions_log').select('date').eq('user_id', user.id);
+  var logs = logsRes.data || [];
+  var joursSet = {};
+  logs.forEach(function(l){ joursSet[l.date] = true; });
+  var joursActifs = Object.keys(joursSet).length;
+  var scoresRes = await sb.from('scores_lymia').select('levier_du_jour').eq('user_id', user.id);
+  var scores = scoresRes.data || [];
+  var observation = '';
+  if (scores.length >= 5) {
+    var counts = {};
+    scores.forEach(function(s){ if (s.levier_du_jour) counts[s.levier_du_jour] = (counts[s.levier_du_jour] || 0) + 1; });
+    var entries = Object.keys(counts).map(function(k){ return [k, counts[k]]; }).sort(function(a,b){ return b[1]-a[1]; });
+    if (entries.length && entries[0][1] >= Math.ceil(scores.length * 0.4)) {
+      var labels = { energie: 'énergie', sommeil: 'sommeil', stress: 'calme', digestion: 'digestion', confort_corporel: 'confort corporel', mouvement: 'mouvement', hydratation: 'hydratation' };
+      observation = '<p class="rituel-texte">J\'ai remarqué quelque chose sur toi\u00a0: c\'est souvent autour de <strong>' + (labels[entries[0][0]] || entries[0][0]) + '</strong> que tu as le plus besoin d\'attention.</p>';
+    }
+  }
+  if (joursActifs < 5) {
+    el.innerHTML = '<p class="rituel-texte">Ton mode d\'emploi se construit petit à petit, au fil de tes passages. Reviens régulièrement pour qu\'il se précise.</p>';
+  } else {
+    el.innerHTML = '<p class="rituel-texte">Tu es passée ' + joursActifs + ' jours différents.</p>' + observation;
+  }
+}
+
+const PF_OBJECTIFS = [
     ['energie', "Plus d'énergie"],
     ['digestion', 'Meilleure digestion'],
     ['sommeil', 'Mieux dormir'],
@@ -762,8 +832,10 @@
     document.getElementById('pf-cuisine').value = (profile && profile.preference_cuisine) || 'simple';
     document.getElementById('pf-hormonal').value = (profile && profile.contexte_hormonal) || '';
     document.getElementById('pf-kit').checked = !!(profile && profile.kit_lymia);
+    document.getElementById('pf-style').value = (profile && profile.style_accompagnement) || '';
     const msg = document.getElementById('pf-save-msg');
     if (msg) msg.textContent = '';
+    renderModeEmploi();
   }
 
   async function saveProfilLymia() {
