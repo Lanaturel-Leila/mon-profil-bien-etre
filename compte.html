@@ -830,10 +830,11 @@ async function checkAccess(user, profile) {
     }
 
     const { data: abonnement } = await sb.from('abonnements').select('*').eq('user_id', user.id).eq('statut', 'actif').maybeSingle();
+    const accesContenu = abonnement || { _accesGratuit: true };
     renderAbonnement(abonnement);
-    renderCheckin(abonnement);
-    renderScoreGlobal(abonnement);
-    if (abonnement) {
+    renderCheckin(accesContenu);
+    renderScoreGlobal(accesContenu);
+    if (accesContenu) {
       const todayData = await getTodayCheckin(user.id);
       if (todayData) {
         const niveauObj = await getNiveauForScore(todayData.score.score_global);
