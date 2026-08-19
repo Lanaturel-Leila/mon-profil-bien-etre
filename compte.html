@@ -1992,11 +1992,6 @@ const PF_OBJECTIFS = [
     'INTUITION': 'Intuition', 'EXPANSION': 'Expansion', 'CONFIANCE': 'Confiance', 'RETOUR': 'Retour',
     'SOIN': 'Soin', 'DÉPASSEMENT': 'Dépassement', 'CLARTÉ': 'Clarté', 'ABONDANCE': 'Abondance'
   };
-  var GUIDANCE_CARTE_SLUGS = {
-    'ÉLAN': 'elan', 'ANCRAGE': 'ancrage', 'DOUCEUR': 'douceur', 'LIBÉRATION': 'liberation',
-    'INTUITION': 'intuition', 'EXPANSION': 'expansion', 'CONFIANCE': 'confiance', 'RETOUR': 'retour',
-    'SOIN': 'soin', 'DÉPASSEMENT': 'depassement', 'CLARTÉ': 'clarte', 'ABONDANCE': 'abondance'
-  };
   function guidanceNomCarte(carte) {
     if (!carte) return '';
     return GUIDANCE_CARTE_NOMS[carte.titre] || (carte.titre.charAt(0) + carte.titre.slice(1).toLowerCase());
@@ -2259,8 +2254,8 @@ const PF_OBJECTIFS = [
     wrap.classList.add('guidance-tarot-card');
   }
   var motCle = carte.mot_cle || carte.theme;
-  var slug = GUIDANCE_CARTE_SLUGS[carte.titre];
-  var imgHtml = slug ? '<div class="guidance-hero-media"><img class="guidance-hero-img" src="assets/cartes/carte_' + slug + '.jpg" alt="' + guidanceNomCarte(carte) + '" loading="lazy"></div>' : '<div class="guidance-tarot-symbol">♦</div>';
+  var slug = carte.titre ? carte.titre.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '') : '';
+  var imgHtml = slug ? '<div class="guidance-hero-media"><img class="guidance-hero-img" src="assets/cartes/carte_' + slug + '.jpg" alt="' + guidanceNomCarte(carte) + '" loading="lazy" onerror="this.parentElement.style.display=\'none\';"></div>' : '<div class="guidance-tarot-symbol">♦</div>';
   el.innerHTML =
     imgHtml +
     '<div class="guidance-tarot-titre">' + guidanceNomCarte(carte) + '</div>' +
