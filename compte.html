@@ -1079,22 +1079,22 @@ const PF_OBJECTIFS = [
           '</div>'
         ).join('');
     }
+  }
 
-    async function demarrerAbonnement(offreKey) {
-      const boutons = document.querySelectorAll('.offer-subscribe-btn');
-      boutons.forEach(function(b) { b.disabled = true; b.textContent = 'Redirection…'; });
-      try {
-        const res = await sb.functions.invoke('create-checkout-session', { body: { offre: offreKey } });
-        if (res.error || !res.data || !res.data.url) {
-          alert('Une erreur est survenue. Réessaie dans un instant.');
-          boutons.forEach(function(b) { b.disabled = false; b.textContent = "S'abonner"; });
-          return;
-        }
-        window.location.href = res.data.url;
-      } catch (e) {
+  async function demarrerAbonnement(offreKey) {
+    const boutons = document.querySelectorAll('.offer-subscribe-btn');
+    boutons.forEach(function(b) { b.disabled = true; b.textContent = 'Redirection…'; });
+    try {
+      const res = await sb.functions.invoke('create-checkout-session', { body: { offre: offreKey } });
+      if (res.error || !res.data || !res.data.url) {
         alert('Une erreur est survenue. Réessaie dans un instant.');
         boutons.forEach(function(b) { b.disabled = false; b.textContent = "S'abonner"; });
+        return;
       }
+      window.location.href = res.data.url;
+    } catch (e) {
+      alert('Une erreur est survenue. Réessaie dans un instant.');
+      boutons.forEach(function(b) { b.disabled = false; b.textContent = "S'abonner"; });
     }
   }
 
