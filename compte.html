@@ -375,7 +375,18 @@
       </div>
     </div>
 
-    <div class="card" id="score-global-card">
+    <div class="card" id="anti-abandon-card-dash">
+<div id="anti-abandon-content-dash">
+<div style="text-align:center; cursor:pointer; font-size:13px; color:#a65b67; font-weight:600;" onclick="activerAntiAbandonDash()">Aujourd'hui, je n'ai pas la motivation</div>
+</div>
+</div>
+
+<div class="card" id="mode-emploi-teaser-card" onclick="goToProfil()" style="cursor:pointer; text-align:center;">
+<div class="mantra-label">Mon mode d’emploi</div>
+<p class="rituel-texte" style="margin-top:2px;">Découvre ce que LYMIA apprend sur ta façon d’avancer.</p>
+</div>
+
+<div class="card" id="score-global-card">
       <div id="score-global-content"></div>
     </div>
 
@@ -776,6 +787,19 @@ async function renderModeEmploi() {
   } else {
     el.innerHTML = '<p class="rituel-texte">Tu es passée ' + joursActifs + ' jours différents.</p>' + observation;
   }
+}
+
+async function activerAntiAbandonDash() {
+  var el = document.getElementById('anti-abandon-content-dash');
+  if (!el) return;
+  el.innerHTML = '<p class="rituel-texte" style="text-align:center; font-weight:600; color:#16283d;">Aujourd\'hui, une seule chose suffit.</p>' +
+    '<p class="rituel-texte" style="text-align:center;">Respire trois fois, lentement. C\'est déjà assez pour aujourd\'hui.</p>' +
+    '<button class="btn btn-secondary" onclick="validerAntiAbandonDash()">C\'est fait</button>';
+  await awardJardinPoints('anti_abandon');
+}
+async function validerAntiAbandonDash() {
+  var el = document.getElementById('anti-abandon-content-dash');
+  if (el) el.innerHTML = '<p class="rituel-texte" style="text-align:center; color:#3d5a4a; font-weight:600;">Contente que tu sois passée aujourd\'hui. On repart d\'ici.</p>';
 }
 
 const PF_OBJECTIFS = [
