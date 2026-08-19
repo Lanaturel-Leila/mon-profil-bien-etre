@@ -173,6 +173,15 @@
   .guidance-tarot-card { border-radius:18px; padding:26px 20px; text-align:center; color:#ffffff; box-shadow:0 8px 24px rgba(22,40,61,0.18); position:relative; overflow:hidden; }
   .guidance-tarot-card::before { content:''; position:absolute; inset:0; background:radial-gradient(circle at 30% 15%, rgba(255,255,255,0.22), transparent 60%); pointer-events:none; }
   .guidance-tarot-symbol { font-size:30px; margin-bottom:8px; position:relative; }
+  .guidance-hero-media { width: 118px; margin: 0 auto 14px; border-radius: 14px; overflow: hidden; box-shadow: 0 10px 26px rgba(0,0,0,0.25); border: 3px solid rgba(255,255,255,0.55); position: relative; }
+  .guidance-hero-img { width: 100%; height: auto; display: block; }
+  #guidance-carte-card { animation-delay: 0.15s; }
+  .lc-guidance-content.revealed #guidance-carte-card { animation: lcCarteReveal 0.8s cubic-bezier(0.2,0.8,0.2,1) 0.15s both; }
+  @keyframes lcCarteReveal {
+    0% { opacity: 0; transform: translateY(14px) scale(0.94) rotate(-1deg); }
+    60% { opacity: 1; transform: translateY(-2px) scale(1.02) rotate(0.3deg); }
+    100% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+  }
   .guidance-tarot-titre { font-size:21px; font-weight:700; font-style:italic; margin-bottom:6px; position:relative; }
   .guidance-tarot-motcle { font-size:11px; letter-spacing:1.5px; text-transform:uppercase; opacity:0.88; margin-bottom:16px; position:relative; }
   .guidance-tarot-message { font-size:14px; line-height:1.55; margin-bottom:14px; position:relative; }
@@ -1515,6 +1524,14 @@ const PF_OBJECTIFS = [
     try { await sb.from('contenu_historique').insert({ user_id: userId, contenu_type: contenuType, contenu_id: contenuId }); } catch (e) {}
   }
 
+  async function getTodayHistorique(userId, contenuType) {
+    if (!userId) return null;
+    var today = new Date().toISOString().slice(0, 10);
+    var res = await sb.from('contenu_historique').select('contenu_id').eq('user_id', userId).eq('contenu_type', contenuType).eq('date', today).limit(1);
+    var data = res.data;
+    return (data && data[0]) ? data[0].contenu_id : null;
+  }
+
   function energiePreferee(niveauNom) {
     if (niveauNom === 'Journee dynamique') return ['modere', 'eleve'];
     if (niveauNom === 'Journee equilibre') return ['bas', 'modere'];
@@ -1733,11 +1750,18 @@ const PF_OBJECTIFS = [
   async function choisirUn(table, userId, offsetJours) {
     const { data } = await sb.from(table).select('*').eq('actif', true).order('id', { ascending: true });
     if (!data || !data.length) return null;
+    const type = table === 'cartes_lymia' ? 'carte' : 'couleur';
+    if (userId) {
+      const dejaAuj = await getTodayHistorique(userId, type);
+      if (dejaAuj) {
+        const trouve = data.find(function(d){ return d.id === dejaAuj; });
+        if (trouve) return trouve;
+      }
+    }
     const start = new Date(new Date().getFullYear(), 0, 0);
     const dayOfYear = Math.floor((Date.now() - start.getTime()) / 86400000) + offsetJours;
     let idx = ((dayOfYear % data.length) + data.length) % data.length;
     if (userId) {
-      const type = table === 'cartes_lymia' ? 'carte' : 'couleur';
       const recents = await getRecentHistorique(userId, type, 3);
       let tries = 0;
       while (recents.indexOf(data[idx].id) !== -1 && tries < data.length) {
@@ -1964,10 +1988,14 @@ const PF_OBJECTIFS = [
     // ===== GUIDANCE : numerologie, astrologie, huile du moment =====
 
   const GUIDANCE_CARTE_NOMS = {
-    'ACCEPTATION': 'Acceptation', 'CHANGEMENT': 'Changement', 'COURAGE': 'Courage',
-    'GRATITUDE': 'Gratitude', 'INTUITION': 'Intuition', 'JOIE': 'Joie',
-    'LACHER-PRISE': 'Lâcher-prise', 'LIMITES': 'Limites', 'OSER': 'Oser',
-    'PATIENCE': 'Patience', 'PRESENCE': 'Présence', 'REPOS': 'Repos'
+    'ÉLAN': 'Élan', 'ANCRAGE': 'Ancrage', 'DOUCEUR': 'Douceur', 'LIBÉRATION': 'Libération',
+    'INTUITION': 'Intuition', 'EXPANSION': 'Expansion', 'CONFIANCE': 'Confiance', 'RETOUR': 'Retour',
+    'SOIN': 'Soin', 'DÉPASSEMENT': 'Dépassement', 'CLARTÉ': 'Clarté', 'ABONDANCE': 'Abondance'
+  };
+  var GUIDANCE_CARTE_SLUGS = {
+    'ÉLAN': 'elan', 'ANCRAGE': 'ancrage', 'DOUCEUR': 'douceur', 'LIBÉRATION': 'liberation',
+    'INTUITION': 'intuition', 'EXPANSION': 'expansion', 'CONFIANCE': 'confiance', 'RETOUR': 'retour',
+    'SOIN': 'soin', 'DÉPASSEMENT': 'depassement', 'CLARTÉ': 'clarte', 'ABONDANCE': 'abondance'
   };
   function guidanceNomCarte(carte) {
     if (!carte) return '';
@@ -2082,6 +2110,13 @@ const PF_OBJECTIFS = [
       var filtres = data.filter(function(h) { return h.contextes && h.contextes.indexOf(tag) !== -1; });
       if (filtres.length) pool = filtres;
     }
+    if (userId) {
+      var dejaAuj = await getTodayHistorique(userId, 'huile');
+      if (dejaAuj) {
+        var trouve = pool.find(function(h){ return h.id === dejaAuj; });
+        if (trouve) return trouve;
+      }
+    }
     var start = new Date(new Date().getFullYear(), 0, 0);
     var dayOfYear = Math.floor((Date.now() - start.getTime()) / 86400000);
     var idx = ((dayOfYear % pool.length) + pool.length) % pool.length;
@@ -2145,6 +2180,7 @@ const PF_OBJECTIFS = [
     const wrap = document.getElementById('guidance-content-wrap');
     if (veil) veil.classList.add('hidden');
     if (wrap) wrap.classList.add('revealed');
+    try { localStorage.setItem('lymia_guidance_revealed_' + new Date().toISOString().slice(0,10), '1'); } catch (e) {}
   }
   function showJourneeFromGuidance() {
     document.getElementById('guidance-view').classList.add('hidden');
@@ -2159,6 +2195,16 @@ const PF_OBJECTIFS = [
   }
 
   async function renderGuidanceView() {
+    try {
+      var __dejaRevele = localStorage.getItem('lymia_guidance_revealed_' + new Date().toISOString().slice(0,10));
+      if (__dejaRevele) {
+        var __veilEl = document.getElementById('guidance-veil');
+        var __wrapEl = document.getElementById('guidance-content-wrap');
+        if (__veilEl) __veilEl.classList.add('hidden');
+        if (__wrapEl) __wrapEl.classList.add('revealed');
+      }
+    } catch (e) {}
+
     var res = await sb.auth.getSession();
     var session = res.data.session;
     var userId = session && session.user ? session.user.id : null;
@@ -2203,23 +2249,25 @@ const PF_OBJECTIFS = [
   }
 
   function renderGuidanceCarte(carte) {
-    var wrap = document.getElementById('guidance-carte-card');
-    var el = document.getElementById('guidance-carte-content');
-    if (!el) return;
-    if (!carte) { el.innerHTML = '<p class="rituel-texte">Ta carte du jour arrive...</p>'; return; }
-    var pal = guidancePaletteFor(carte.titre);
-    if (wrap) {
-      wrap.style.background = 'linear-gradient(160deg, ' + pal[0] + ', ' + pal[1] + ')';
-      wrap.classList.add('guidance-tarot-card');
-    }
-    var motCle = carte.mot_cle || carte.theme;
-    el.innerHTML =
-      '<div class="guidance-tarot-symbol">✦</div>' +
-      '<div class="guidance-tarot-titre">' + guidanceNomCarte(carte) + '</div>' +
-      (motCle ? '<div class="guidance-tarot-motcle">Mot-clé : ' + motCle + '</div>' : '') +
-      '<p class="guidance-tarot-message">' + (carte.message || carte.mantra || '') + '</p>' +
-      (carte.invitation ? '<div class="guidance-tarot-suggestion">' + carte.invitation + '</div>' : '');
+  var wrap = document.getElementById('guidance-carte-card');
+  var el = document.getElementById('guidance-carte-content');
+  if (!el) return;
+  if (!carte) { el.innerHTML = '<p class="rituel-texte">Ta carte du jour arrive...</p>'; return; }
+  var pal = guidancePaletteFor(carte.titre);
+  if (wrap) {
+    wrap.style.background = 'linear-gradient(160deg, ' + pal[0] + ', ' + pal[1] + ')';
+    wrap.classList.add('guidance-tarot-card');
   }
+  var motCle = carte.mot_cle || carte.theme;
+  var slug = GUIDANCE_CARTE_SLUGS[carte.titre];
+  var imgHtml = slug ? '<div class="guidance-hero-media"><img class="guidance-hero-img" src="assets/cartes/carte_' + slug + '.jpg" alt="' + guidanceNomCarte(carte) + '" loading="lazy"></div>' : '<div class="guidance-tarot-symbol">♦</div>';
+  el.innerHTML =
+    imgHtml +
+    '<div class="guidance-tarot-titre">' + guidanceNomCarte(carte) + '</div>' +
+    (motCle ? '<div class="guidance-tarot-motcle">Mot-clé : ' + motCle + '</div>' : '') +
+    '<p class="guidance-tarot-message">' + (carte.message || carte.mantra || '') + '</p>' +
+    (carte.invitation ? '<div class="guidance-tarot-suggestion">' + carte.invitation + '</div>' : '');
+}
 
   function renderGuidanceCouleur(couleur) {
     var el = document.getElementById('guidance-couleur-content');
