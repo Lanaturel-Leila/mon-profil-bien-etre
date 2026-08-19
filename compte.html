@@ -55,6 +55,7 @@
   .offer-title { font-size: 15px; font-weight: 700; color: #16283d; margin-bottom: 4px; }
   .offer-price { font-size: 13px; color: #5c6b64; margin-bottom: 8px; }
   .offer-list { font-size: 13px; color: #5c6b64; line-height: 1.6; padding-left: 18px; }
+  .offer-subscribe-btn { margin-top: 10px; width: 100%; }
   .pill {
     display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 9px;
     border-radius: 20px; background: #eaf6ec; color: #2e6b3f; margin-bottom: 8px;
@@ -694,12 +695,10 @@
   const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   const OFFERS = [
-    { key: 'basique', label: 'Basique', price: '9,99€/mois — sans engagement',
-      items: ['Accès à l\'intelligence de la plateforme', 'Routines adaptées à ton temps disponible', 'Suivi de ta progression'] },
-    { key: 'intermediaire', label: 'Intermédiaire', price: '39,99€/mois — engagement 3 mois',
-      items: ['Tout Basique', 'Accès au coaching personnalisé', 'Groupe WhatsApp'] },
-    { key: 'premium', label: 'Premium', price: '149,99€/mois — engagement 6 mois',
-      items: ['Compléments alimentaires inclus', 'Huile essentielle doTERRA incluse', 'Accès au groupe WhatsApp privé', 'Accès complet à la plateforme', 'Coaching en ligne individuel une fois par semaine'] },
+    { key: 'plateforme', label: 'Lymia — Plateforme', price: '19,99€/mois — sans engagement',
+      items: ['Accès complet à la plateforme', 'Guidance quotidienne', 'Plan du jour personnalisé', 'Jardin de progression', 'Vidéos de routines'] },
+    { key: 'coaching', label: 'Lymia — Coaching', price: '229€/mois — sans engagement',
+      items: ['Tout Plateforme', 'Coaching individuel en visio une fois par semaine', 'Cours de mouvement collectifs 2 à 3 fois par semaine', 'Newsletters', 'Conseils compléments alimentaires'] },
   ];
 
   
@@ -1064,6 +1063,11 @@ const PF_OBJECTIFS = [
         '<ul class="offer-list">' + offer.items.map(i => '<li>' + i + '</li>').join('') + '</ul>' +
         '<div id="routine-content" style="margin-top:12px;"></div>';
     } else {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('checkout') === 'success') {
+        el.innerHTML = '<p style="font-size:14px;">Merci ! Ton paiement a bien été reçu. Ton abonnement s\'active dans quelques instants — <a href="javascript:location.reload()">rafraîchis la page</a> si besoin.</p>';
+        return;
+      }
       el.innerHTML =
         '<p style="font-size:14px; margin-bottom:10px;">Tu n\'as pas encore d\'abonnement actif.</p>' +
         OFFERS.map(o =>
@@ -1071,9 +1075,26 @@ const PF_OBJECTIFS = [
           '<div class="offer-title">' + o.label + '</div>' +
           '<div class="offer-price">' + o.price + '</div>' +
           '<ul class="offer-list">' + o.items.map(i => '<li>' + i + '</li>').join('') + '</ul>' +
+          '<button type="button" class="btn offer-subscribe-btn" onclick="demarrerAbonnement(\'' + o.key + '\')">S\'abonner</button>' +
           '</div>'
-        ).join('') +
-        '<p style="font-size:12.5px; color:#8a968f; margin-top:14px;">Le paiement en ligne arrive bientôt. En attendant, écris à Leïla sur <a href="https://instagram.com/lanaturel.by.leila" target="_blank">Instagram</a> pour réserver ta place.</p>';
+        ).join('');
+    }
+
+    async function demarrerAbonnement(offreKey) {
+      const boutons = document.querySelectorAll('.offer-subscribe-btn');
+      boutons.forEach(function(b) { b.disabled = true; b.textContent = 'Redirection…'; });
+      try {
+        const res = await sb.functions.invoke('create-checkout-session', { body: { offre: offreKey } });
+        if (res.error || !res.data || !res.data.url) {
+          alert('Une erreur est survenue. Réessaie dans un instant.');
+          boutons.forEach(function(b) { b.disabled = false; b.textContent = "S'abonner"; });
+          return;
+        }
+        window.location.href = res.data.url;
+      } catch (e) {
+        alert('Une erreur est survenue. Réessaie dans un instant.');
+        boutons.forEach(function(b) { b.disabled = false; b.textContent = "S'abonner"; });
+      }
     }
   }
 
