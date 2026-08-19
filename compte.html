@@ -249,6 +249,42 @@
     letter-spacing: 0.2px;
   }
   .btn-secondary { background: var(--lc-white); color: var(--lc-bordeaux); border: 1.5px solid var(--lc-bordeaux-soft); box-shadow: none; }
+  .lc-allege-card { background: linear-gradient(160deg, var(--lc-cream) 0%, var(--lc-rose-soft) 100%); border: 1px solid rgba(124,51,65,0.08); box-shadow: 0 8px 22px -18px var(--lc-shadow-soft); transition: transform 250ms ease, box-shadow 250ms ease, border-color 250ms ease; }
+  @media (hover: hover) and (pointer: fine) {
+    .lc-allege-card:hover { transform: translateY(-2px); box-shadow: 0 16px 34px -16px var(--lc-shadow); border-color: rgba(124,51,65,0.16); }
+    .lc-allege-card:hover .lc-allege-arrow { transform: translateX(3px); }
+  }
+  .lc-allege-card:active { transform: scale(0.985); }
+  .lc-allege-normal { display: flex; align-items: center; gap: 14px; cursor: pointer; }
+  .lc-allege-icon { flex-shrink: 0; width: 44px; }
+  .lc-allege-svg { width: 44px; height: 20px; display: block; }
+  .lc-allege-path { fill: none; stroke: var(--lc-bordeaux-soft); stroke-width: 2; stroke-linecap: round; }
+  .lc-allege-text { flex: 1; min-width: 0; }
+  .lc-allege-eyebrow { font-size: 10.5px; letter-spacing: 0.7px; text-transform: uppercase; color: var(--lc-text-mute); font-weight: 700; margin-bottom: 4px; }
+  .lc-allege-title { font-size: 15px; font-weight: 700; color: var(--lc-bordeaux-deep); margin-bottom: 3px; }
+  .lc-allege-sub { font-size: 12.5px; color: var(--lc-text-soft); line-height: 1.4; }
+  .lc-allege-cta { flex-shrink: 0; font-size: 12.5px; font-weight: 700; color: var(--lc-bordeaux); white-space: nowrap; display: flex; align-items: center; gap: 4px; }
+  .lc-allege-arrow { display: inline-block; transition: transform 250ms ease; }
+  @media (max-width: 400px) {
+    .lc-allege-normal { flex-wrap: wrap; }
+    .lc-allege-cta { width: 100%; justify-content: flex-end; margin-top: 4px; }
+  }
+  .lc-allege-step2, .lc-allege-step3 { text-align: center; animation: lc-allege-fade 300ms ease; }
+  @keyframes lc-allege-fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+  .lc-allege-step2-title, .lc-allege-step3-title { font-size: 15px; font-weight: 700; color: var(--lc-bordeaux-deep); margin-bottom: 6px; }
+  .lc-allege-step2-sub, .lc-allege-step3-sub { font-size: 12.5px; color: var(--lc-text-soft); margin-bottom: 16px; }
+  .lc-allege-miniaction { background: var(--lc-white); border-radius: var(--lc-radius-md); padding: 18px 16px; border: 1px solid var(--lc-border); text-align: center; }
+  .lc-allege-miniaction-badge { display: inline-block; font-size: 10.5px; font-weight: 700; letter-spacing: 0.6px; color: var(--lc-bordeaux-soft); background: var(--lc-rose-soft); padding: 3px 10px; border-radius: 20px; margin-bottom: 8px; }
+  .lc-allege-miniaction-title { font-size: 14.5px; font-weight: 700; color: var(--lc-text); margin-bottom: 6px; }
+  .lc-allege-miniaction-sub { font-size: 12.5px; color: var(--lc-text-soft); line-height: 1.5; margin-bottom: 14px; }
+  .lc-allege-btn-mini { background: linear-gradient(135deg, var(--lc-bordeaux), var(--lc-bordeaux-deep)); color: #fff; border: none; border-radius: var(--lc-radius-sm); padding: 10px 24px; font-size: 13px; font-weight: 700; cursor: pointer; transition: transform 200ms ease, box-shadow 200ms ease; box-shadow: 0 10px 22px -10px rgba(124,51,65,0.5); }
+  .lc-allege-btn-mini:hover { transform: translateY(-1px); }
+  .lc-allege-btn-mini:active { transform: scale(0.97); }
+  .lc-allege-step3-icon { margin: 0 auto 12px; width: 44px; }
+  .lc-allege-step3-foot { font-size: 12px; color: var(--lc-text-mute); font-style: italic; }
+  .lc-allege-step3 .lc-allege-path { stroke-dasharray: 90; stroke-dashoffset: 90; animation: lc-allege-draw 700ms ease-out 150ms forwards; }
+  @keyframes lc-allege-draw { to { stroke-dashoffset: 0; } }
+
 
   .tab-btn { border-color: var(--lc-border); color: var(--lc-text-mute); background: var(--lc-cream); border-radius: var(--lc-radius-sm); }
   .tab-btn.active { background: var(--lc-bordeaux); border-color: var(--lc-bordeaux); color: var(--lc-white); }
@@ -375,9 +411,17 @@
       </div>
     </div>
 
-    <div class="card" id="anti-abandon-card-dash">
+    <div class="card lc-allege-card" id="anti-abandon-card-dash">
 <div id="anti-abandon-content-dash">
-<div style="text-align:center; cursor:pointer; font-size:13px; color:#a65b67; font-weight:600;" onclick="activerAntiAbandonDash()">Aujourd'hui, je n'ai pas la motivation</div>
+<div class="lc-allege-normal" onclick="activerAntiAbandonDash()">
+  <div class="lc-allege-icon"><svg class="lc-allege-svg" viewBox="0 0 64 24" aria-hidden="true"><path class="lc-allege-path" d="M2 4 C 14 4, 18 20, 32 20 C 46 20, 50 4, 62 4"/></svg></div>
+  <div class="lc-allege-text">
+    <div class="lc-allege-eyebrow">Besoin d'une journée plus douce ?</div>
+    <div class="lc-allege-title">Lymia s'adapte à toi.</div>
+    <div class="lc-allege-sub">Allège ton programme aujourd'hui sans perdre ton élan.</div>
+  </div>
+  <div class="lc-allege-cta">Adapter ma journée <span class="lc-allege-arrow">→</span></div>
+</div>
 </div>
 </div>
 
@@ -416,9 +460,17 @@
       <p class="rituel-texte">Ta carte, ta couleur, ton énergie numérologique et ton huile essentielle du moment t'attendent.</p>
       <div class="jardin-next">Découvrir ma guidance →</div>
     </div>
-<div class="card" id="anti-abandon-card">
+<div class="card lc-allege-card" id="anti-abandon-card">
 <div id="anti-abandon-content">
-<div style="text-align:center; cursor:pointer; font-size:13px; color:#a65b67; font-weight:600;" onclick="activerAntiAbandon()">Aujourd'hui, je n'ai pas la motivation</div>
+<div class="lc-allege-normal" onclick="activerAntiAbandon()">
+  <div class="lc-allege-icon"><svg class="lc-allege-svg" viewBox="0 0 64 24" aria-hidden="true"><path class="lc-allege-path" d="M2 4 C 14 4, 18 20, 32 20 C 46 20, 50 4, 62 4"/></svg></div>
+  <div class="lc-allege-text">
+    <div class="lc-allege-eyebrow">Besoin d'une journée plus douce ?</div>
+    <div class="lc-allege-title">Lymia s'adapte à toi.</div>
+    <div class="lc-allege-sub">Allège ton programme aujourd'hui sans perdre ton élan.</div>
+  </div>
+  <div class="lc-allege-cta">Adapter ma journée <span class="lc-allege-arrow">→</span></div>
+</div>
 </div>
 </div>
 <div class="card" id="objectif-jour-card" style="text-align:center;">
@@ -741,14 +793,26 @@
   async function activerAntiAbandon() {
   var el = document.getElementById('anti-abandon-content');
   if (!el) return;
-  el.innerHTML = '<p class="rituel-texte" style="text-align:center; font-weight:600; color:#16283d;">Aujourd\'hui, une seule chose suffit.</p>' +
-    '<p class="rituel-texte" style="text-align:center;">Respire trois fois, lentement. C\'est déjà assez pour aujourd\'hui.</p>' +
-    '<button class="btn btn-secondary" onclick="validerAntiAbandon()">C\'est fait</button>';
+  el.innerHTML = '<div class="lc-allege-step2">' +
+    '<div class="lc-allege-step2-title">Aujourd\'hui, on fait plus léger.</div>' +
+    '<div class="lc-allege-step2-sub">Une seule petite action suffit pour garder le lien avec ton objectif.</div>' +
+    '<div class="lc-allege-miniaction">' +
+      '<div class="lc-allege-miniaction-badge">2 MIN</div>' +
+      '<div class="lc-allege-miniaction-title">Respire avec Lymia</div>' +
+      '<div class="lc-allege-miniaction-sub">Juste deux minutes pour toi. Respire trois fois, lentement — c\'est déjà assez pour aujourd\'hui.</div>' +
+      '<button class="lc-allege-btn-mini" onclick="validerAntiAbandon()">Je commence</button>' +
+    '</div>' +
+  '</div>';
   await awardJardinPoints('anti_abandon');
 }
 async function validerAntiAbandon() {
   var el = document.getElementById('anti-abandon-content');
-  if (el) el.innerHTML = '<p class="rituel-texte" style="text-align:center; color:#3d5a4a; font-weight:600;">Contente que tu sois passée aujourd\'hui. On repart d\'ici.</p>';
+  if (el) el.innerHTML = '<div class="lc-allege-step3">' +
+    '<div class="lc-allege-step3-icon"><svg class=\"lc-allege-svg\" viewBox=\"0 0 64 24\" aria-hidden=\"true\"><path class=\"lc-allege-path\" d=\"M2 4 C 14 4, 18 20, 32 20 C 46 20, 50 4, 62 4\"/></svg></div>' +
+    '<div class="lc-allege-step3-title">Tu as gardé le lien.</div>' +
+    '<div class="lc-allege-step3-sub">Aujourd\'hui, c\'était suffisant.</div>' +
+    '<div class="lc-allege-step3-foot">Ton chemin continue.</div>' +
+  '</div>';
   renderJardinPreview();
 }
 async function saveStyleAccompagnement() {
@@ -792,15 +856,28 @@ async function renderModeEmploi() {
 async function activerAntiAbandonDash() {
   var el = document.getElementById('anti-abandon-content-dash');
   if (!el) return;
-  el.innerHTML = '<p class="rituel-texte" style="text-align:center; font-weight:600; color:#16283d;">Aujourd\'hui, une seule chose suffit.</p>' +
-    '<p class="rituel-texte" style="text-align:center;">Respire trois fois, lentement. C\'est déjà assez pour aujourd\'hui.</p>' +
-    '<button class="btn btn-secondary" onclick="validerAntiAbandonDash()">C\'est fait</button>';
+  el.innerHTML = '<div class="lc-allege-step2">' +
+    '<div class="lc-allege-step2-title">Aujourd\'hui, on fait plus léger.</div>' +
+    '<div class="lc-allege-step2-sub">Une seule petite action suffit pour garder le lien avec ton objectif.</div>' +
+    '<div class="lc-allege-miniaction">' +
+      '<div class="lc-allege-miniaction-badge">2 MIN</div>' +
+      '<div class="lc-allege-miniaction-title">Respire avec Lymia</div>' +
+      '<div class="lc-allege-miniaction-sub">Juste deux minutes pour toi. Respire trois fois, lentement — c\'est déjà assez pour aujourd\'hui.</div>' +
+      '<button class="lc-allege-btn-mini" onclick="validerAntiAbandonDash()">Je commence</button>' +
+    '</div>' +
+  '</div>';
   await awardJardinPoints('anti_abandon');
 }
 async function validerAntiAbandonDash() {
   var el = document.getElementById('anti-abandon-content-dash');
-  if (el) el.innerHTML = '<p class="rituel-texte" style="text-align:center; color:#3d5a4a; font-weight:600;">Contente que tu sois passée aujourd\'hui. On repart d\'ici.</p>';
+  if (el) el.innerHTML = '<div class="lc-allege-step3">' +
+    '<div class="lc-allege-step3-icon"><svg class=\"lc-allege-svg\" viewBox=\"0 0 64 24\" aria-hidden=\"true\"><path class=\"lc-allege-path\" d=\"M2 4 C 14 4, 18 20, 32 20 C 46 20, 50 4, 62 4\"/></svg></div>' +
+    '<div class="lc-allege-step3-title">Tu as gardé le lien.</div>' +
+    '<div class="lc-allege-step3-sub">Aujourd\'hui, c\'était suffisant.</div>' +
+    '<div class="lc-allege-step3-foot">Ton chemin continue.</div>' +
+  '</div>';
 }
+
 
 const PF_OBJECTIFS = [
     ['energie', "Plus d'énergie"],
