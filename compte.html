@@ -168,6 +168,9 @@
   .defi-card-titre { font-size:14px; font-weight:700; color:#16283d; margin-bottom:2px; }
   .defi-hero { text-align:center; }
 
+  .lock-icon { font-size:36px; text-align:center; margin-bottom:10px; }
+  #lock-view .card { text-align:center; }
+  .lock-cta { display:inline-block; margin-top:16px; }
   .guidance-entry-card { cursor:pointer; text-align:center; background:linear-gradient(135deg, #f8f0e8, #ffffff); }
   .guidance-syntese-line { font-size:13px; color:#4a4438; margin:3px 0; }
   .guidance-tarot-card { border-radius:18px; padding:26px 20px; text-align:center; color:#ffffff; box-shadow:0 8px 24px rgba(22,40,61,0.18); position:relative; overflow:hidden; }
@@ -405,6 +408,14 @@
       <div id="auth-msg"></div>
     </div>
     <a class="back-link" href="index.html">← Retour au bilan bien-être</a>
+  </div>
+
+<div id="lock-view" class="hidden">
+    <div class="card">
+      <div class="lock-icon">🔒</div>
+      <div class="mantra-label" id="lock-view-title">Ton essai LYMIA touche à sa fin</div>
+      <div id="lock-view-content"><p class="rituel-texte">Chargement...</p></div>
+    </div>
   </div>
 
   <div id="dash-view" class="hidden">
@@ -752,12 +763,54 @@
     document.getElementById('login-form').reset();
   }
 
+async function checkAccess(user, profile) {
+    if (!profile) return true;
+    if (profile.acces_test) return true;
+    const { data: ab } = await sb.from('abonnements').select('id').eq('user_id', user.id).eq('statut', 'actif').maybeSingle();
+    if (ab) return true;
+    if (profile.created_at) {
+      const created = new Date(profile.created_at);
+      const diffDays = (Date.now() - created.getTime()) / 86400000;
+      if (diffDays <= 7) return true;
+    }
+    return false;
+  }
+
+  function renderLockView(profile) {
+    const el = document.getElementById('lock-view-content');
+    if (!el) return;
+    const prenom = profile && profile.prenom ? profile.prenom : '';
+    const titre = document.getElementById('lock-view-title');
+    if (titre) titre.textContent = prenom ? ('Ton essai LYMIA touche à sa fin, ' + prenom) : 'Ton essai LYMIA touche à sa fin';
+    el.innerHTML =
+      '<p class="rituel-texte">Tu as pu découvrir LIA pendant 7 jours — ta Guidance, ton Jardin, ton plan du jour. Pour continuer ce chemin avec elle, contacte-nous pour activer ton accès.</p>' +
+      '<a class="btn lock-cta" href="mailto:ounissileila23@gmail.com?subject=Activer%20mon%20acc%C3%A8s%20LYMIA">Activer mon accès</a>' +
+      '<div style="margin-top:14px;"><button class="logout-link" onclick="handleLogoutFromLock()">Se déconnecter</button></div>';
+  }
+
+  async function handleLogoutFromLock() {
+    await sb.auth.signOut();
+    document.getElementById('lock-view').classList.add('hidden');
+    document.getElementById('auth-view').classList.remove('hidden');
+    const f = document.getElementById('login-form');
+    if (f) f.reset();
+  }
+
   async function onAuthenticated(user) {
     document.getElementById('auth-view').classList.add('hidden');
     document.getElementById('dash-view').classList.remove('hidden');
 
     let { data: profile } = await sb.from('profiles').select('*').eq('id', user.id).maybeSingle();
     PROFIL_CACHE = profile;
+
+    const acces = await checkAccess(user, profile);
+    if (!acces) {
+      document.getElementById('dash-view').classList.add('hidden');
+      document.getElementById('lock-view').classList.remove('hidden');
+      renderLockView(profile);
+      return;
+    }
+
     renderProfilSummary();
 
     const pendingPrenom = sessionStorage.getItem('lymia_pending_prenom');
