@@ -402,6 +402,27 @@
   .route-step-status { font-size:11.5px; color:var(--lc-text-soft); margin-top:2px; text-transform:uppercase; letter-spacing:0.4px; }
   .route-step-desc { font-size:13.5px; color:var(--lc-text); line-height:1.5; margin-top:8px; padding:12px 14px; background:var(--lc-cream-deep); border-radius:12px; display:none; }
   .route-step.expanded .route-step-desc { display:block; }
+
+.nutri-pill-row{display:flex; flex-wrap:wrap; gap:8px; margin:10px 0;}
+.nutri-pill{background:var(--lc-white); border:1px solid var(--lc-rose-soft); color:var(--lc-text-soft); border-radius:999px; padding:9px 16px; font-size:13.5px; cursor:pointer; transition:all .2s ease;}
+.nutri-pill.active{background:var(--lc-bordeaux-deep); border-color:var(--lc-bordeaux-deep); color:var(--lc-white);}
+.nutri-pour-moi-btn{display:block; width:100%; background:var(--lc-bordeaux-deep); color:var(--lc-white); border:none; border-radius:var(--lc-radius-lg); padding:13px; font-size:14.5px; cursor:pointer; margin:12px 0 6px;}
+.nutri-section-label{font-size:12px; letter-spacing:.5px; color:var(--lc-text-mute); text-transform:uppercase; margin:18px 0 8px;}
+.nutri-reco-card{background:#fbf3ea; border-radius:var(--lc-radius-lg); padding:18px; margin-top:8px;}
+.nutri-reco-kicker{font-size:12px; color:var(--lc-bordeaux-soft); text-transform:uppercase; letter-spacing:.5px; margin-bottom:4px;}
+.nutri-reco-titre{font-size:19px; font-weight:600; color:var(--lc-text);}
+.nutri-reco-meta{font-size:13px; color:var(--lc-text-mute); margin-top:2px;}
+.nutri-raisons-toggle{font-size:12.5px; color:var(--lc-bordeaux-soft); cursor:pointer; margin-top:10px; display:inline-block;}
+.nutri-raisons-list{margin-top:8px; display:none;}
+.nutri-raisons-list.open{display:block;}
+.nutri-raison-chip{display:inline-block; background:var(--lc-white); border-radius:999px; padding:6px 12px; font-size:12px; color:var(--lc-text-soft); margin:0 6px 6px 0;}
+.nutri-reco-actions{display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;}
+.nutri-btn-secondary{flex:1; min-width:140px; background:none; border:1px solid #d8ddd2; color:var(--lc-text-soft); border-radius:12px; padding:10px; font-size:13px; cursor:pointer;}
+.nutri-fav-btn{background:none; border:1px solid var(--lc-rose-soft); color:var(--lc-bordeaux-soft); border-radius:12px; padding:10px 14px; font-size:13px; cursor:pointer;}
+.nutri-fav-btn.active{background:var(--lc-bordeaux-deep); border-color:var(--lc-bordeaux-deep); color:var(--lc-white);}
+.nutri-detail{margin-top:12px; font-size:13.5px; color:var(--lc-text-soft); line-height:1.6;}
+.nutri-favori-item{display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid #f0ece3; font-size:13.5px; cursor:pointer;}
+.nutri-soon-note{font-size:12px; color:var(--lc-text-mute); text-align:center; margin-top:20px; padding:12px; border:1px dashed #dcd6ca; border-radius:12px;}
 </style>
 </head>
 <body>
@@ -489,6 +510,11 @@
   <div class="lc-allege-cta">Adapter ma journée <span class="lc-allege-arrow">→</span></div>
 </div>
 </div>
+</div>
+
+<div class="card" id="nutrition-teaser-card" onclick="goToNutrition()" style="cursor:pointer; text-align:center;">
+<div class="mantra-label">Nutrition</div>
+<p class="rituel-texte" style="margin-top:2px;">Qu'est-ce que je peux manger aujourd'hui ? Des idées qui s'adaptent à toi.</p>
 </div>
 
 <div class="card" id="mode-emploi-teaser-card" onclick="goToProfil()" style="cursor:pointer; text-align:center;">
@@ -766,6 +792,26 @@
     </div>
   </div>
 
+<div id="nutrition-view" class="hidden">
+<div class="univers-intro">
+<div class="univers-kicker">Nutrition</div>
+<h1>Qu'est-ce que je peux manger aujourd'hui ?</h1>
+<p class="subtitle">Des idées qui s'adaptent à toi, pas l'inverse.</p>
+</div>
+<div class="univers-back-link" onclick="showDashFromNutrition()">← Retour à aujourd'hui</div>
+<div style="text-align:right; margin:-6px 4px 10px;"><span style="font-size:12.5px; color:var(--lc-bordeaux-soft); cursor:pointer;" onclick="goToProfilFromNutrition()">Modifier mes préférences alimentaires</span></div>
+<div class="univers-list-panel" style="padding:20px 22px 24px;">
+<div class="nutri-section-label">Combien de temps as-tu ?</div>
+<div class="nutri-pill-row" id="nutri-temps-row"></div>
+<button class="nutri-pour-moi-btn" onclick="nutritionChoisirPourMoi()">Choisis pour moi</button>
+<div class="nutri-section-label">De quoi as-tu envie ? <span style="text-transform:none; color:var(--lc-text-mute);">(facultatif)</span></div>
+<div class="nutri-pill-row" id="nutri-envie-row"></div>
+<div id="nutri-resultat"></div>
+<div class="nutri-section-label" style="cursor:pointer;" onclick="toggleNutriFavoris()"><span id="nutri-favoris-label">Mes recettes préférées</span></div>
+<div class="nutri-favoris-list hidden" id="nutri-favoris-list"></div>
+<div class="nutri-soon-note">Bientôt : cuisiner avec ce que j'ai déjà chez moi.</div>
+</div>
+</div>
 <div id="profil-view" class="hidden">
     <div class="card">
       <div class="zone-label" style="text-align:center;">Ton profil LYMIA</div>
@@ -997,7 +1043,7 @@ async function checkAccess(user, profile) {
     if (profile && profile.prenom) {
       document.getElementById('dash-greeting').textContent = 'Bonjour ' + profile.prenom;
       document.getElementById('prenom-setup').classList.add('hidden');
-      if (document.getElementById('main-greeting')) document.getElementById('main-greeting').textContent = 'Bonjour ' + profile.prenom + ' 🌸';
+      if (document.getElementById('main-greeting')) document.getElementById('main-greeting').textContent = 'Bonjour ' + profile.prenom ;
       if (document.getElementById('main-subphrase')) document.getElementById('main-subphrase').textContent = "Aujourd'hui, on avance à ta façon.";
     } else {
       document.getElementById('dash-greeting').textContent = 'Bienvenue';
@@ -1898,7 +1944,8 @@ const PF_OBJECTIFS = [
     hydratation: ['hydratation']
   };
 
-  async function choisirRecetteIntelligente(priorites, userId) {
+  async function choisirRecetteIntelligente(priorites, userId, opts) {
+    opts = opts || {};
     const { data: recettesData } = await sb.from('recettes').select('*').eq('actif', true);
     const recettes = recettesData || [];
     let profile = null;
@@ -1906,10 +1953,13 @@ const PF_OBJECTIFS = [
       const { data } = await sb.from('profiles').select('*').eq('id', userId).maybeSingle();
       profile = data;
     }
-    const tempsCuisine = tempsCuisineDepuisPreference(profile && profile.preference_cuisine);
+    const tempsCuisine = (opts.tempsOverride != null) ? opts.tempsOverride : tempsCuisineDepuisPreference(profile && profile.preference_cuisine);
     const allergies = (profile && profile.allergies) || [];
     const exclus = (profile && profile.aliments_exclus) || [];
     const objectifsProfil = (profile && profile.objectifs_nutrition) || [];
+    const preferencesAlim = (profile && profile.preferences_alimentaires) || [];
+    const excludeIds = opts.excludeIds || [];
+    const envie = (opts.envie && opts.envie !== 'surprends') ? opts.envie : null;
     const recents = userId ? await getRecentHistorique(userId, 'recette', 4) : [];
 
     const objectifsPriorite = [];
@@ -1920,19 +1970,23 @@ const PF_OBJECTIFS = [
 
     const compatibles = recettes.filter(function(r) {
       if (r.temps_minutes > tempsCuisine) return false;
+      if (excludeIds.indexOf(r.id) !== -1) return false;
       const allergenes = r.allergenes || [];
       const exclusions = r.exclusions || [];
       if (allergies.some(function(a){ return allergenes.indexOf(a) !== -1; })) return false;
       if (exclus.some(function(e){ return exclusions.indexOf(e) !== -1; })) return false;
+      if (preferencesAlim.some(function(p){ const tags = PREFERENCE_EXCLUSION_MAP[p] || []; return tags.some(function(t){ return exclusions.indexOf(t) !== -1; }); })) return false;
       return true;
     });
 
     const scored = compatibles.map(function(r) {
       const tags = r.tags_objectifs || [];
+      const ctx = r.tags_contexte || [];
       let score = 0;
       const raisons = [];
       objectifsPriorite.forEach(function(o) { if (tags.indexOf(o) !== -1) { score += 3; raisons.push('priorite:' + o); } });
       objectifsProfil.forEach(function(o) { if (tags.indexOf(o) !== -1) { score += 2; raisons.push('objectif:' + o); } });
+      if (envie && ctx.indexOf(envie) !== -1) { score += 2; raisons.push('envie:' + envie); }
       const recent = recents.indexOf(r.id) !== -1;
       if (recent) score -= 5;
       return { recette: r, score: score, raisons: raisons, recent: recent };
@@ -1957,19 +2011,20 @@ const PF_OBJECTIFS = [
   }
 
   function renderUneRecette(item, tempsCuisine) {
-    const el = document.getElementById('journee-recette-content');
-    if (!el || !item) { if (el) el.innerHTML = '<p class="rituel-texte">Pas de recette disponible pour le moment.</p>'; return; }
-    const recette = item.recette;
-    const ingredients = Array.isArray(recette.ingredients) ? recette.ingredients : [];
-    el.innerHTML =
-      '<div class="essentiel-titre" style="color:#16283d;">' + recette.titre + '</div>' +
-      '<div class="jardin-next" style="margin-top:2px;">' + recette.temps_minutes + ' min' + (recette.difficulte ? ' — ' + recette.difficulte.replace('_', ' ') : '') + '</div>' +
-      (recette.description ? '<p class="rituel-texte" style="margin-top:6px;">' + recette.description + '</p>' : '') +
-      (ingredients.length ? '<ul class="recette-ingredients">' + ingredients.map(function(i){ return '<li>' + i + '</li>'; }).join('') + '</ul>' : '') +
-      (recette.etapes ? '<p class="rituel-texte" style="margin-top:6px;">' + recette.etapes + '</p>' : '') +
-      '<div class="recette-explication">' + explicationRecette(item, tempsCuisine) + '</div>' +
-      '<button class="voir-autre-btn" onclick="voirAutreRecette()">Voir une autre idée</button>';
-  }
+  const el = document.getElementById('journee-recette-content');
+  if (!el || !item) { if (el) el.innerHTML = '<p class="rituel-texte">Pas de recette disponible pour le moment.</p>'; return; }
+  const recette = item.recette;
+  const ingredients = Array.isArray(recette.ingredients) ? recette.ingredients : [];
+  el.innerHTML =
+    '<div class="essentiel-titre" style="color:#16283d;">' + recette.titre + '</div>' +
+    '<div class="jardin-next" style="margin-top:2px;">' + recette.temps_minutes + ' min' + (recette.difficulte ? ' — ' + recette.difficulte.replace('_', ' ') : '') + '</div>' +
+    (recette.description ? '<p class="rituel-texte" style="margin-top:6px;">' + recette.description + '</p>' : '') +
+    (ingredients.length ? '<ul class="recette-ingredients">' + ingredients.map(function(i){ return '<li>' + i + '</li>'; }).join('') + '</ul>' : '') +
+    (recette.etapes ? '<p class="rituel-texte" style="margin-top:6px;">' + recette.etapes + '</p>' : '') +
+    '<div class="recette-explication">' + explicationRecette(item, tempsCuisine) + '</div>' +
+    '<button class="voir-autre-btn" onclick="voirAutreRecette()">Voir une autre idée</button>' +
+    '<button class="voir-autre-btn" style="margin-top:8px; border-color:var(--lc-bordeaux-soft); color:var(--lc-bordeaux-soft);" onclick="voirRecetteDepuisJournee(\'' + recette.id + '\')">Voir dans Nutrition</button>';
+}
 
   function voirAutreRecette() {
     if (!RECETTE_CANDIDATES.length) return;
@@ -2810,6 +2865,234 @@ const PF_OBJECTIFS = [
     document.getElementById('feuilleroute-view').classList.add('hidden');
     document.getElementById('dash-view').classList.remove('hidden');
   }
+
+
+let NUTRITION_STATE = { userId: null, temps: null, envie: null, candidats: [], index: 0, tempsCuisine: 20, favoris: [], favorisLoaded: false, favorisOuvert: false, raisonsOuvert: false };
+const NUTRI_TEMPS_OPTIONS = [[5,'5 min'],[10,'10 min'],[20,'20 min'],[30,'30 min'],[999,"J'ai le temps"]];
+const NUTRI_ENVIE_OPTIONS = [['tres_simple','Très simple'],['frais','Frais'],['reconfortant','Réconfortant'],['leger','Léger'],['gourmand','Gourmand'],['surprends','Surprends-moi']];
+const PREFERENCE_EXCLUSION_MAP = { vegetarien: ['viande','poisson'], vegan: ['viande','poisson','oeufs','lait','fromage','miel'], sans_gluten: ['gluten'], sans_lactose: ['lactose'] };
+
+function goToNutrition() {
+  document.getElementById('dash-view').classList.add('hidden');
+  document.getElementById('nutrition-view').classList.remove('hidden');
+  window.scrollTo(0, 0);
+  initNutritionView();
+}
+
+function showDashFromNutrition() {
+  document.getElementById('nutrition-view').classList.add('hidden');
+  document.getElementById('dash-view').classList.remove('hidden');
+}
+
+function goToProfilFromNutrition() {
+  PROFIL_RETURN_VIEW = 'nutrition-view';
+  document.getElementById('nutrition-view').classList.add('hidden');
+  document.getElementById('profil-view').classList.remove('hidden');
+  const link = document.getElementById('profil-back-link');
+  if (link) link.textContent = 'Retour à Nutrition';
+  renderProfilForm();
+}
+
+async function initNutritionView() {
+  if (!NUTRITION_STATE.userId) {
+    const { data: { session } } = await sb.auth.getSession();
+    NUTRITION_STATE.userId = session && session.user ? session.user.id : null;
+  }
+  renderNutriTempsRow();
+  renderNutriEnvieRow();
+  if (!NUTRITION_STATE.favorisLoaded) { await chargerFavoris(); }
+  renderNutriFavorisList();
+  const el = document.getElementById('nutri-resultat');
+  if (el && !NUTRITION_STATE.candidats.length) {
+    el.innerHTML = '<p class="rituel-texte" style="margin-top:16px;">Choisis un temps, ou laisse Lymia décider pour toi.</p>';
+  }
+}
+
+function renderNutriTempsRow() {
+  const el = document.getElementById('nutri-temps-row');
+  if (!el) return;
+  el.innerHTML = NUTRI_TEMPS_OPTIONS.map(function(o){
+    const active = NUTRITION_STATE.temps === o[0] ? ' active' : '';
+    return '<div class="nutri-pill' + active + '" onclick="nutritionChoisirTemps(' + o[0] + ')">' + o[1] + '</div>';
+  }).join('');
+}
+
+function renderNutriEnvieRow() {
+  const el = document.getElementById('nutri-envie-row');
+  if (!el) return;
+  el.innerHTML = NUTRI_ENVIE_OPTIONS.map(function(o){
+    const active = NUTRITION_STATE.envie === o[0] ? ' active' : '';
+    return '<div class="nutri-pill' + active + '" onclick="nutritionChoisirEnvie(\'' + o[0] + '\')">' + o[1] + '</div>';
+  }).join('');
+}
+
+function nutritionChoisirTemps(minutes) {
+  NUTRITION_STATE.temps = minutes;
+  renderNutriTempsRow();
+  chargerRecommandationNutrition();
+}
+
+function nutritionChoisirEnvie(envie) {
+  NUTRITION_STATE.envie = (NUTRITION_STATE.envie === envie) ? null : envie;
+  renderNutriEnvieRow();
+  chargerRecommandationNutrition();
+}
+
+function nutritionChoisirPourMoi() {
+  chargerRecommandationNutrition();
+}
+
+async function chargerRecommandationNutrition(excludeIds) {
+  const el = document.getElementById('nutri-resultat');
+  if (el) el.innerHTML = '<p class="rituel-texte" style="margin-top:16px;">Lymia choisit pour toi...</p>';
+  const opts = {};
+  if (NUTRITION_STATE.temps != null) opts.tempsOverride = NUTRITION_STATE.temps;
+  if (NUTRITION_STATE.envie) opts.envie = NUTRITION_STATE.envie;
+  if (excludeIds && excludeIds.length) opts.excludeIds = excludeIds;
+  const result = await choisirRecetteIntelligente([], NUTRITION_STATE.userId, opts);
+  NUTRITION_STATE.candidats = result.candidats;
+  NUTRITION_STATE.index = 0;
+  NUTRITION_STATE.tempsCuisine = result.tempsCuisine;
+  renderNutriResultat();
+  if (NUTRITION_STATE.candidats.length && NUTRITION_STATE.userId) {
+    logHistorique(NUTRITION_STATE.userId, 'recette', NUTRITION_STATE.candidats[0].recette.id);
+  }
+}
+
+function raisonsRecette(item, tempsCuisine) {
+  if (!item) return [];
+  const raisons = [];
+  raisons.push(item.recette.temps_minutes + ' minutes');
+  const uniques = [];
+  item.raisons.forEach(function(r){ if (uniques.indexOf(r) === -1) uniques.push(r); });
+  if (uniques.some(function(r){ return r.indexOf('objectif:') === 0 || r.indexOf('priorite:') === 0; })) {
+    raisons.push('Correspond à tes objectifs');
+  }
+  if (uniques.some(function(r){ return r.indexOf('envie:') === 0; })) {
+    raisons.push('Correspond à ce dont tu as envie');
+  }
+  raisons.push('Compatible avec ton alimentation');
+  return raisons;
+}
+
+function renderNutriResultat() {
+  const el = document.getElementById('nutri-resultat');
+  if (!el) return;
+  const candidats = NUTRITION_STATE.candidats;
+  if (!candidats.length) {
+    el.innerHTML = '<p class="rituel-texte" style="margin-top:16px;">Pas d\'idée disponible dans ce temps pour le moment.</p>';
+    return;
+  }
+  const item = candidats[NUTRITION_STATE.index] || candidats[0];
+  const recette = item.recette;
+  const ingredients = Array.isArray(recette.ingredients) ? recette.ingredients : [];
+  const estFav = NUTRITION_STATE.favoris.indexOf(recette.id) !== -1;
+  const raisons = raisonsRecette(item, NUTRITION_STATE.tempsCuisine);
+  el.innerHTML =
+    '<div class="nutri-reco-card">' +
+    '<div class="nutri-reco-kicker">J\'ai choisi ça pour toi</div>' +
+    '<div class="nutri-reco-titre">' + recette.titre + '</div>' +
+    '<div class="nutri-reco-meta">' + recette.temps_minutes + ' min' + (recette.difficulte ? ' — ' + recette.difficulte.replace('_',' ') : '') + '</div>' +
+    (recette.description ? '<p class="rituel-texte" style="margin-top:8px;">' + recette.description + '</p>' : '') +
+    '<div class="nutri-raisons-toggle" onclick="toggleNutriRaisons()">Pourquoi pour toi ?</div>' +
+    '<div class="nutri-raisons-list' + (NUTRITION_STATE.raisonsOuvert ? ' open' : '') + '" id="nutri-raisons-list">' +
+    raisons.map(function(r){ return '<span class="nutri-raison-chip">' + r + '</span>'; }).join('') +
+    '</div>' +
+    (ingredients.length ? '<div class="nutri-detail"><strong>Ingrédients</strong><ul class="recette-ingredients">' + ingredients.map(function(i){ return '<li>' + i + '</li>'; }).join('') + '</ul></div>' : '') +
+    (recette.etapes ? '<div class="nutri-detail">' + recette.etapes + '</div>' : '') +
+    '<div class="nutri-reco-actions">' +
+    '<button class="nutri-btn-secondary" onclick="nutritionAutreIdee()">Propose-moi autre chose</button>' +
+    '<button class="nutri-fav-btn' + (estFav ? ' active' : '') + '" onclick="nutritionToggleFavori(\'' + recette.id + '\')">' + (estFav ? 'Dans mes favoris' : 'Ajouter à mes favoris') + '</button>' +
+    '</div>' +
+    '</div>';
+}
+
+function toggleNutriRaisons() {
+  NUTRITION_STATE.raisonsOuvert = !NUTRITION_STATE.raisonsOuvert;
+  const el = document.getElementById('nutri-raisons-list');
+  if (el) el.classList.toggle('open', NUTRITION_STATE.raisonsOuvert);
+}
+
+function nutritionAutreIdee() {
+  const candidats = NUTRITION_STATE.candidats;
+  if (!candidats.length) return;
+  if (NUTRITION_STATE.index < candidats.length - 1) {
+    NUTRITION_STATE.index += 1;
+    renderNutriResultat();
+    const item = candidats[NUTRITION_STATE.index];
+    if (NUTRITION_STATE.userId) logHistorique(NUTRITION_STATE.userId, 'recette', item.recette.id);
+  } else {
+    const shownIds = candidats.map(function(c){ return c.recette.id; });
+    chargerRecommandationNutrition(shownIds);
+  }
+}
+
+async function chargerFavoris() {
+  if (!NUTRITION_STATE.userId) { NUTRITION_STATE.favoris = []; NUTRITION_STATE.favorisLoaded = true; return; }
+  const { data } = await sb.from('recette_favoris').select('recette_id').eq('user_id', NUTRITION_STATE.userId);
+  NUTRITION_STATE.favoris = (data || []).map(function(d){ return d.recette_id; });
+  NUTRITION_STATE.favorisLoaded = true;
+}
+
+async function nutritionToggleFavori(recetteId) {
+  if (!NUTRITION_STATE.userId) return;
+  const estFav = NUTRITION_STATE.favoris.indexOf(recetteId) !== -1;
+  if (estFav) {
+    await sb.from('recette_favoris').delete().eq('user_id', NUTRITION_STATE.userId).eq('recette_id', recetteId);
+    NUTRITION_STATE.favoris = NUTRITION_STATE.favoris.filter(function(id){ return id !== recetteId; });
+  } else {
+    await sb.from('recette_favoris').insert({ user_id: NUTRITION_STATE.userId, recette_id: recetteId });
+    NUTRITION_STATE.favoris.push(recetteId);
+  }
+  renderNutriResultat();
+  renderNutriFavorisList();
+}
+
+function toggleNutriFavoris() {
+  NUTRITION_STATE.favorisOuvert = !NUTRITION_STATE.favorisOuvert;
+  renderNutriFavorisList();
+}
+
+async function renderNutriFavorisList() {
+  const label = document.getElementById('nutri-favoris-label');
+  if (label) label.textContent = 'Mes recettes préférées' + (NUTRITION_STATE.favoris.length ? ' (' + NUTRITION_STATE.favoris.length + ')' : '');
+  const el = document.getElementById('nutri-favoris-list');
+  if (!el) return;
+  if (!NUTRITION_STATE.favorisOuvert) { el.classList.add('hidden'); return; }
+  el.classList.remove('hidden');
+  if (!NUTRITION_STATE.favoris.length) { el.innerHTML = '<p class="rituel-texte">Pas encore de recette en favoris.</p>'; return; }
+  const { data } = await sb.from('recettes').select('*').in('id', NUTRITION_STATE.favoris);
+  const recettes = data || [];
+  el.innerHTML = recettes.map(function(r){
+    return '<div class="nutri-favori-item" onclick="nutritionVoirRecette(\'' + r.id + '\')"><span>' + r.titre + '</span><span style="color:var(--lc-text-mute);">' + r.temps_minutes + ' min</span></div>';
+  }).join('');
+}
+
+async function nutritionVoirRecette(recetteId) {
+  const idx = NUTRITION_STATE.candidats.findIndex(function(c){ return c.recette.id === recetteId; });
+  if (idx !== -1) {
+    NUTRITION_STATE.index = idx;
+    renderNutriResultat();
+    window.scrollTo(0, 0);
+    return;
+  }
+  const { data } = await sb.from('recettes').select('*').eq('id', recetteId).maybeSingle();
+  if (!data) return;
+  NUTRITION_STATE.candidats = [{ recette: data, score: 0, raisons: [], recent: false }];
+  NUTRITION_STATE.index = 0;
+  NUTRITION_STATE.tempsCuisine = data.temps_minutes;
+  renderNutriResultat();
+  window.scrollTo(0, 0);
+}
+
+function voirRecetteDepuisJournee(recetteId) {
+  const journeeView = document.getElementById('journee-view');
+  if (journeeView) journeeView.classList.add('hidden');
+  document.getElementById('dash-view').classList.add('hidden');
+  document.getElementById('nutrition-view').classList.remove('hidden');
+  window.scrollTo(0, 0);
+  initNutritionView().then(function(){ nutritionVoirRecette(recetteId); });
+}
 
 (async function init() {
     const { data: { session } } = await sb.auth.getSession();
