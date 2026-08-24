@@ -1877,7 +1877,53 @@ const PF_OBJECTIFS = [
     try { await sb.from('contenu_historique').insert({ user_id: userId, contenu_type: contenuType, contenu_id: contenuId }); } catch (e) {}
   }
 
-  async function getTodayHistorique(userId, contenuType) {
+  async function getHistoriqueAvecDates(userId, contenuType, jours) {
+const since = new Date(Date.now() - jours * 86400000).toISOString().slice(0, 10);
+const { data } = await sb.from('contenu_historique').select('contenu_id, date').eq('user_id', userId).eq('contenu_type', contenuType).gte('date', since);
+return data || [];
+}
+
+function penaliteRecence(dateStr) {
+const jours = Math.floor((Date.now() - new Date(dateStr).getTime()) / 86400000);
+if (jours <= 0) return 6;
+if (jours <= 2) return 4;
+if (jours <= 4) return 2;
+return 1;
+}
+
+function momentActuel() {
+const h = new Date().getHours();
+if (h >= 5 && h < 11) return 'matin';
+if (h >= 11 && h < 15) return 'midi';
+if (h >= 15 && h < 19) return 'encas';
+if (h >= 19 && h < 23) return 'soir';
+return 'encas';
+}
+
+async function getFavorisIds(userId) {
+if (!userId) return [];
+const { data } = await sb.from('recette_favoris').select('recette_id').eq('user_id', userId);
+return (data || []).map(function(d){ return d.recette_id; });
+}
+
+function filtrerRecettesCompatibles(recettes, profile, tempsCuisine, excludeIds) {
+const allergies = (profile && profile.allergies) || [];
+const exclus = (profile && profile.aliments_exclus) || [];
+const preferencesAlim = (profile && profile.preferences_alimentaires) || [];
+excludeIds = excludeIds || [];
+return recettes.filter(function(r) {
+if (tempsCuisine != null && r.temps_minutes > tempsCuisine) return false;
+if (excludeIds.indexOf(r.id) !== -1) return false;
+const allergenes = r.allergenes || [];
+const exclusions = r.exclusions || [];
+if (allergies.some(function(a){ return allergenes.indexOf(a) !== -1; })) return false;
+if (exclus.some(function(e){ return exclusions.indexOf(e) !== -1; })) return false;
+if (preferencesAlim.some(function(p){ const tags = PREFERENCE_EXCLUSION_MAP[p] || []; return tags.some(function(t){ return exclusions.indexOf(t) !== -1; }); })) return false;
+return true;
+});
+}
+
+async function getTodayHistorique(userId, contenuType) {
     if (!userId) return null;
     var today = new Date().toISOString().slice(0, 10);
     var res = await sb.from('contenu_historique').select('contenu_id').eq('user_id', userId).eq('contenu_type', contenuType).eq('date', today).limit(1);
@@ -2002,57 +2048,77 @@ const PF_OBJECTIFS = [
   };
 
   async function choisirRecetteIntelligente(priorites, userId, opts) {
-    opts = opts || {};
-    const { data: recettesData } = await sb.from('recettes').select('*').eq('actif', true);
-    const recettes = recettesData || [];
-    let profile = null;
-    if (userId) {
-      const { data } = await sb.from('profiles').select('*').eq('id', userId).maybeSingle();
-      profile = data;
-    }
-    const tempsCuisine = (opts.tempsOverride != null) ? opts.tempsOverride : tempsCuisineDepuisPreference(profile && profile.preference_cuisine);
-    const allergies = (profile && profile.allergies) || [];
-    const exclus = (profile && profile.aliments_exclus) || [];
-    const objectifsProfil = (profile && profile.objectifs_nutrition) || [];
-    const preferencesAlim = (profile && profile.preferences_alimentaires) || [];
-    const excludeIds = opts.excludeIds || [];
-    const envie = (opts.envie && opts.envie !== 'surprends') ? opts.envie : null;
-    const recents = userId ? await getRecentHistorique(userId, 'recette', 4) : [];
+opts = opts || {};
+const { data: recettesData } = await sb.from('recettes').select('*').eq('actif', true);
+const recettes = recettesData || [];
+let profile = null;
+if (userId) {
+const { data } = await sb.from('profiles').select('*').eq('id', userId).maybeSingle();
+profile = data;
+}
+const tempsCuisine = (opts.tempsOverride != null) ? opts.tempsOverride : tempsCuisineDepuisPreference(profile && profile.preference_cuisine);
+const excludeIds = opts.excludeIds || [];
+const envie = (opts.envie && opts.envie !== 'surprends') ? opts.envie : null;
+const moment = opts.momentOverride || momentActuel();
+const ingredientsDispo = opts.ingredientsDisponibles || [];
+const ingredientsDispoNorm = ingredientsDispo.map(normaliserTexte);
+const recentsAvecDates = userId ? await getHistoriqueAvecDates(userId, 'recette', 7) : [];
+const favoris = userId ? await getFavorisIds(userId) : [];
+const objectifsProfil = (profile && profile.objectifs_nutrition) || [];
 
-    const objectifsPriorite = [];
-    (priorites || []).forEach(function(p) {
-      const slugs = OBJECTIF_SLUG_MAP[p.axe] || [];
-      slugs.forEach(function(s){ if (objectifsPriorite.indexOf(s) === -1) objectifsPriorite.push(s); });
-    });
+const objectifsPriorite = [];
+(priorites || []).forEach(function(p) {
+const slugs = OBJECTIF_SLUG_MAP[p.axe] || [];
+slugs.forEach(function(s){ if (objectifsPriorite.indexOf(s) === -1) objectifsPriorite.push(s); });
+});
 
-    const compatibles = recettes.filter(function(r) {
-      if (r.temps_minutes > tempsCuisine) return false;
-      if (excludeIds.indexOf(r.id) !== -1) return false;
-      const allergenes = r.allergenes || [];
-      const exclusions = r.exclusions || [];
-      if (allergies.some(function(a){ return allergenes.indexOf(a) !== -1; })) return false;
-      if (exclus.some(function(e){ return exclusions.indexOf(e) !== -1; })) return false;
-      if (preferencesAlim.some(function(p){ const tags = PREFERENCE_EXCLUSION_MAP[p] || []; return tags.some(function(t){ return exclusions.indexOf(t) !== -1; }); })) return false;
-      return true;
-    });
+const compatibles = filtrerRecettesCompatibles(recettes, profile, tempsCuisine, excludeIds);
 
-    const scored = compatibles.map(function(r) {
-      const tags = r.tags_objectifs || [];
-      const ctx = r.tags_contexte || [];
-      const etats = r.tags_etats || [];
-      let score = 0;
-      const raisons = [];
-      objectifsPriorite.forEach(function(o) { if (tags.indexOf(o) !== -1) { score += 3; raisons.push('priorite:' + o); } });
-      objectifsProfil.forEach(function(o) { if (tags.indexOf(o) !== -1) { score += 2; raisons.push('objectif:' + o); } });
-      if (envie && ctx.indexOf(envie) !== -1) { score += 2; raisons.push('envie:' + envie); }
-      if (opts.etatTags && opts.etatTags.length) { opts.etatTags.forEach(function(e){ if (etats.indexOf(e) !== -1) { score += 4; raisons.push('etat:' + e); } }); }
-      const recent = recents.indexOf(r.id) !== -1;
-      if (recent) score -= 5;
-      return { recette: r, score: score, raisons: raisons, recent: recent };
-    }).sort(function(a, b){ return b.score - a.score; });
+const scored = compatibles.map(function(r) {
+const tags = r.tags_objectifs || [];
+const ctx = r.tags_contexte || [];
+const etats = r.tags_etats || [];
+const ingr = Array.isArray(r.ingredients) ? r.ingredients : [];
+let score = 0;
+const raisons = [];
+objectifsPriorite.forEach(function(o) { if (tags.indexOf(o) !== -1) { score += 3; raisons.push('priorite:' + o); } });
+objectifsProfil.forEach(function(o) { if (tags.indexOf(o) !== -1) { score += 2; raisons.push('objectif:' + o); } });
+if (envie && ctx.indexOf(envie) !== -1) { score += 2; raisons.push('envie:' + envie); }
+if (opts.etatTags && opts.etatTags.length) { opts.etatTags.forEach(function(e){ if (etats.indexOf(e) !== -1) { score += 4; raisons.push('etat:' + e); } }); }
+if (moment && Array.isArray(r.moment_journee) && r.moment_journee.indexOf(moment) !== -1) { score += 1; raisons.push('moment:' + moment); }
+if (favoris.indexOf(r.id) !== -1) { score += 2; raisons.push('favori'); }
+let ingredientsInfo = null;
+if (ingredientsDispoNorm.length) {
+const overlap = [];
+let covered = 0;
+ingr.forEach(function(i) {
+const iNorm = normaliserTexte(i);
+const found = ingredientsDispoNorm.some(function(sN, idx) {
+if (iNorm.indexOf(sN) !== -1) { if (overlap.indexOf(ingredientsDispo[idx]) === -1) overlap.push(ingredientsDispo[idx]); return true; }
+return false;
+});
+if (found) covered += 1;
+});
+const total = ingr.length;
+const missing = total - covered;
+ingredientsInfo = { covered: covered, total: total, missing: missing, overlap: overlap };
+score += covered * 2 - missing * 3;
+raisons.push('ingredients:' + covered + '/' + total);
+}
+const recentMatches = recentsAvecDates.filter(function(h){ return h.contenu_id === r.id; }).sort(function(a,b){ return new Date(b.date) - new Date(a.date); });
+const recentEntry = recentMatches.length ? recentMatches[0] : null;
+let recent = false;
+if (recentEntry) {
+recent = true;
+const penalite = penaliteRecence(recentEntry.date);
+score -= penalite;
+raisons.push('recent:' + penalite);
+}
+return { recette: r, score: score, raisons: raisons, recent: recent, ingredientsInfo: ingredientsInfo };
+}).sort(function(a, b){ return b.score - a.score; });
 
-    return { candidats: scored, tempsCuisine: tempsCuisine };
-  }
+return { candidats: scored, tempsCuisine: tempsCuisine };
+}
 
   function explicationRecette(item, tempsCuisine) {
     if (!item) return '';
@@ -2971,13 +3037,68 @@ const NUTRIENT_FACTS = [
 ["banane","Banane","potassium, glucides"],
 ["oeuf","Œufs","protéines de qualité"],
 ["pomme","Pomme","fibres"]
+,
+["carotte","Carotte","bêta-carotène"],
+["orange","Orange","vitamine C"],
+["poivron","Poivron","vitamine C"],
+["tomate","Tomate","lycopène"],
+["brocoli","Brocoli","vitamine C, fibres"],
+["patate douce","Patate douce","bêta-carotène, fibres"],
+["lentilles corail","Lentilles corail","protéines végétales, fer"],
+["lentilles","Lentilles","protéines végétales, fer"],
+["tofu","Tofu","protéines végétales, calcium"],
+["saumon","Saumon","oméga-3, protéines"],
+["riz complet","Riz complet","fibres, glucides complexes"],
+["pates completes","Pâtes complètes","fibres, glucides complexes"],
+["feta","Feta","calcium, protéines"],
+["ricotta","Ricotta","calcium, protéines"],
+["yaourt grec","Yaourt grec","protéines, calcium"],
+["yaourt","Yaourt","calcium, probiotiques"],
+["chou kale","Chou kale","vitamine K, fibres"],
+["kale","Chou kale","vitamine K, fibres"],
+["roquette","Roquette","vitamine K"],
+["myrtille","Myrtilles","antioxydants"],
+["framboise","Framboises","fibres, vitamine C"],
+["fruits rouges","Fruits rouges","antioxydants, vitamine C"],
+["fraise","Fraise","vitamine C"],
+["kiwi","Kiwi","vitamine C"],
+["pamplemousse","Pamplemousse","vitamine C"],
+["citron vert","Citron vert","vitamine C"],
+["grenade","Grenade","antioxydants"],
+["pasteque","Pastèque","hydratation, vitamine A"],
+["concombre","Concombre","hydratation"],
+["dattes","Dattes","fibres, glucides"],
+["amande","Amandes","bons lipides, magnésium"],
+["noix","Noix","oméga-3, bons lipides"],
+["beurre de cacahuete","Beurre de cacahuète","protéines végétales, bons lipides"],
+["graines de chia","Graines de chia","oméga-3, fibres"],
+["graines de lin","Graines de lin","oméga-3, fibres"],
+["cacao","Cacao cru","antioxydants, magnésium"],
+["the vert","Thé vert","antioxydants"],
+["matcha","Matcha","antioxydants"],
+["camomille","Camomille","composés apaisants"],
+["tilleul","Tilleul","composés apaisants"],
+["menthe","Menthe","fraîcheur, composés aromatiques"],
+["basilic","Basilic","antioxydants"],
+["persil","Persil","vitamine K, vitamine C"],
+["pignons de pin","Pignons de pin","bons lipides"],
+["tahini","Tahini (sésame)","calcium, bons lipides"],
+["algues","Algues","iode, minéraux"],
+["miso","Miso","protéines végétales"],
+["fenouil","Fenouil","fibres"],
+["romarin","Romarin","composés aromatiques"],
+["figue","Figue","fibres"],
+["pain complet","Pain complet","fibres, glucides complexes"],
+["lait d'amande","Lait d’amande","calcium (si enrichi)"],
+["lait de coco","Lait de coco","lipides"],
+["lait d'avoine","Lait d’avoine","glucides complexes"]
 ];
 const NUTRIENT_FACTS_SORTED = NUTRIENT_FACTS.slice().sort(function(a,b){ return b[0].length - a[0].length; });
 
-const INGREDIENTS_DISPO = ["Œufs","Épinards","Avocat","Graines de sésame","Mangue","Ananas","Graines de courge","Miel","Citron","Gingembre","Curcuma","Cannelle","Flocons d'avoine","Compote de pomme","Quinoa","Poulet","Pois chiches","Légumes de saison","Huile d'olive","Pêche","Banane","Lait végétal","Camomille","Fleur d'oranger","Lavande","Verveine","Sauge"];
+const INGREDIENTS_DISPO = ["Œufs","Épinards","Avocat","Graines de sésame","Mangue","Ananas","Graines de courge","Miel","Citron","Gingembre","Curcuma","Cannelle","Flocons d'avoine","Compote de pomme","Quinoa","Poulet","Pois chiches","Légumes de saison","Huile d'olive","Pêche","Banane","Lait végétal","Camomille","Fleur d'oranger","Lavande","Verveine","Sauge","Carotte","Orange","Poivron","Tomate","Brocoli","Patate douce","Lentilles corail","Tofu","Saumon","Riz complet","Pâtes complètes","Feta","Ricotta","Yaourt nature","Yaourt grec","Chou kale","Roquette","Myrtilles","Framboises","Fraise","Kiwi","Pamplemousse","Citron vert","Grenade","Pastèque","Concombre","Dattes","Amandes","Noix","Beurre de cacahuète","Graines de chia","Graines de lin","Cacao cru","Thé vert","Matcha","Tilleul","Menthe","Basilic","Persil","Pignons de pin","Tahini","Pain complet","Lait d'amande","Lait de coco","Lait d'avoine"];
 
 function normaliserTexte(t) {
-return (t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+return (t || '').toLowerCase().replace(/\u0153/g, 'oe').replace(/\u00e6/g, 'ae').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 }
 
 function faitsNutritionnels(ingredientsList, limit) {
@@ -3085,25 +3206,15 @@ const el = document.getElementById('nutri-ingr-resultat');
 const selected = NUTRITION_STATE.ingredientsSelectionnes;
 if (!selected.length) { if (el) el.innerHTML = '<p class="rituel-texte" style="margin-top:14px;">Choisis au moins un ingrédient.</p>'; return; }
 if (el) el.innerHTML = '<p class="rituel-texte" style="margin-top:14px;">Lymia analyse ta combinaison...</p>';
-const { data: recettesData } = await sb.from('recettes').select('*').eq('actif', true);
-const recettes = recettesData || [];
-const selectedNorm = selected.map(normaliserTexte);
-let best = null, bestScore = 0;
-recettes.forEach(function(r) {
-const ingr = Array.isArray(r.ingredients) ? r.ingredients : [];
-let score = 0;
-const overlap = [];
-ingr.forEach(function(i) {
-const iNorm = normaliserTexte(i);
-selectedNorm.forEach(function(sN, idx) {
-if (iNorm.indexOf(sN) !== -1) {
-score += 1;
-if (overlap.indexOf(selected[idx]) === -1) overlap.push(selected[idx]);
-}
-});
-});
-if (score > bestScore) { bestScore = score; best = { recette: r, overlap: overlap }; }
-});
+const opts = { ingredientsDisponibles: selected };
+if (NUTRITION_STATE.temps != null) opts.tempsOverride = NUTRITION_STATE.temps;
+if (NUTRITION_STATE.etat) opts.etatTags = [NUTRITION_STATE.etat];
+const result = await choisirRecetteIntelligente([], NUTRITION_STATE.userId, opts);
+const avecIngredients = result.candidats.filter(function(c){ return c.ingredientsInfo && c.ingredientsInfo.covered > 0; });
+const complet = avecIngredients.find(function(c){ return c.ingredientsInfo.missing === 0; });
+const presque = !complet ? avecIngredients.find(function(c){ return c.ingredientsInfo.missing === 1; }) : null;
+const best = complet || presque || null;
+if (best && NUTRITION_STATE.userId) logHistorique(NUTRITION_STATE.userId, 'recette', best.recette.id);
 renderIngredientRevelation(best);
 }
 
@@ -3115,9 +3226,10 @@ el.innerHTML = '<p class="rituel-texte" style="margin-top:14px;">Je n\'ai pas en
 return;
 }
 const r = best.recette;
+const info = best.ingredientsInfo || { overlap: [], missing: 0, total: (Array.isArray(r.ingredients) ? r.ingredients.length : 0) };
 const etatSlug = (r.tags_etats && r.tags_etats[0]) || null;
 const label = etatSlug ? etatLabel(etatSlug) : null;
-const baseIngr = best.overlap.length ? best.overlap : (Array.isArray(r.ingredients) ? r.ingredients : []);
+const baseIngr = info.overlap.length ? info.overlap : (Array.isArray(r.ingredients) ? r.ingredients : []);
 const chips = faitsNutritionnels(baseIngr);
 let html = '<div class="etat-reveal">';
 if (label) {
@@ -3125,6 +3237,12 @@ html += '<div class="ingr-reveal-lead">Aujourd\'hui, tu seras</div>';
 html += '<div class="ingr-reveal-etat">' + label.toUpperCase() + '</div>';
 }
 if (chips.length) html += '<div style="margin-top:6px; text-align:center;">' + chips.map(function(c){ return '<span class="nutri-raison-chip">' + c.ingredient + ' — ' + c.fait + '</span>'; }).join('') + '</div>';
+if (info.missing === 0) {
+html += '<p class="rituel-texte" style="margin-top:8px; text-align:center;">Tu as tout ce qu\'il faut.</p>';
+} else if (info.missing === 1) {
+const manque = Array.isArray(r.ingredients) ? r.ingredients.find(function(i){ return info.overlap.every(function(o){ return normaliserTexte(i).indexOf(normaliserTexte(o)) === -1; }); }) : null;
+html += '<p class="rituel-texte" style="margin-top:8px; text-align:center;">Il te manque seulement 1 ingrédient' + (manque ? ' : ' + manque : '') + '.</p>';
+}
 html += '<button class="ingr-transform-btn" onclick="nutritionVoirRecette(\'' + r.id + '\')">Transformons-les → ' + r.titre + '</button>';
 html += '</div>';
 el.innerHTML = html;
@@ -3224,19 +3342,36 @@ async function chargerRecommandationNutrition(excludeIds) {
 }
 
 function raisonsRecette(item, tempsCuisine) {
-  if (!item) return [];
-  const raisons = [];
-  raisons.push(item.recette.temps_minutes + ' minutes');
-  const uniques = [];
-  item.raisons.forEach(function(r){ if (uniques.indexOf(r) === -1) uniques.push(r); });
-  if (uniques.some(function(r){ return r.indexOf('objectif:') === 0 || r.indexOf('priorite:') === 0; })) {
-    raisons.push('Correspond à tes objectifs');
-  }
-  if (uniques.some(function(r){ return r.indexOf('envie:') === 0; })) {
-    raisons.push('Correspond à ce dont tu as envie');
-  }
-  raisons.push('Compatible avec ton alimentation');
-  return raisons;
+if (!item) return [];
+const r = item.recette;
+const ingr = Array.isArray(r.ingredients) ? r.ingredients : [];
+const raisons = [];
+raisons.push(r.temps_minutes + ' minutes, comme prévu');
+const uniques = [];
+item.raisons.forEach(function(x){ if (uniques.indexOf(x) === -1) uniques.push(x); });
+const etatRaison = uniques.find(function(x){ return x.indexOf('etat:') === 0; });
+const facts = faitsNutritionnels(ingr, 3);
+if (etatRaison) {
+const label = etatLabel(etatRaison.slice(5));
+if (facts.length) {
+raisons.push('Pour ton intention ' + label + ' : ' + facts.slice(0, 2).map(function(c){ return c.ingredient + ' (' + c.fait + ')'; }).join(', '));
+} else {
+raisons.push('Pour ton intention ' + label);
+}
+} else if (uniques.some(function(x){ return x.indexOf('objectif:') === 0 || x.indexOf('priorite:') === 0; })) {
+raisons.push('Correspond à tes objectifs du moment');
+}
+if (uniques.some(function(x){ return x.indexOf('envie:') === 0; })) {
+raisons.push('Correspond à ce dont tu as envie');
+}
+if (uniques.indexOf('favori') !== -1) {
+raisons.push('Une de tes recettes favorites');
+}
+raisons.push('Compatible avec ton alimentation');
+if (facts.length > 2) {
+raisons.push('Le petit + Lymia : ' + facts[2].ingredient + ' apporte notamment ' + facts[2].fait + '.');
+}
+return raisons;
 }
 
 function renderNutriResultat() {
