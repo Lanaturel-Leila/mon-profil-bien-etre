@@ -38,6 +38,9 @@
     }
 
     .couleur-img { display:block; width:150px; height:150px; margin:0 auto 14px auto; border-radius:50%; border:3px solid #ecdfd2; box-shadow:0 4px 14px rgba(124,51,65,0.14); object-fit:cover; cursor:pointer; animation: couleurFloat 3.2s ease-in-out infinite; transition: transform 0.2s ease; }
+    .couleur-badge { display:block; width:150px; height:150px; margin:0 auto 14px auto; border-radius:50%; border:3px solid #ecdfd2; box-shadow:0 4px 14px rgba(124,51,65,0.14); cursor:pointer; animation: couleurFloat 3.2s ease-in-out infinite; transition: transform 0.2s ease; }
+    .couleur-badge:active { transform: scale(0.94); }
+    .couleur-badge.couleur-wiggle { animation: couleurWiggle 0.5s ease; }
     .couleur-img:active { transform: scale(0.94); }
     .couleur-img.couleur-wiggle { animation: couleurWiggle 0.5s ease; }
     @keyframes couleurFloat { 0%,100% { transform: translateY(0) rotate(0deg); } 25% { transform: translateY(-3px) rotate(-6deg); } 50% { transform: translateY(-6px) rotate(0deg); } 75% { transform: translateY(-3px) rotate(6deg); } }
