@@ -13,7 +13,29 @@
     background: #f8f9f6; color: #26333d; min-height: 100vh;
     display: flex; align-items: center; justify-content: center; padding: 24px;
   }
-  .app { max-width: 440px; width: 100%; }
+  .app { max-width: 440px; width: 100%; padding-bottom: 88px; }
+  .journee-section-title { font-size: 12.5px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: var(--lc-bordeaux-soft, #a65b67); margin: 28px 4px 10px; }
+  .journee-section-title.first { margin-top: 4px; }
+  .bottom-nav {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
+    display: flex; justify-content: center;
+    background: rgba(255,255,255,0.96); backdrop-filter: blur(6px);
+    border-top: 1px solid rgba(124,51,65,0.10);
+    box-shadow: 0 -8px 24px -18px rgba(22,40,61,0.25);
+    padding: 6px max(6px, env(safe-area-inset-left)) calc(6px + env(safe-area-inset-bottom));
+  }
+  .bottom-nav-inner { display: flex; width: 100%; max-width: 440px; }
+  .bottom-nav-btn {
+    flex: 1; background: none; border: none; cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    padding: 6px 2px; border-radius: 12px; color: #a79489;
+    font-family: inherit; transition: color 150ms ease, transform 150ms ease;
+  }
+  .bottom-nav-btn:active { transform: scale(0.93); }
+  .bottom-nav-btn .bnav-icon { font-size: 19px; line-height: 1; }
+  .bottom-nav-btn .bnav-label { font-size: 10.5px; font-weight: 600; letter-spacing: 0.1px; }
+  .bottom-nav-btn.active { color: var(--lc-bordeaux, #7c3341); }
+  .bottom-nav-btn.active .bnav-icon { transform: translateY(-1px); }
   h1 { font-size: 21px; font-weight: 700; margin-bottom: 6px; color: #16283d; text-align: center; }
   p.subtitle { font-size: 14px; color: #8a968f; text-align: center; margin-bottom: 22px; }
   .card {
@@ -616,6 +638,8 @@
 </div>
 </div>
 </div>
+
+<div class="journee-section-title">Ton programme du jour</div>
 <div class="card" id="objectif-jour-card" style="text-align:center;">
       <div id="objectif-jour"></div>
     </div>
@@ -627,16 +651,6 @@
       <div id="phrase-jour-content"><p class="rituel-texte">Chargement...</p></div>
     </div>
     <div id="defi-jour-wrapper"></div>
-    <div class="card jardin-card" onclick="goToJardin()">
-      <div class="mantra-label">Mon Jardin</div>
-      <div id="jardin-preview-content"><p class="rituel-texte">Chargement de ton jardin...</p></div>
-      <div class="jardin-next">Touche pour ouvrir ton jardin</div>
-    </div>
-    <div class="card profil-quick-card" onclick="goToProfilFromJournee()">
-      <div class="mantra-label">Ton profil LYMIA</div>
-      <p class="rituel-texte" style="margin-top:2px;">Objectifs, alimentation, contexte de vie.</p>
-      <div class="jardin-next">Touche pour modifier ton profil</div>
-    </div>
     <div class="essentiel-card" id="essentiel-card">
       <div class="zone-label">Ton essentiel du jour</div>
       <div id="journee-essentiel-content"><p class="rituel-texte" style="color:#eef1ea;">Préparation de ton essentiel...</p></div>
@@ -649,6 +663,13 @@
       <div class="zone-label">Ton idée repas</div>
       <div id="journee-recette-content"><p class="rituel-texte">Chargement...</p></div>
     </div>
+
+<div class="journee-section-title">Explorer</div>
+<div class="card jardin-card" onclick="goToJardin()">
+      <div class="mantra-label">Mon Jardin</div>
+      <div id="jardin-preview-content"><p class="rituel-texte">Chargement de ton jardin...</p></div>
+      <div class="jardin-next">Touche pour ouvrir ton jardin</div>
+    </div>
     <div class="card" id="videos-teaser-card" onclick="goToVideos()" style="cursor:pointer; text-align:center;">
       <div class="mantra-label">Tes vidéos bien-être</div>
       <p class="rituel-texte" style="margin-top:2px;">Des séquences courtes filmées par Leïla, pour bouger où que tu sois.</p>
@@ -658,7 +679,6 @@
       <div id="journee-inspiration-content"><p class="rituel-texte">Chargement...</p></div>
     </div>
     <a class="back-link" href="#" onclick="showDashFromJournee(); return false;">Refaire mon check-in</a>
-    <a class="back-link" href="#" onclick="showDashFromJournee(); return false;">Voir mon profil et mon abonnement</a>
   </div>
 
     <div id="guidance-view" class="hidden">
@@ -982,6 +1002,16 @@
     <a class="back-link" id="profil-back-link" href="#" onclick="showDashFromProfil(); return false;">Retour à mon compte</a>
   </div>
 
+  <nav id="bottom-nav" class="bottom-nav hidden">
+    <div class="bottom-nav-inner">
+      <button class="bottom-nav-btn" id="nav-accueil" onclick="bottomNavGo('journee-view')"><span class="bnav-icon">🏡</span><span class="bnav-label">Accueil</span></button>
+      <button class="bottom-nav-btn" id="nav-nutrition" onclick="bottomNavGo('nutrition-view')"><span class="bnav-icon">🥗</span><span class="bnav-label">Nutrition</span></button>
+      <button class="bottom-nav-btn" id="nav-univers" onclick="bottomNavGo('univers-view')"><span class="bnav-icon">✨</span><span class="bnav-label">Univers</span></button>
+      <button class="bottom-nav-btn" id="nav-jardin" onclick="bottomNavGo('jardin-view')"><span class="bnav-icon">🌱</span><span class="bnav-label">Jardin</span></button>
+      <button class="bottom-nav-btn" id="nav-profil" onclick="bottomNavGo('profil-view')"><span class="bnav-icon">🌿</span><span class="bnav-label">Profil</span></button>
+    </div>
+  </nav>
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -1056,6 +1086,9 @@
     document.getElementById('dash-view').classList.add('hidden');
     document.getElementById('auth-view').classList.remove('hidden');
     document.getElementById('login-form').reset();
+    const nav = document.getElementById('bottom-nav');
+    if (nav) nav.classList.add('hidden');
+    JOURNEE_RENDERED = false;
   }
 
 async function checkAccess(user, profile) {
@@ -1089,6 +1122,8 @@ async function checkAccess(user, profile) {
     document.getElementById('auth-view').classList.remove('hidden');
     const f = document.getElementById('login-form');
     if (f) f.reset();
+    const nav = document.getElementById('bottom-nav');
+    if (nav) nav.classList.add('hidden');
   }
 
   async function onAuthenticated(user) {
@@ -1107,6 +1142,8 @@ async function checkAccess(user, profile) {
     }
 
     renderProfilSummary();
+    const navEl = document.getElementById('bottom-nav');
+    if (navEl) navEl.classList.remove('hidden');
 
     const pendingPrenom = sessionStorage.getItem('lymia_pending_prenom');
     if (pendingPrenom && profile && !profile.prenom) {
@@ -1597,6 +1634,7 @@ const PF_OBJECTIFS = [
   }
 
   function renderJourneeLymia(scoreGlobal, niveau, priorites, checkinRow) {
+    JOURNEE_RENDERED = true;
     const niveauNom = (niveau && niveau.nom) ? niveau.nom : 'Niveau en cours de calcul';
     const message = (niveau && niveau.message) ? niveau.message : '';
     const jDeg = Math.round(Math.max(0, Math.min(100, scoreGlobal)) * 3.6);
@@ -3672,6 +3710,55 @@ async function nutritionVoirRecette(recetteId) {
   window.scrollTo(0, 0);
 }
 
+// ===== NAVIGATION BASSE (BOTTOM NAV) =====
+let JOURNEE_RENDERED = false;
+const BOTTOM_NAV_ALL_VIEWS = ['dash-view','journee-view','guidance-view','jardin-view','defis-view','univers-view','feuilleroute-view','nutrition-view','profil-view','videos-view'];
+const BOTTOM_NAV_MAP = {'dash-view':'nav-accueil','journee-view':'nav-accueil','nutrition-view':'nav-nutrition','univers-view':'nav-univers','jardin-view':'nav-jardin','profil-view':'nav-profil'};
+
+function bottomNavGo(view) {
+  BOTTOM_NAV_ALL_VIEWS.forEach(function(id){ const el = document.getElementById(id); if (el) el.classList.add('hidden'); });
+  window.scrollTo(0, 0);
+  if (view === 'journee-view' && !JOURNEE_RENDERED) view = 'dash-view';
+  if (view === 'univers-view') {
+    const detail = document.getElementById('univers-detail');
+    const list = document.getElementById('univers-list-wrap');
+    if (detail) detail.classList.add('hidden');
+    if (list) list.classList.remove('hidden');
+  }
+  const target = document.getElementById(view);
+  if (target) target.classList.remove('hidden');
+  if (view === 'jardin-view') renderJardinPage();
+  if (view === 'nutrition-view') initNutritionView();
+  if (view === 'profil-view') {
+    PROFIL_RETURN_VIEW = JOURNEE_RENDERED ? 'journee-view' : 'dash-view';
+    const link = document.getElementById('profil-back-link');
+    if (link) link.textContent = 'Retour à l\'accueil';
+    renderProfilForm();
+  }
+}
+
+function initBottomNavObserver() {
+  const views = Object.keys(BOTTOM_NAV_MAP);
+  function sync() {
+    let activeNav = null;
+    views.forEach(function(viewId){
+      const el = document.getElementById(viewId);
+      if (el && !el.classList.contains('hidden')) activeNav = BOTTOM_NAV_MAP[viewId];
+    });
+    document.querySelectorAll('.bottom-nav-btn').forEach(function(b){ b.classList.remove('active'); });
+    if (activeNav) {
+      const btn = document.getElementById(activeNav);
+      if (btn) btn.classList.add('active');
+    }
+  }
+  const observer = new MutationObserver(sync);
+  views.forEach(function(viewId){
+    const el = document.getElementById(viewId);
+    if (el) observer.observe(el, { attributes: true, attributeFilter: ['class'] });
+  });
+  sync();
+}
+
 function voirRecetteDepuisJournee(recetteId) {
   const journeeView = document.getElementById('journee-view');
   if (journeeView) journeeView.classList.add('hidden');
@@ -3681,6 +3768,7 @@ function voirRecetteDepuisJournee(recetteId) {
   initNutritionView().then(function(){ nutritionVoirRecette(recetteId); });
 }
 
+initBottomNavObserver();
 (async function init() {
     const { data: { session } } = await sb.auth.getSession();
     if (session) await onAuthenticated(session.user);
