@@ -27,11 +27,12 @@
   }
   .tab-btn.active { background: #16283d; border-color: #16283d; color: white; }
   label { display: block; font-size: 13px; font-weight: 600; color: #5c6b64; margin: 12px 0 6px; }
-  input {
+  input, textarea {
     width: 100%; padding: 11px 13px; border-radius: 10px; border: 1.5px solid #e4e8df;
-    font-size: 14px; color: #26333d; background: #fcfdfb;
+    font-size: 14px; color: #26333d; background: #fcfdfb; font-family: inherit;
   }
-  input:focus { outline: none; border-color: #cdeafd; }
+  textarea { resize: vertical; min-height: 60px; }
+  input:focus, textarea:focus { outline: none; border-color: #cdeafd; }
   .btn {
     width: 100%; padding: 13px; border-radius: 12px; border: none;
     background: #16283d; color: white; font-size: 15px; font-weight: 700;
@@ -247,13 +248,13 @@
   }
 
   label { color: var(--lc-text-soft); }
-  input {
+  input, textarea {
     border-radius: var(--lc-radius-sm);
     border: 1.5px solid var(--lc-border);
     background: var(--lc-cream);
     color: var(--lc-text);
   }
-  input:focus { border-color: var(--lc-bordeaux-soft); }
+  input:focus, textarea:focus { border-color: var(--lc-bordeaux-soft); }
 
   .btn {
     background: linear-gradient(135deg, var(--lc-bordeaux), var(--lc-bordeaux-deep));
@@ -621,6 +622,10 @@
     <div class="card" id="journee-temps-card" style="text-align:center;">
       <div id="journee-temps-content"></div>
     </div>
+    <div class="card" id="phrase-jour-card" style="text-align:center;">
+      <div class="zone-label">Ta phrase du jour</div>
+      <div id="phrase-jour-content"><p class="rituel-texte">Chargement...</p></div>
+    </div>
     <div id="defi-jour-wrapper"></div>
     <div class="card jardin-card" onclick="goToJardin()">
       <div class="mantra-label">Mon Jardin</div>
@@ -643,6 +648,10 @@
     <div class="card recette-card">
       <div class="zone-label">Ton idée repas</div>
       <div id="journee-recette-content"><p class="rituel-texte">Chargement...</p></div>
+    </div>
+    <div class="card" id="videos-teaser-card" onclick="goToVideos()" style="cursor:pointer; text-align:center;">
+      <div class="mantra-label">Tes vidéos bien-être</div>
+      <p class="rituel-texte" style="margin-top:2px;">Des séquences courtes filmées par Leïla, pour bouger où que tu sois.</p>
     </div>
     <div class="card inspiration-card" id="inspiration-card">
       <div class="zone-label">Ta carte et ta couleur du jour</div>
@@ -712,6 +721,15 @@
     <a class="back-link" href="#" onclick="showJourneeFromDefis(); return false;">Retour à ma journée</a>
   </div>
 
+  <div id="videos-view" class="hidden">
+    <div class="card defi-hero">
+      <div style="font-size:12px; letter-spacing:1px; color:#8a968f; text-transform:uppercase; text-align:center; margin-bottom:6px;">Tes vidéos bien-être</div>
+      <p class="rituel-texte" style="text-align:center;">Des séquences courtes, filmées par Leïla, à faire où que tu sois.</p>
+    </div>
+    <div id="videos-list-content"><p class="rituel-texte">Chargement...</p></div>
+    <a class="back-link" href="#" onclick="showJourneeFromVideos(); return false;">Retour à ma journée</a>
+  </div>
+
     <div id="univers-view" class="hidden">
     <div class="univers-intro">
       <div class="univers-kicker">Mon Univers</div>
@@ -738,7 +756,7 @@
         </div>
         <div class="univers-item-arrow">→</div>
       </div>
-      <div class="univers-item" onclick="showUniversSoon('Mon Journal')">
+      <div class="univers-item" onclick="showUniversJournal()">
         <div class="univers-item-icon"><img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAA4KCw0LCQ4NDA0QDw4RFiQXFhQUFiwgIRokNC43NjMuMjI6QVNGOj1OPjIySGJJTlZYXV5dOEVmbWVabFNbXVn/2wBDAQ8QEBYTFioXFypZOzI7WVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVn/wAARCAA9AIwDASIAAhEBAxEB/8QAGwAAAQUBAQAAAAAAAAAAAAAAAAECAwQGBQf/xAA8EAABAwEFAwcJCAMBAAAAAAABAAIDEQQFEiExBlGhEyJEYYGS4RQyM0FxgpGisRYjNENTVNHwJFJicv/EABcBAQEBAQAAAAAAAAAAAAAAAAABAgP/xAAeEQEBAAMBAAIDAAAAAAAAAAAAAQIREiETQSIxUf/aAAwDAQACEQMRAD8A2eNROkq9oHrKMShjOO1NG5cXd09G7qJnKx0BEjKf+glcQWmuYI03qHyeEiggjwnVaYSxStLQXOjafWA8Gine4cmaEHKqqsssZyfFE6tanfr/ACVaIGDCBQAUpuVRAZAxmNxo0alNNpicObPGCCKkmvYmNAc0BwBGWRUkbQNGt7KKRo/ymBuZlZTfX+70lvaX2R+HzmjEOxOoP9W/AJ4zFCqk8u2Htt4GK9LK8+a0EZ6Gq7DXY6PY8gHtXN2hu4DlMIoWHE1R3Ne/lrnQvjZG5go0D1gZZ9a42eO8vrvQyy42+YfiFZfJJLXEW0GgAVWLVW4xVqkMkOFyOTr6lZwoLVrTPSBkskB5p5vrB0VgWwEVLT2KF7ahRAFuSbsNSml1BqlsIxSOd1/QeKqvfzUyG8o7O0gDlHAkOANKH+0Wk07bigdq4r7+bXm2d59rvBMdf0gHNgYPaSU3Gea0Lap9cllXbQ2kaCAe74pGbUyxn75lnc0a0OE/Uq9HNaFuRPtUozCzkm1Nie0ugcwnU4nUw9XWoDtOSfxEDR1UTZqtYPafipAVjhtMW9LhPYP4SnawDpEJ91Ojmu1fUWJoeBl5p7VgJcV23uHtqATULTs2kgtTTFJK1xeQ1oaw1+i5+0Vi5Szcqwc5ixv1vX46aGzStmgZKw814BC6MXmhZXZOSaSwfeD7vGQw/Uf3rWqZkArJqlu4kSOQkOirJjlC45qVxULjmsrHMkhIBaSQRkVwZ7qtBtD3MtUoa51aA6L0C03fFaHF1Sx51I9aqG5R+v8AKtXG/STOfbBSXbO1x/yJHU61A673u1lkPat+/Z8OcT5Qc/8AjxTHbNMPSD3PFZ5yb6wYIXTXVzz7xUguiKmrwdK1W4+zTR0o9zxR9mx+6Pc8VOczrBiWXTCytQTXsClZdcAPom/BbH7Nj918nilGzjQPxJ7ninOa94MxHd8AHomfBWIrFCPy2/BaEbPAdJPc8U8XEB0g9xTjI+TFyoYmR+awD2BTPjbMwscKg6rpC5qdIPdTm3ThPp6+6tTCpc8Weuu5zY7zdOHu5MNOFtcqlaIHJTNu+g9L8qUWIj8z5VqY1i5SogUjnKx5Gf1OCQ2In8zgrqpuKbimshfKC5gqK0V0WAE86QkbgFajY2NgawUASY/0uev0dXtRnu4oGgQujmM93FFTu4oQgKndxSVO7ilQgM93FGe7ihKgTPdxRU7uKVIgKndxRnu4oSqBKndxRU7uKEKgqd3FFTu4oQgKncjVCR2RyKD/2Q==" alt=""/></div>
         <div class="univers-item-body">
           <div class="univers-item-title">Mon Journal</div>
@@ -1609,6 +1627,176 @@ const PF_OBJECTIFS = [
     renderCarteEtCouleur();
     renderJardinPreview();
     renderObjectifDuJour();
+    renderPhraseDuJour();
+  }
+
+  async function choisirPhraseDuJour(userId, profile) {
+    const { data } = await sb.from('phrases_inspirantes').select('*').eq('actif', true);
+    if (!data || !data.length) return null;
+    if (userId) {
+      const dejaAuj = await getTodayHistorique(userId, 'phrase');
+      if (dejaAuj) {
+        const trouve = data.find(function(d){ return d.id === dejaAuj; });
+        if (trouve) return trouve;
+      }
+    }
+    const moment = momentActuel();
+    const momentPeriode = (moment === 'matin' || moment === 'soir') ? moment : null;
+    const style = profile && profile.style_accompagnement;
+    const objectifs = (profile && profile.objectifs_nutrition) || [];
+    function scorePhrase(p) {
+      let s = 0;
+      if (momentPeriode && p.moment_journee && p.moment_journee.indexOf(momentPeriode) !== -1) s += 2;
+      if (!p.moment_journee || !p.moment_journee.length) s += 1;
+      if (style && p.style_accompagnement && p.style_accompagnement.indexOf(style) !== -1) s += 3;
+      if (!p.style_accompagnement || !p.style_accompagnement.length) s += 1;
+      if (objectifs.length && p.tags_objectif && p.tags_objectif.some(function(t){ return objectifs.indexOf(t) !== -1; })) s += 3;
+      return s;
+    }
+    const scored = data.map(function(p){ return { p: p, s: scorePhrase(p) }; });
+    const maxScore = scored.reduce(function(m,c){ return Math.max(m, c.s); }, 0);
+    let pool = scored.filter(function(c){ return c.s === maxScore; }).map(function(c){ return c.p; });
+    if (userId) {
+      const recents = await getRecentHistorique(userId, 'phrase', 10);
+      const pasRecent = pool.filter(function(p){ return recents.indexOf(p.id) === -1; });
+      if (pasRecent.length) pool = pasRecent;
+    }
+    const start = new Date(new Date().getFullYear(), 0, 0);
+    const dayOfYear = Math.floor((Date.now() - start.getTime()) / 86400000);
+    const chosen = pool[((dayOfYear % pool.length) + pool.length) % pool.length];
+    if (userId && chosen) logHistorique(userId, 'phrase', chosen.id);
+    return chosen;
+  }
+
+  async function renderPhraseDuJour() {
+    const el = document.getElementById('phrase-jour-content');
+    if (!el) return;
+    try {
+      const { data: { session } } = await sb.auth.getSession();
+      const userId = session && session.user ? session.user.id : null;
+      let profile = null;
+      if (userId) {
+        const { data } = await sb.from('profiles').select('style_accompagnement, objectifs_nutrition').eq('id', userId).maybeSingle();
+        profile = data;
+      }
+      const phrase = await choisirPhraseDuJour(userId, profile);
+      el.innerHTML = phrase
+        ? '<p class="rituel-texte" style="font-style:italic;">« ' + phrase.texte + ' »</p>'
+        : '<p class="rituel-texte">Reviens un peu plus tard pour ta phrase du jour.</p>';
+    } catch (e) {
+      el.innerHTML = '<p class="rituel-texte">Reviens un peu plus tard pour ta phrase du jour.</p>';
+    }
+  }
+
+  // ===== ESPACE VIDÉOS =====
+  function goToVideos() {
+    document.getElementById('journee-view').classList.add('hidden');
+    document.getElementById('videos-view').classList.remove('hidden');
+    renderVideosList();
+  }
+
+  function showJourneeFromVideos() {
+    document.getElementById('videos-view').classList.add('hidden');
+    document.getElementById('journee-view').classList.remove('hidden');
+  }
+
+  async function renderVideosList() {
+    const el = document.getElementById('videos-list-content');
+    if (!el) return;
+    el.innerHTML = '<p class="rituel-texte">Chargement...</p>';
+    try {
+      const all = await getContenusActifs();
+      const videos = all.filter(function(c){ return c.type === 'video'; });
+      if (!videos.length) {
+        el.innerHTML = '<div class="card"><p class="rituel-texte" style="text-align:center;">Tes premières vidéos arrivent bientôt, tournées par Leïla.</p></div>';
+        return;
+      }
+      el.innerHTML = videos.map(function(v){
+        const dispo = !!v.video_url;
+        return '<div class="card" style="text-align:left;">' +
+          '<div class="mantra-label">' + v.titre + (v.duree_minutes ? ' · ' + v.duree_minutes + ' min' : '') + '</div>' +
+          '<p class="rituel-texte" style="margin-top:4px;">' + (v.description || '') + '</p>' +
+          (dispo
+            ? '<video controls style="width:100%; border-radius:10px; margin-top:10px;" src="' + v.video_url + '"></video>' +
+              '<button class="btn" style="margin-top:10px;" onclick="marquerVideoVue(\'' + v.id + '\', this)">J\'ai fait cette vidéo</button>'
+            : '<p class="jardin-next" style="margin-top:8px;">🌴 Bientôt disponible — Leïla la tourne à Bali</p>') +
+          '</div>';
+      }).join('');
+    } catch (e) {
+      el.innerHTML = '<p class="rituel-texte">Une erreur est survenue.</p>';
+    }
+  }
+
+  async function marquerVideoVue(contenuId, btn) {
+    if (btn) { btn.disabled = true; btn.textContent = 'Enregistrement...'; }
+    try {
+      const { data: { user } } = await sb.auth.getUser();
+      if (user) { await logHistorique(user.id, 'video', contenuId); }
+      const result = await awardJardinPoints('video_visionnee');
+      if (btn) { btn.textContent = (result && result.awarded) ? 'Fait aujourd\'hui ✓' : 'Déjà enregistré aujourd\'hui'; }
+    } catch (e) {
+      if (btn) { btn.disabled = false; btn.textContent = 'J\'ai fait cette vidéo'; }
+    }
+  }
+
+  // ===== MON JOURNAL =====
+  async function showUniversJournal() {
+    const content = document.getElementById('univers-detail-content');
+    content.innerHTML = '<p class="univers-detail-text">Chargement...</p>';
+    document.getElementById('univers-list-wrap').classList.add('hidden');
+    document.getElementById('univers-detail').classList.remove('hidden');
+    try {
+      const { data: { user } } = await sb.auth.getUser();
+      const today = new Date().toISOString().slice(0, 10);
+      const { data: entry } = await sb.from('journal_entries').select('*').eq('user_id', user.id).eq('date', today).maybeSingle();
+      const { data: recents } = await sb.from('journal_entries').select('date, texte').eq('user_id', user.id).neq('date', today).order('date', { ascending: false }).limit(5);
+      content.innerHTML =
+        '<div class="univers-detail-title">Mon Journal</div>' +
+        '<p class="univers-detail-text">Quelques lignes, quand tu en as envie. Rien n\'est obligatoire.</p>' +
+        '<label>Comment s\'est passée ta journée ?</label>' +
+        '<textarea id="journal-texte" rows="4" placeholder="Ce que tu veux garder de cette journée...">' + ((entry && entry.texte) || '') + '</textarea>' +
+        '<label>Une chose pour laquelle tu es reconnaissante</label>' +
+        '<textarea id="journal-gratitude" rows="2" placeholder="Même minuscule...">' + ((entry && entry.gratitude) || '') + '</textarea>' +
+        '<label>Une intention pour demain</label>' +
+        '<textarea id="journal-intention" rows="2" placeholder="Ce que tu aimerais pour demain...">' + ((entry && entry.intention) || '') + '</textarea>' +
+        '<button class="btn" id="journal-save-btn" onclick="saveJournalEntry()">Enregistrer mon journal</button>' +
+        '<div id="journal-save-msg" style="margin-top:8px; font-size:13px; color:#5c7a52;"></div>' +
+        (recents && recents.length
+          ? '<div class="mantra-label" style="margin-top:24px;">Tes derniers jours</div>' +
+            recents.map(function(r){ return '<div class="univers-carte-row"><div class="univers-carte-date">' + r.date + '</div><div class="univers-carte-mantra">' + ((r.texte || '').slice(0,120)) + '</div></div>'; }).join('')
+          : '');
+    } catch (e) {
+      content.innerHTML = '<p class="univers-detail-text">Une erreur est survenue.</p>';
+    }
+  }
+
+  async function saveJournalEntry() {
+    const btn = document.getElementById('journal-save-btn');
+    const msg = document.getElementById('journal-save-msg');
+    if (btn) { btn.disabled = true; btn.textContent = 'Enregistrement...'; }
+    try {
+      const { data: { user } } = await sb.auth.getUser();
+      const today = new Date().toISOString().slice(0, 10);
+      const payload = {
+        user_id: user.id, date: today,
+        texte: document.getElementById('journal-texte').value,
+        gratitude: document.getElementById('journal-gratitude').value,
+        intention: document.getElementById('journal-intention').value,
+        updated_at: new Date().toISOString()
+      };
+      const { data: existing } = await sb.from('journal_entries').select('id').eq('user_id', user.id).eq('date', today).maybeSingle();
+      if (existing) {
+        await sb.from('journal_entries').update(payload).eq('id', existing.id);
+      } else {
+        await sb.from('journal_entries').insert(payload);
+      }
+      await awardJardinPoints('journal_ecrit');
+      if (msg) msg.textContent = '✓ Ton journal a été enregistré.';
+    } catch (e) {
+      if (msg) msg.textContent = 'Une erreur est survenue, réessaie.';
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = 'Enregistrer mon journal'; }
+    }
   }
 
   async function renderObjectifDuJour() {
