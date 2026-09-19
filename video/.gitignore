@@ -1,0 +1,13 @@
+node_modules/
+out/
+.remotion/
+whisper.cpp/
+*.log
+
+# Les vidéos ne vont jamais sur GitHub : ce dépôt est public.
+public/clips/*
+!public/clips/.gitkeep
+!public/clips/README.md
+public/planche/
+public/audio/*
+!public/audio/.gitkeep
